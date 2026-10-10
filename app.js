@@ -5,6 +5,44 @@
 // Offline-Ready with LocalStorage & JSON Backup
 // ========================================================
 
+// ========================================================
+// EDITABLE VIDEO LINKS (Topic Keyword -> YouTube URL)
+// The owner can customize, reorder, or add new topics below anytime!
+// ========================================================
+var VIDEO_LINKS = {
+  "science experiments": "https://www.youtube.com/results?search_query=science+experiments+for+kids",
+  "volcano experiment": "https://www.youtube.com/results?search_query=volcano+experiment+for+kids",
+  "living vs non-living": "https://www.youtube.com/results?search_query=living+vs+non-living+things+for+kids",
+  "five senses": "https://www.youtube.com/results?search_query=five+senses+for+kids",
+  "water cycle": "https://www.youtube.com/results?search_query=water+cycle+for+kids",
+  "solar system": "https://www.youtube.com/results?search_query=solar+system+for+kids",
+  "parts of a plant": "https://www.youtube.com/results?search_query=parts+of+a+plant+for+kids"
+};
+
+// Rich metadata for Learning Videos section
+var VIDEO_CATALOG = [
+  { key: "science experiments", title: "Science Experiments for Kids", icon: "🔬", desc: "Easy kitchen science & fun experiments" },
+  { key: "volcano experiment", title: "Volcano Experiment for Kids", icon: "🌋", desc: "Baking soda & vinegar erupting volcano" },
+  { key: "living vs non-living", title: "Living vs Non-Living Things", icon: "🌿", desc: "Plants, animals & everyday objects" },
+  { key: "five senses", title: "Five Senses for Kids", icon: "👀", desc: "Sight, hearing, smell, taste, and touch" },
+  { key: "water cycle", title: "Water Cycle for Kids", icon: "💧", desc: "Evaporation, clouds, and rainfall journey" },
+  { key: "solar system", title: "Solar System for Kids", icon: "🪐", desc: "Sun, Earth, Moon & 8 amazing planets" },
+  { key: "parts of a plant", title: "Parts of a Plant for Kids", icon: "🌱", desc: "Roots, stem, leaves, flower & growth" }
+];
+
+function getVideoUrlForTopic(subject, topicTitle) {
+  var lower = (topicTitle || "").toLowerCase();
+  for (var k in VIDEO_LINKS) {
+    if (lower.indexOf(k) !== -1) {
+      return VIDEO_LINKS[k];
+    }
+  }
+  if (subject === "Science") {
+    return "https://www.youtube.com/results?search_query=" + encodeURIComponent(topicTitle + " for kids");
+  }
+  return null;
+}
+
 // ---------- Constants (9 Subjects) ----------
 var SUBJECTS = [
   { name: "Reading", icon: "📖" },
@@ -314,11 +352,16 @@ function render() {
     renderWeek();
   } else if (currentView === "syllabus") {
     renderSyllabusPlanner();
+    renderLearningVideos();
   } else if (currentView === "generator") {
     updateGeneratorKidName();
     renderWorksheetPreview();
   } else if (currentView === "report") {
-    renderWeeklyReport();
+    if (currentReportMode === "monthly") {
+      renderMonthlyReport();
+    } else {
+      renderWeeklyReport();
+    }
   }
 }
 
@@ -355,6 +398,108 @@ function renderTabs() {
   });
 }
 
+function isDayComplete(kidId, ds) {
+  var rec = state.records && state.records[recordKey(kidId, ds)];
+  if (!rec) return false;
+  for (var i = 0; i < SUBJECTS.length; i++) {
+    if (!rec[SUBJECTS[i].name]) return false;
+  }
+  return true;
+}
+
+function getChildStreak(kidId) {
+  if (!kidId || !state.records) return 0;
+  var streak = 0;
+  var d = new Date();
+  var todayDs = dateStr(d);
+
+  var checkDate = new Date(d);
+  if (!isDayComplete(kidId, todayDs)) {
+    // If today is not finished yet, check if yesterday was finished to keep ongoing streak
+    checkDate.setDate(checkDate.getDate() - 1);
+  }
+
+  while (true) {
+    var ds = dateStr(checkDate);
+    if (isDayComplete(kidId, ds)) {
+      streak++;
+      checkDate.setDate(checkDate.getDate() - 1);
+    } else {
+      break;
+    }
+  }
+  return streak;
+}
+
+function checkStreakCelebration(kidId) {
+  var streak = getChildStreak(kidId);
+  if (streak >= 7) {
+    var storageKey = "homesteps_streak7_seen_" + kidId + "_" + streak;
+    if (localStorage.getItem(storageKey) !== "true") {
+      localStorage.setItem(storageKey, "true");
+      var modal = document.getElementById("streakCelebrationModal");
+      if (modal) modal.classList.remove("hidden");
+    }
+  }
+}
+
+// Checklist Undo Support (Requirement 3)
+var lastChecklistAction = null;
+var undoToastTimeout = null;
+
+function recordChecklistAction(kidId, ds, subjectName, prevValue) {
+  lastChecklistAction = {
+    kidId: kidId,
+    date: ds,
+    subjectName: subjectName,
+    prevValue: prevValue
+  };
+  showUndoToast();
+}
+
+function showUndoToast() {
+  var toast = document.getElementById("undoToast");
+  if (!toast) return;
+  toast.classList.remove("hidden");
+  if (undoToastTimeout) clearTimeout(undoToastTimeout);
+  undoToastTimeout = setTimeout(function () {
+    hideUndoToast();
+  }, 5000);
+}
+
+function hideUndoToast() {
+  var toast = document.getElementById("undoToast");
+  if (toast) toast.classList.add("hidden");
+  if (undoToastTimeout) {
+    clearTimeout(undoToastTimeout);
+    undoToastTimeout = null;
+  }
+}
+
+function undoChecklistAction() {
+  if (!lastChecklistAction) return;
+  var kidId = lastChecklistAction.kidId;
+  var ds = lastChecklistAction.date;
+  var rec = getRecord(kidId, ds);
+  rec[lastChecklistAction.subjectName] = lastChecklistAction.prevValue;
+
+  var totalDone = 0;
+  SUBJECTS.forEach(function (s) { if (rec[s.name]) totalDone++; });
+  if (totalDone === SUBJECTS.length) {
+    if (!state.stars) state.stars = {};
+    state.stars[recordKey(kidId, ds)] = true;
+  } else {
+    if (state.stars) delete state.stars[recordKey(kidId, ds)];
+  }
+
+  saveState();
+  lastChecklistAction = null;
+  hideUndoToast();
+  renderChecklist();
+  renderWeek();
+  renderActiveChildBadge();
+}
+
 function renderActiveChildBadge() {
   var badge = document.getElementById("activeChildBadge");
   var kid = activeKid();
@@ -363,10 +508,12 @@ function renderActiveChildBadge() {
     return;
   }
   var starsThisWeek = getWeekStarsCount(kid.id);
+  var streak = getChildStreak(kid.id);
   var bandText = kid.ageBand ? "Level: " + kid.ageBand : "Age: " + kid.age;
   badge.innerHTML =
     '<span>👤 <strong>' + kid.name + '</strong> (' + bandText + ')</span>' +
-    '<span>⭐ <strong>' + starsThisWeek + '</strong> stars this week</span>';
+    '<span>⭐ <strong>' + starsThisWeek + '</strong> stars this week</span>' +
+    '<span class="child-streak-pill">🔥 <strong>' + streak + '-day</strong> streak!</span>';
 }
 
 
@@ -403,13 +550,17 @@ function renderChecklist() {
     cb.checked = isDone;
 
     cb.onchange = function () {
+      var prevVal = !cb.checked;
       rec[sub.name] = cb.checked;
       
+      recordChecklistAction(kid.id, today, sub.name, prevVal);
+
       var totalDone = 0;
       SUBJECTS.forEach(function (s) { if (rec[s.name]) totalDone++; });
       if (totalDone === SUBJECTS.length) {
         if (!state.stars) state.stars = {};
         state.stars[recordKey(kid.id, today)] = true;
+        checkStreakCelebration(kid.id);
       }
 
       saveState();
@@ -643,6 +794,19 @@ function renderSyllabusPlanner() {
       actions.appendChild(printBtn);
       actions.appendChild(teachBtn);
 
+      var videoUrl = getVideoUrlForTopic(tObj.sub, tObj.item.title);
+      if (videoUrl) {
+        var videoBtn = document.createElement("button");
+        videoBtn.className = "btn-plan-action btn-plan-video";
+        videoBtn.type = "button";
+        videoBtn.innerHTML = '🎬 Watch Video';
+        videoBtn.title = "Watch related video on YouTube";
+        videoBtn.onclick = function () {
+          window.open(videoUrl, "_blank");
+        };
+        actions.appendChild(videoBtn);
+      }
+
       topicItem.appendChild(infoSide);
       topicItem.appendChild(actions);
       topicsContainer.appendChild(topicItem);
@@ -670,6 +834,35 @@ function renderSyllabusPlanner() {
 
     subBox.appendChild(pillsWrap);
     currBox.appendChild(subBox);
+  });
+}
+
+// Render Curated Learning Videos Section (Requirement 7)
+function renderLearningVideos() {
+  var list = document.getElementById("learningVideosList");
+  if (!list) return;
+  list.innerHTML = "";
+
+  VIDEO_CATALOG.forEach(function (item) {
+    var card = document.createElement("div");
+    card.className = "video-card-item";
+
+    var top = document.createElement("div");
+    top.innerHTML =
+      '<div class="video-card-title">' + item.icon + ' ' + item.title + '</div>' +
+      '<div class="video-card-sub">' + item.desc + '</div>';
+
+    var btn = document.createElement("button");
+    btn.className = "btn-video-watch";
+    btn.type = "button";
+    btn.innerHTML = '▶ Watch on YouTube ↗';
+    btn.onclick = function () {
+      window.open(VIDEO_LINKS[item.key], "_blank");
+    };
+
+    card.appendChild(top);
+    card.appendChild(btn);
+    list.appendChild(card);
   });
 }
 
@@ -1477,6 +1670,239 @@ function renderWeeklyReport() {
   }
 }
 
+// ========================================================
+// MONTHLY REPORT & BATCH PRINTING (Requirements 4 & 6)
+// ========================================================
+var currentReportMode = "weekly";
+
+function initReportControls() {
+  var weeklyBtn = document.getElementById("reportWeeklyTabBtn");
+  var monthlyBtn = document.getElementById("reportMonthlyTabBtn");
+  var monthSelect = document.getElementById("reportMonthSelect");
+  var printMonthlyBtn = document.getElementById("printMonthlyReportBtn");
+  var shareMonthBtn = document.getElementById("shareMonthReportWhatsAppBtn");
+
+  if (weeklyBtn) {
+    weeklyBtn.onclick = function () {
+      currentReportMode = "weekly";
+      weeklyBtn.classList.add("active");
+      if (monthlyBtn) monthlyBtn.classList.remove("active");
+      document.getElementById("weeklyReportHeader").classList.remove("hidden");
+      document.getElementById("monthlyReportHeader").classList.add("hidden");
+      document.getElementById("monthlySelectorControls").classList.add("hidden");
+      document.getElementById("weeklyReportContent").classList.remove("hidden");
+      document.getElementById("monthlyReportContent").classList.add("hidden");
+      renderWeeklyReport();
+    };
+  }
+
+  if (monthlyBtn) {
+    monthlyBtn.onclick = function () {
+      currentReportMode = "monthly";
+      monthlyBtn.classList.add("active");
+      if (weeklyBtn) weeklyBtn.classList.remove("active");
+      document.getElementById("weeklyReportHeader").classList.add("hidden");
+      document.getElementById("monthlyReportHeader").classList.remove("hidden");
+      document.getElementById("monthlySelectorControls").classList.remove("hidden");
+      document.getElementById("weeklyReportContent").classList.add("hidden");
+      document.getElementById("monthlyReportContent").classList.remove("hidden");
+      populateMonthSelect();
+      renderMonthlyReport();
+    };
+  }
+
+  if (monthSelect) {
+    monthSelect.onchange = function () {
+      renderMonthlyReport();
+    };
+  }
+
+  if (printMonthlyBtn) {
+    printMonthlyBtn.onclick = function () {
+      var kid = activeKid();
+      var monthVal = document.getElementById("reportMonthSelect").value;
+      var printBox = document.getElementById("printContainer");
+      var monthlyBox = document.getElementById("monthlyReportContent");
+      if (kid && printBox && monthlyBox) {
+        printBox.innerHTML =
+          '<div class="paper-page" style="border: 2px solid #000; padding: 10mm; background: #FFF;">' +
+          '  <h2 style="font-size:1.4rem; margin-bottom: 4px;">HomeSteps — Monthly Progress Summary</h2>' +
+          '  <p style="margin-bottom: 12px; font-size: 0.95rem;">Child: <strong>' + kid.name + '</strong> • Month: <strong>' + monthVal + '</strong></p>' +
+          monthlyBox.innerHTML +
+          '</div>';
+        window.print();
+      }
+    };
+  }
+
+  if (shareMonthBtn) {
+    shareMonthBtn.onclick = function () {
+      var kid = activeKid();
+      var monthVal = document.getElementById("reportMonthSelect").value;
+      if (!kid) return;
+      var text = "🌟 HomeSteps Monthly Learning Report for " + kid.name + " (" + monthVal + ")! We made steady homeschool progress this month! 📚✨";
+      var url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(text);
+      window.open(url, "_blank");
+    };
+  }
+}
+
+function populateMonthSelect() {
+  var sel = document.getElementById("reportMonthSelect");
+  if (!sel || sel.options.length > 0) return;
+
+  var now = new Date();
+  var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  
+  for (var i = 0; i < 6; i++) {
+    var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    var val = d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2);
+    var label = months[d.getMonth()] + " " + d.getFullYear();
+    var opt = document.createElement("option");
+    opt.value = val;
+    opt.textContent = label;
+    if (i === 0) opt.selected = true;
+    sel.appendChild(opt);
+  }
+}
+
+function renderMonthlyReport() {
+  var kid = activeKid();
+  var summaryBox = document.getElementById("monthlySummaryBox");
+  var detailsBox = document.getElementById("monthlyDetailsBox");
+  var monthTitle = document.getElementById("reportMonthTitle");
+  var monthSelect = document.getElementById("reportMonthSelect");
+
+  if (!kid) {
+    if (summaryBox) summaryBox.innerHTML = '<p class="empty-msg">No active child selected.</p>';
+    if (detailsBox) detailsBox.innerHTML = "";
+    return;
+  }
+
+  var selectedMonthVal = monthSelect ? monthSelect.value : "";
+  if (!selectedMonthVal) {
+    populateMonthSelect();
+    selectedMonthVal = monthSelect ? monthSelect.value : "";
+  }
+
+  var parts = (selectedMonthVal || "2026-10").split("-");
+  var year = parseInt(parts[0], 10);
+  var month = parseInt(parts[1], 10) - 1;
+  var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  if (monthTitle) monthTitle.textContent = monthNames[month] + " " + year;
+
+  var daysInMonth = new Date(year, month + 1, 0).getDate();
+  var totalPossible = daysInMonth * SUBJECTS.length;
+  var totalDone = 0;
+  var totalStars = 0;
+  var subjectTotals = {};
+  SUBJECTS.forEach(function (s) { subjectTotals[s.name] = 0; });
+
+  var bestStreakInMonth = 0;
+  var currentMonthStreak = 0;
+
+  for (var day = 1; day <= daysInMonth; day++) {
+    var dStr = year + "-" + ("0" + (month + 1)).slice(-2) + "-" + ("0" + day).slice(-2);
+    var rec = (state.records && state.records[recordKey(kid.id, dStr)]) || {};
+    var dayDoneCount = 0;
+
+    if (isStarAwarded(kid.id, dStr)) totalStars++;
+
+    SUBJECTS.forEach(function (s) {
+      if (rec[s.name]) {
+        totalDone++;
+        dayDoneCount++;
+        subjectTotals[s.name]++;
+      }
+    });
+
+    if (dayDoneCount === SUBJECTS.length) {
+      currentMonthStreak++;
+      if (currentMonthStreak > bestStreakInMonth) {
+        bestStreakInMonth = currentMonthStreak;
+      }
+    } else {
+      currentMonthStreak = 0;
+    }
+  }
+
+  var overallPct = Math.round((totalDone / totalPossible) * 100);
+
+  if (summaryBox) {
+    summaryBox.innerHTML =
+      '<div class="report-stat-card">' +
+      '  <div class="report-stat-value">' + totalDone + ' / ' + totalPossible + '</div>' +
+      '  <div class="report-stat-label">Month Tasks Completed (' + overallPct + '%)</div>' +
+      '</div>' +
+      '<div class="report-stat-card">' +
+      '  <div class="report-stat-value">⭐ ' + totalStars + '</div>' +
+      '  <div class="report-stat-label">Month Stars Earned</div>' +
+      '</div>' +
+      '<div class="report-stat-card">' +
+      '  <div class="report-stat-value">🔥 ' + bestStreakInMonth + ' days</div>' +
+      '  <div class="report-stat-label">Best Streak of the Month</div>' +
+      '</div>';
+  }
+
+  if (detailsBox) {
+    var tbl = '<table class="report-table"><thead><tr><th>Subject</th><th>Monthly Tasks Done</th><th>Completion %</th><th>Monthly Status</th></tr></thead><tbody>';
+    SUBJECTS.forEach(function (s) {
+      var sDone = subjectTotals[s.name];
+      var sPct = Math.round((sDone / daysInMonth) * 100);
+      var statusTag = sPct >= 80 ? '<span style="color:#166534;font-weight:800;">Mastered 🌟</span>' : (sPct >= 40 ? '<span style="color:#D97706;font-weight:700;">Consistent ⏳</span>' : '<span style="color:#64748B;">In Progress ✏️</span>');
+      tbl += '<tr><td class="sub-name">' + s.icon + ' ' + s.name + '</td><td><strong>' + sDone + ' / ' + daysInMonth + ' days</strong></td><td>' + sPct + '%</td><td>' + statusTag + '</td></tr>';
+    });
+    tbl += '</tbody></table>';
+    detailsBox.innerHTML = tbl;
+  }
+}
+
+// Batch Print This Week Worksheets (Requirement 4)
+function batchPrintWeeksWorksheets() {
+  var kid = activeKid();
+  if (!kid) {
+    alert("Please add or select a child first.");
+    return;
+  }
+  var currentBand = kid.ageBand || "4-5";
+  var syllabusForBand = SYLLABUS_DATA[currentBand] || SYLLABUS_DATA["4-5"];
+  var dayNames = ["Day 1 (Monday)", "Day 2 (Tuesday)", "Day 3 (Wednesday)", "Day 4 (Thursday)", "Day 5 (Friday)"];
+  var subKeys = Object.keys(syllabusForBand.subjects);
+
+  var printContainer = document.getElementById("printContainer");
+  printContainer.innerHTML = "";
+
+  for (var dayIndex = 0; dayIndex < 5; dayIndex++) {
+    var primarySub = subKeys[dayIndex % subKeys.length];
+    var item = syllabusForBand.subjects[primarySub] ? syllabusForBand.subjects[primarySub][dayIndex % syllabusForBand.subjects[primarySub].length] : null;
+
+    var subKey = primarySub.toLowerCase();
+    if (subKey === "social studies") subKey = "social";
+    if (subKey === "art & craft") subKey = "art";
+    if (subKey === "nazra") subKey = "urdu";
+
+    var typ = (item && item.type) ? item.type : "tracing";
+    var list = (WORKSHEET_PRESETS[subKey] && WORKSHEET_PRESETS[subKey][typ]) || [];
+    var preset = (item && item.presetId) ? list.find(function (p) { return p.id === item.presetId; }) : null;
+    if (!preset && list.length > 0) preset = list[0];
+    if (!preset) {
+      preset = WORKSHEET_PRESETS.english.tracing[0];
+      subKey = "english";
+      typ = "tracing";
+    }
+
+    var wsDate = dayNames[dayIndex] + " — Week 1";
+    var pageHtml = buildWorksheetHTML(subKey, typ, preset, kid.name, wsDate);
+
+    var pageWrap = document.createElement("div");
+    pageWrap.className = "paper-page printable-sheet-page";
+    pageWrap.innerHTML = pageHtml;
+    printContainer.appendChild(pageWrap);
+  }
+
+  window.print();
+}
+
 
 // ========================================================
 // PRINT & SOCIAL ACTIONS
@@ -1863,7 +2289,174 @@ if (localStorage.getItem("homesteps_onboarded") !== "true") {
   document.getElementById("onboardingBanner").classList.remove("hidden");
 }
 
+// ========================================================
+// 9. NEW ENGAGEMENT FEATURES WIRING
+// ========================================================
+
+// 1. PWA Install & Offline Service Worker (Requirement 1)
+var deferredInstallPrompt = null;
+window.addEventListener("beforeinstallprompt", function (e) {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  var installBtn = document.getElementById("pwaInstallBtn");
+  if (installBtn) installBtn.classList.remove("hidden");
+});
+
+var pwaBtn = document.getElementById("pwaInstallBtn");
+if (pwaBtn) {
+  pwaBtn.onclick = function () {
+    if (deferredInstallPrompt) {
+      deferredInstallPrompt.prompt();
+      deferredInstallPrompt.userChoice.then(function (res) {
+        if (res.outcome === "accepted") {
+          console.log("PWA installed");
+        }
+        deferredInstallPrompt = null;
+        pwaBtn.classList.add("hidden");
+      });
+    }
+  };
+}
+
+// PWA one-time toast hint
+if (!localStorage.getItem("homesteps_pwa_hint_seen")) {
+  setTimeout(function () {
+    var hint = document.getElementById("pwaToastHint");
+    if (hint) {
+      hint.classList.remove("hidden");
+      setTimeout(function () {
+        hint.classList.add("hidden");
+        localStorage.setItem("homesteps_pwa_hint_seen", "true");
+      }, 7000);
+    }
+  }, 2000);
+}
+
+var dismissPwaToastBtn = document.getElementById("dismissPwaToastBtn");
+if (dismissPwaToastBtn) {
+  dismissPwaToastBtn.onclick = function () {
+    var hint = document.getElementById("pwaToastHint");
+    if (hint) hint.classList.add("hidden");
+    localStorage.setItem("homesteps_pwa_hint_seen", "true");
+  };
+}
+
+try {
+  if ("serviceWorker" in navigator && window.location.protocol.startsWith("http")) {
+    navigator.serviceWorker.register("./sw.js").catch(function (err) {
+      console.log("Service worker registration skipped:", err);
+    });
+  }
+} catch (e) {}
+
+// 2. Daily Reminder (Opt-in) (Requirement 2)
+function initDailyReminder() {
+  var toggle = document.getElementById("dailyReminderToggle");
+  var timeInput = document.getElementById("dailyReminderTime");
+  var container = document.getElementById("reminderTimeContainer");
+
+  var enabled = localStorage.getItem("homesteps_reminder_enabled") === "true";
+  var remTime = localStorage.getItem("homesteps_reminder_time") || "20:00";
+
+  if (toggle) toggle.checked = enabled;
+  if (timeInput) timeInput.value = remTime;
+  if (container) {
+    if (enabled) container.classList.remove("hidden");
+    else container.classList.add("hidden");
+  }
+
+  if (toggle) {
+    toggle.onchange = function () {
+      var isChecked = toggle.checked;
+      localStorage.setItem("homesteps_reminder_enabled", isChecked ? "true" : "false");
+      if (container) {
+        if (isChecked) container.classList.remove("hidden");
+        else container.classList.add("hidden");
+      }
+      if (isChecked && "Notification" in window && Notification.permission === "default") {
+        Notification.requestPermission();
+      }
+    };
+  }
+
+  if (timeInput) {
+    timeInput.onchange = function () {
+      localStorage.setItem("homesteps_reminder_time", timeInput.value);
+    };
+  }
+
+  checkDailyReminderBanner();
+}
+
+function checkDailyReminderBanner() {
+  var enabled = localStorage.getItem("homesteps_reminder_enabled") === "true";
+  if (!enabled) return;
+
+  var remTime = localStorage.getItem("homesteps_reminder_time") || "20:00";
+  var parts = remTime.split(":");
+  var remHour = parseInt(parts[0], 10);
+  var remMin = parseInt(parts[1], 10);
+
+  var now = new Date();
+  var curMins = now.getHours() * 60 + now.getMinutes();
+  var remMins = remHour * 60 + remMin;
+
+  if (curMins >= remMins) {
+    var kid = activeKid();
+    if (kid) {
+      var today = dateStr(now);
+      var rec = getRecord(kid.id, today);
+      var done = 0;
+      SUBJECTS.forEach(function (s) { if (rec[s.name]) done++; });
+      if (done < SUBJECTS.length) {
+        var banner = document.getElementById("reminderBanner");
+        if (banner) banner.classList.remove("hidden");
+      }
+    }
+  }
+}
+
+document.getElementById("goToChecklistBtn").onclick = function () {
+  document.getElementById("reminderBanner").classList.add("hidden");
+  switchView("tracker");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
+document.getElementById("dismissReminderBannerBtn").onclick = function () {
+  document.getElementById("reminderBanner").classList.add("hidden");
+};
+
+// 3. Undo for Checklist (Requirement 3)
+document.getElementById("undoActionBtn").onclick = undoChecklistAction;
+
+window.addEventListener("keydown", function (e) {
+  if ((e.ctrlKey || e.metaKey) && (e.key === "z" || e.key === "Z") && !e.shiftKey) {
+    if (lastChecklistAction) {
+      e.preventDefault();
+      undoChecklistAction();
+    }
+  }
+});
+
+// 4. Batch Print Week Worksheets (Requirement 4)
+document.getElementById("batchPrintWeekBtn").onclick = batchPrintWeeksWorksheets;
+
+// 5. Streak Celebration Modal (Requirement 5)
+document.getElementById("closeStreakModalBtn").onclick = function () {
+  document.getElementById("streakCelebrationModal").classList.add("hidden");
+};
+
+document.getElementById("shareStreakWhatsAppBtn").onclick = function () {
+  var text = "My child just hit a 7-day learning streak on HomeSteps! 🔥";
+  var url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(text);
+  window.open(url, "_blank");
+};
+
+// 6. Monthly Report Controls (Requirement 6)
+initReportControls();
+
 // ---------- Initial Boot ----------
 initAccessibility();
+initDailyReminder();
 updatePresetOptions();
 render();

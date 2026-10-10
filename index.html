@@ -12,6 +12,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#C96F4A">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
 </head>
 <body>
 
@@ -29,8 +32,9 @@
           </div>
         </div>
 
-        <!-- Header Action Icons (Accessibility, Help, Premium, Backup) -->
+        <!-- Header Action Icons (Accessibility, Help, Premium, Backup, PWA Install) -->
         <div class="header-actions">
+          <button id="pwaInstallBtn" class="pwa-install-btn hidden" title="Install HomeSteps App" aria-label="Install App">📲 Install App</button>
           <button id="toggleBigTextBtn" class="icon-btn" title="Big Text Mode (Aa+)" aria-label="Toggle Big Text">Aa+</button>
           <button id="helpModalBtn" class="icon-btn" title="Help & Guide (?)" aria-label="Help">❓</button>
           <button id="premiumModalBtn" class="premium-header-btn" title="HomeSteps Premium (Coming Soon)" aria-label="Premium">✨ Premium</button>
@@ -38,6 +42,24 @@
         </div>
       </div>
     </header>
+
+    <!-- PWA One-Time Hint Toast -->
+    <div id="pwaToastHint" class="toast-hint hidden">
+      <span>💡 Tip: Install HomeSteps on your home screen for one-tap access!</span>
+      <button id="dismissPwaToastBtn" class="close-toast-btn" aria-label="Dismiss">×</button>
+    </div>
+
+    <!-- Daily Reminder In-App Banner -->
+    <div id="reminderBanner" class="reminder-banner hidden">
+      <div class="reminder-banner-content">
+        <span class="reminder-banner-icon">⏰</span>
+        <span>Time for today's checklist! 🌟</span>
+      </div>
+      <div class="reminder-banner-actions">
+        <button id="goToChecklistBtn" class="btn btn-secondary btn-small">Check Now ✓</button>
+        <button id="dismissReminderBannerBtn" class="close-toast-btn" aria-label="Dismiss">×</button>
+      </div>
+    </div>
 
     <!-- 60-Second Onboarding Welcome Banner (PRD §19) -->
     <div id="onboardingBanner" class="onboarding-card hidden">
@@ -115,6 +137,12 @@
         <div class="progress-wrap">
           <div class="progress-bar"><div id="progressFill"></div></div>
           <p id="progressText">0 of 9 done</p>
+        </div>
+
+        <!-- Floating Undo Toast (Requirement 3) -->
+        <div id="undoToast" class="undo-toast hidden">
+          <span>Checklist updated</span>
+          <button id="undoActionBtn" class="btn-undo" type="button">↩️ Undo</button>
         </div>
 
         <!-- Celebration Banner when 9/9 done + WhatsApp Share Win -->
@@ -216,8 +244,19 @@
           <span class="badge-sub">Auto-syncs with Tracker & Generator</span>
         </div>
         <p class="card-subtext">Suggested daily lessons — easily <strong>Print a Worksheet</strong> or <strong>Mark as Taught</strong>:</p>
-        
         <div id="weeklyPlannerList" class="planner-days-list"></div>
+      </section>
+
+      <!-- Curated Learning Videos Section (Science Focus - Requirement 7) -->
+      <section class="card videos-card">
+        <div class="card-header-flex">
+          <div>
+            <h2>🎬 Learning Videos</h2>
+            <p class="card-subtext">Watch together with your child 👩‍👧</p>
+          </div>
+          <span class="badge-sub">Science & Discovery</span>
+        </div>
+        <div id="learningVideosList" class="learning-videos-grid"></div>
       </section>
 
       <!-- Full Curriculum Browser -->
@@ -302,6 +341,9 @@
           <button id="printWsBtn" class="btn btn-primary btn-print" type="button">
             🖨️ Print Worksheet (A4)
           </button>
+          <button id="batchPrintWeekBtn" class="btn btn-batch-print" type="button" title="Print 5-day worksheets from weekly planner">
+            🖨️ Print This Week's Worksheets
+          </button>
         </div>
       </section>
 
@@ -320,10 +362,28 @@
     </main>
 
 
-    <!-- ================= VIEW 4: WEEKLY REPORT ================= -->
+    <!-- ================= VIEW 4: PROGRESS REPORT (WEEKLY & MONTHLY) ================= -->
     <main id="reportView" class="view-panel hidden">
       <section class="card">
-        <div class="card-header-flex">
+        
+        <!-- Report Mode Bar (Weekly vs Monthly) -->
+        <div class="report-mode-bar">
+          <div class="report-toggle-group">
+            <button id="reportWeeklyTabBtn" class="report-toggle-btn active" type="button">Weekly Report</button>
+            <button id="reportMonthlyTabBtn" class="report-toggle-btn" type="button">Monthly Report</button>
+          </div>
+          
+          <div id="monthlySelectorControls" class="monthly-controls hidden">
+            <label for="reportMonthSelect">Select Month:</label>
+            <select id="reportMonthSelect" class="form-select month-select"></select>
+            <button id="printMonthlyReportBtn" class="btn btn-secondary btn-small" type="button">
+              🖨️ Print Monthly Summary
+            </button>
+          </div>
+        </div>
+
+        <!-- Weekly Report Header -->
+        <div id="weeklyReportHeader" class="card-header-flex">
           <div>
             <h2>📊 Weekly Progress Report</h2>
             <span class="date" id="reportDateRange"></span>
@@ -338,9 +398,32 @@
           </div>
         </div>
 
-        <div id="reportSummaryBox" class="report-summary-cards"></div>
-        <div id="reportDetailsBox" class="report-details-table-wrap"></div>
-        <div id="reportNotesBox" class="report-notes-list"></div>
+        <!-- Monthly Report Header -->
+        <div id="monthlyReportHeader" class="card-header-flex hidden">
+          <div>
+            <h2>📅 Monthly Progress Report</h2>
+            <span class="date" id="reportMonthTitle"></span>
+          </div>
+          <div class="report-btns">
+            <button id="shareMonthReportWhatsAppBtn" class="btn btn-whatsapp btn-small" type="button">
+              📱 Share on WhatsApp
+            </button>
+          </div>
+        </div>
+
+        <!-- Weekly View Containers -->
+        <div id="weeklyReportContent">
+          <div id="reportSummaryBox" class="report-summary-cards"></div>
+          <div id="reportDetailsBox" class="report-details-table-wrap"></div>
+          <div id="reportNotesBox" class="report-notes-list"></div>
+        </div>
+
+        <!-- Monthly View Containers -->
+        <div id="monthlyReportContent" class="hidden">
+          <div id="monthlySummaryBox" class="report-summary-cards"></div>
+          <div id="monthlyDetailsBox" class="report-details-table-wrap"></div>
+        </div>
+
       </section>
     </main>
 
@@ -500,6 +583,24 @@
         </div>
       </div>
 
+      <!-- Daily Reminder Settings (Requirement 2) -->
+      <div class="reminder-settings-card">
+        <div class="reminder-toggle-row">
+          <div class="reminder-label-box">
+            <strong>🔔 Daily Reminder:</strong>
+            <p>Get an in-app reminder when today's checklist is still incomplete.</p>
+          </div>
+          <label class="switch-toggle" for="dailyReminderToggle">
+            <input type="checkbox" id="dailyReminderToggle">
+            <span class="slider-round"></span>
+          </label>
+        </div>
+        <div id="reminderTimeContainer" class="reminder-time-row hidden">
+          <label for="dailyReminderTime">Reminder Time:</label>
+          <input type="time" id="dailyReminderTime" value="20:00" class="time-picker-input">
+        </div>
+      </div>
+
       <div class="faq-section">
         <h4>Frequently Asked Questions (FAQs):</h4>
         <details class="faq-item">
@@ -565,6 +666,28 @@
         <div class="danger-zone">
           <button id="wipeAllDataBtn" class="btn-danger-link">⚠️ Reset & Delete All Data</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ================= MODAL 5: 7-DAY STREAK CELEBRATION (Requirement 5) ================= -->
+  <div id="streakCelebrationModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="streakModalTitle">
+    <div class="modal-card streak-modal-card">
+      <div class="modal-header">
+        <h3 id="streakModalTitle">🎉 7-Day Streak! Amazing!</h3>
+        <button id="closeStreakModalBtn" class="close-btn" aria-label="Close Streak Celebration Modal">×</button>
+      </div>
+
+      <div class="streak-hero-content">
+        <div class="streak-fire-anim">🔥 7-DAY STREAK 🔥</div>
+        <p class="streak-subtext">Mabrook! Your child completed 7 consecutive days of 100% learning on HomeSteps! Consistency is the greatest gift for early learners.</p>
+      </div>
+
+      <div class="streak-modal-actions">
+        <button id="shareStreakWhatsAppBtn" class="btn btn-whatsapp" style="width: 100%;">
+          📱 Share on WhatsApp
+        </button>
       </div>
     </div>
   </div>

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFDF8"/>
+      <stop offset="100%" stop-color="#FFF0DF"/>
+    </linearGradient>
+    <linearGradient id="pot" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#DE7952"/>
+      <stop offset="100%" stop-color="#B25530"/>
+    </linearGradient>
+    <linearGradient id="leaf1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#93C572"/>
+      <stop offset="100%" stop-color="#608C4A"/>
+    </linearGradient>
+    <linearGradient id="leaf2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#B4DE8B"/>
+      <stop offset="100%" stop-color="#7CA859"/>
+    </linearGradient>
+    <linearGradient id="goldStar" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFDD57"/>
+      <stop offset="100%" stop-color="#F5A623"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Squircle App Background -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <rect width="504" height="504" x="4" y="4" rx="108" fill="none" stroke="#E6D3C1" stroke-width="8"/>
+
+  <!-- Plant Stem -->
+  <path d="M256 360 C256 260 256 210 256 160" stroke="#608C4A" stroke-width="22" stroke-linecap="round"/>
+
+  <!-- Left Leaf -->
+  <path d="M256 260 C180 260 140 180 140 150 C210 150 256 210 256 260 Z" fill="url(#leaf1)"/>
+
+  <!-- Right Leaf -->
+  <path d="M256 210 C330 210 372 130 372 100 C300 100 256 160 256 210 Z" fill="url(#leaf2)"/>
+
+  <!-- Plant Pot / Base -->
+  <path d="M190 350 L322 350 L302 440 L210 440 Z" fill="url(#pot)"/>
+  <rect x="176" y="332" width="160" height="26" rx="13" fill="#C96F4A"/>
+
+  <!-- Little Golden Sparkle -->
+  <polygon points="390,140 400,165 425,175 400,185 390,210 380,185 355,175 380,165" fill="url(#goldStar)"/>
+</svg>
