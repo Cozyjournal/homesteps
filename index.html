@@ -42,8 +42,8 @@
     <!-- 60-Second Onboarding Welcome Banner (PRD §19) -->
     <div id="onboardingBanner" class="onboarding-card hidden">
       <div class="onboarding-content">
-        <h3>👋 Khush Amdeed! Welcome to HomeSteps</h3>
-        <p>Bache ki parhai ka hisaab roz sirf <strong>2 minute</strong> mein rakhein. Shuru karne ke liye bache ka naam likhein ya checklist mark karein!</p>
+        <h3>👋 Welcome to HomeSteps!</h3>
+        <p>Track your child's homeschool learning in under <strong>2 minutes</strong> a day. Select a child or tick today's checklist to get started!</p>
       </div>
       <button id="dismissOnboardingBtn" class="btn btn-secondary btn-small">Start Now ✓</button>
     </div>
@@ -67,8 +67,8 @@
     <!-- Child Selector & Quick Add Section -->
     <section class="kid-section">
       <div class="kid-header-row">
-        <span class="kid-section-title">Bacha chunein:</span>
-        <button id="toggleAddKidBtn" class="toggle-link" type="button">+ Naya Bacha Add Karein</button>
+        <span class="kid-section-title">Select Child:</span>
+        <button id="toggleAddKidBtn" class="toggle-link" type="button">+ Add New Child</button>
       </div>
 
       <!-- Tabs to switch between kids -->
@@ -76,15 +76,15 @@
 
       <!-- Collapsible Form to add a new kid -->
       <form id="addKidForm" class="add-kid hidden" onsubmit="return false;">
-        <input id="kidName" type="text" placeholder="Bache ka naam (e.g. Ahmed)" maxlength="20" required>
-        <input id="kidAge" type="number" placeholder="Umar (Age)" min="1" max="18" required>
+        <input id="kidName" type="text" placeholder="Child's name (e.g. Ahmed)" maxlength="20" required>
+        <input id="kidAge" type="number" placeholder="Age" min="1" max="18" required>
         <select id="kidAgeBand" class="form-select">
           <option value="3-4">Age 3–4 (Hafsa)</option>
           <option value="4-5" selected>Age 4–5 (Ahmed)</option>
           <option value="5-6">Age 5–6</option>
           <option value="6-7">Age 6–7</option>
         </select>
-        <button id="addKidBtn" type="button">+ Add Kid</button>
+        <button id="addKidBtn" type="button">+ Add Child</button>
       </form>
 
       <!-- Active Child Info Pill -->
@@ -92,17 +92,17 @@
     </section>
 
 
-    <!-- ================= VIEW 1: DAILY TRACKER (v3.3: 9 Subjects) ================= -->
+    <!-- ================= VIEW 1: DAILY TRACKER (9 Subjects) ================= -->
     <main id="trackerView" class="view-panel active">
 
       <!-- Today's Checklist Card -->
       <section class="card">
         <div class="card-header-flex">
           <div>
-            <h2>Rozana Checklist</h2>
+            <h2>Daily Checklist</h2>
             <span id="todayDate" class="date"></span>
           </div>
-          <div id="starRewardBadge" class="reward-pill" title="Aaj ka Star">
+          <div id="starRewardBadge" class="reward-pill" title="Today's Star">
             <span class="star-icon">⭐</span>
             <span id="starRewardText">Star Reward</span>
           </div>
@@ -120,10 +120,10 @@
         <!-- Celebration Banner when 9/9 done + WhatsApp Share Win -->
         <div id="celebrationBanner" class="celebration-banner hidden">
           <div class="celebration-text">
-            🎉 <strong>Masha'Allah Shabaash!</strong> Aaj ka sab target mukammal ho gaya! ⭐
+            🎉 <strong>Well Done!</strong> Today's targets are complete! Star earned! ⭐
           </div>
           <button id="shareWinBtn" class="btn btn-whatsapp" type="button">
-            📱 WhatsApp Status Par Share Karein
+            📱 Share Win on WhatsApp Status
           </button>
         </div>
       </section>
@@ -132,22 +132,22 @@
       <section class="card notes-card">
         <div class="card-header-flex">
           <div class="notes-title-group">
-            <h2>📝 Roz Ka Note</h2>
+            <h2>📝 Daily Note</h2>
             <span id="noteSaveStatus" class="save-tag">Saved ✓</span>
           </div>
           <button id="voiceNoteBtn" class="btn btn-secondary btn-small voice-btn" type="button" title="Speak to write note">
             🎙️ Voice Note
           </button>
         </div>
-        <p class="card-subtext">Maa ki roz ki chhoti baat (jaise: <em>"Ahmed ne Science mein body parts seekh liye"</em>):</p>
-        <textarea id="dailyNote" class="daily-note-input" placeholder="Aaj bache ne kya seekha ya kaisa perform kiya..." rows="3"></textarea>
+        <p class="card-subtext">A quick note on today's learning (e.g., <em>"Ahmed learned body parts in Science today"</em>):</p>
+        <textarea id="dailyNote" class="daily-note-input" placeholder="What did your child learn today or how was their session?..." rows="3"></textarea>
         <div id="voiceStatus" class="voice-status-text hidden">Listening... Speak now 🎙️</div>
       </section>
 
       <!-- Weekly Overview Card -->
       <section class="card">
         <div class="card-header-flex">
-          <h2>Hafte Ka Progress (Mon–Sun)</h2>
+          <h2>Weekly Progress (Mon–Sun)</h2>
           <span id="weekStarsSummary" class="stars-counter">⭐ 0 stars</span>
         </div>
         <div id="weekView" class="week"></div>
@@ -168,7 +168,7 @@
               <span class="badge-tag">Syllabus Engine</span>
               <h2>📚 Guided Weekly Lesson Plan</h2>
             </div>
-            <p class="card-subtext">Agla kya parhana hai? Built-in structured plan for all 4 age bands.</p>
+            <p class="card-subtext">What to teach next? Here is your guided, age-appropriate weekly curriculum.</p>
           </div>
         </div>
 
@@ -183,13 +183,13 @@
             </select>
           </div>
           <button id="toggleCustomTopicBtn" class="btn btn-secondary btn-small" type="button">
-            + Naya Topic Add Karein
+            + Add Custom Topic
           </button>
         </div>
 
         <!-- Add Custom Topic Form -->
         <form id="addCustomTopicForm" class="custom-topic-box hidden" onsubmit="return false;">
-          <h4>Apna Topic Shamil Karein:</h4>
+          <h4>Add Your Custom Topic:</h4>
           <div class="grid-2col">
             <select id="newTopicSubject" class="form-select">
               <option value="English">English</option>
@@ -201,7 +201,7 @@
               <option value="Social Studies">Social Studies</option>
               <option value="Art & Craft">Art & Craft</option>
             </select>
-            <input id="newTopicTitle" type="text" class="form-input" placeholder="Topic ka naam (e.g. Parts of Plant)" required>
+            <input id="newTopicTitle" type="text" class="form-input" placeholder="Topic title (e.g. Parts of a Plant)" required>
           </div>
           <div class="form-actions-right">
             <button id="saveCustomTopicBtn" class="btn btn-primary btn-small" type="button">Save Topic</button>
@@ -215,15 +215,15 @@
           <h2>🗓️ 5-Day Weekly Schedule</h2>
           <span class="badge-sub">Auto-syncs with Tracker & Generator</span>
         </div>
-        <p class="card-subtext">Har din ke topics samne hain — ek click se <strong>Worksheet print</strong> karein ya <strong>Taught mark</strong> karein:</p>
+        <p class="card-subtext">Suggested daily lessons — easily <strong>Print a Worksheet</strong> or <strong>Mark as Taught</strong>:</p>
         
         <div id="weeklyPlannerList" class="planner-days-list"></div>
       </section>
 
-      <!-- Full Syllabus Curriculum Browser -->
+      <!-- Full Curriculum Browser -->
       <section class="card">
         <div class="card-header-flex">
-          <h2>📖 Poora Curriculum (Subject Breakdown)</h2>
+          <h2>📖 Full Curriculum Outline</h2>
           <button id="toggleCurriculumBtn" class="toggle-link" type="button">View Details ▼</button>
         </div>
         <div id="fullCurriculumView" class="curriculum-accordion hidden"></div>
@@ -232,7 +232,7 @@
     </main>
 
 
-    <!-- ================= VIEW 3: PRINTABLE GENERATOR (v3.3: 7 Worksheet Types) ================= -->
+    <!-- ================= VIEW 3: PRINTABLE GENERATOR (7 Worksheet Types) ================= -->
     <main id="generatorView" class="view-panel hidden">
 
       <!-- Controls Card -->
@@ -241,18 +241,18 @@
           <span class="badge-tag">Printable Maker</span>
           <h2>🖨️ Printable Worksheet Generator</h2>
         </div>
-        <p class="card-subtext">Worksheet ka topic chunein, live preview dekhein aur direct A4 print nikaalein!</p>
+        <p class="card-subtext">Select a subject and worksheet type, see the live preview, and print directly on A4!</p>
 
         <div class="generator-grid">
           
           <!-- Subject Selector -->
           <div class="form-group">
-            <label for="wsSubject">1. Mazmoon (Subject):</label>
+            <label for="wsSubject">1. Subject:</label>
             <select id="wsSubject" class="form-select">
               <option value="english">🔤 English</option>
-              <option value="urdu">🇵🇰 Urdu (اردو)</option>
-              <option value="math">🔢 Math / Counting</option>
-              <option value="islamiat">🌙 Islamiat (اسلامیات)</option>
+              <option value="urdu">🇵🇰 Urdu</option>
+              <option value="math">🔢 Math</option>
+              <option value="islamiat">🌙 Islamiat</option>
               <option value="science">🔬 Science</option>
               <option value="social">🌍 Social Studies</option>
               <option value="art">🎨 Art & Craft</option>
@@ -265,11 +265,11 @@
             <label for="wsType">2. Worksheet Type:</label>
             <select id="wsType" class="form-select">
               <option value="tracing">✍️ Tracing (Letters / Numbers / Huroof)</option>
-              <option value="matching">🔀 Matching (Picture se Word / Number)</option>
-              <option value="counting">🔢 Counting (Objects gino aur likho)</option>
-              <option value="coloring">🖍️ Coloring + Label (Clean Outlines)</option>
-              <option value="circle">⭕ Circle the Correct (Sahi jawab pe gol)</option>
-              <option value="fill">📝 Fill in the Blank (Khali jagah bharo)</option>
+              <option value="matching">🔀 Matching (Picture to Word / Number)</option>
+              <option value="counting">🔢 Counting (Count & Write Numbers)</option>
+              <option value="coloring">🖍️ Coloring + Label (Outlines & Words)</option>
+              <option value="circle">⭕ Circle the Correct Answer</option>
+              <option value="fill">📝 Fill in the Blanks</option>
               <option value="map">🗺️ Map Labeling (Pakistan Map / Flag / Compass)</option>
             </select>
           </div>
@@ -282,8 +282,8 @@
 
           <!-- Child Name for Header -->
           <div class="form-group">
-            <label for="wsKidName">Worksheet pe bache ka naam:</label>
-            <input id="wsKidName" type="text" class="form-input" placeholder="Bache ka naam">
+            <label for="wsKidName">Child Name on Header:</label>
+            <input id="wsKidName" type="text" class="form-input" placeholder="Child's name">
           </div>
 
           <!-- Worksheet Date -->
@@ -325,12 +325,12 @@
       <section class="card">
         <div class="card-header-flex">
           <div>
-            <h2>📊 Hafte Ki Mukammal Report</h2>
+            <h2>📊 Weekly Progress Report</h2>
             <span class="date" id="reportDateRange"></span>
           </div>
           <div class="report-btns">
             <button id="shareReportWhatsAppBtn" class="btn btn-whatsapp btn-small" type="button">
-              📱 WhatsApp Share
+              📱 Share on WhatsApp
             </button>
             <button id="printReportBtn" class="btn btn-secondary btn-small" type="button">
               🖨️ Print Report
@@ -386,17 +386,17 @@
       </div>
 
       <div class="payment-instructions-box">
-        <h4>📱 Asaan Payment (JazzCash / Easypaisa):</h4>
-        <p class="pay-step">1. Raqam in numbers par transfer karein:</p>
+        <h4>📱 Simple Local Payment (JazzCash / Easypaisa):</h4>
+        <p class="pay-step">1. Transfer subscription fee to either account:</p>
         <div class="account-pill">
           <strong>JazzCash:</strong> 0300-1234567 (Sualeha / HomeSteps)
         </div>
         <div class="account-pill">
           <strong>Easypaisa:</strong> 0345-1234567 (Sualeha / HomeSteps)
         </div>
-        <p class="pay-step">2. Screenshot WhatsApp par bhej kar activate karwayen:</p>
+        <p class="pay-step">2. Send screenshot on WhatsApp for instant activation:</p>
         <button id="sendPaymentProofWhatsAppBtn" class="btn btn-whatsapp" style="width: 100%;">
-          📱 WhatsApp Par Screenshot Bhejein
+          📱 Send Screenshot on WhatsApp
         </button>
       </div>
     </div>
@@ -415,44 +415,44 @@
         <div class="help-step-item">
           <span class="step-num">1</span>
           <div>
-            <strong>📋 Rozana Checklist (2 min):</strong>
-            <p>Roz ka kaam ungli se tap karke mark karein. Sab done hone par bache ko star milega!</p>
+            <strong>📋 Daily Checklist (2 min):</strong>
+            <p>Tap checkboxes to record daily learning. Completing all items earns a daily star!</p>
           </div>
         </div>
         <div class="help-step-item">
           <span class="step-num">2</span>
           <div>
-            <strong>📚 Syllabus (Agla kya parhana hai):</strong>
-            <p>Hafte ka 5-day plan dekhein. Samne button se direct worksheet nikaalein.</p>
+            <strong>📚 Syllabus (What to teach next):</strong>
+            <p>Follow the 5-day age-appropriate weekly plan. Print matching practice sheets with one click.</p>
           </div>
         </div>
         <div class="help-step-item">
           <span class="step-num">3</span>
           <div>
-            <strong>🖨️ Printable Generator:</strong>
-            <p>Worksheet chunein aur Print dabayein. Clean A4 sheet print hogi!</p>
+            <strong>🖨️ Printable Worksheets:</strong>
+            <p>Select any worksheet and click Print. Clean, print-ready A4 worksheets with zero hassle!</p>
           </div>
         </div>
       </div>
 
       <div class="faq-section">
-        <h4>Aksar Poochhe Jane Wale Sawalat (FAQs):</h4>
+        <h4>Frequently Asked Questions (FAQs):</h4>
         <details class="faq-item">
-          <summary>Kya ye waqayi bilkul free hai?</summary>
-          <p>Ji haan! Daily tracker, 7 types ki worksheets aur full syllabus hamesha ke liye 100% free hain.</p>
+          <summary>Is HomeSteps really free?</summary>
+          <p>Yes! The daily tracker, all 7 worksheet types, and full syllabus are 100% free forever.</p>
         </details>
         <details class="faq-item">
-          <summary>Mera data kahan save hota hai?</summary>
-          <p>Aapka saara data aapke phone/laptop ke browser mein save hota hai. Koi server ya tracker nahi hai.</p>
+          <summary>Where is my data stored?</summary>
+          <p>All data stays private on your local phone or computer browser. Nothing is sent to external servers.</p>
         </details>
         <details class="faq-item">
-          <summary>Worksheet print kaise karein?</summary>
-          <p>Print button dabane se browser ka print window khul jata hai jo page ko saaf A4 par fit karta hai.</p>
+          <summary>How do I print worksheets?</summary>
+          <p>Clicking Print opens your browser's print dialog, formatted cleanly for standard A4 paper.</p>
         </details>
       </div>
 
       <div class="modal-footer-contact">
-        <p>Koi masla ya mashwara ho? Sualeha se direct rabta karein:</p>
+        <p>Questions or feedback? Reach out directly:</p>
         <button id="contactSupportWhatsAppBtn" class="btn btn-secondary btn-small">
           💬 WhatsApp Support
         </button>
@@ -469,12 +469,12 @@
         <button id="closePrivacyModalBtn" class="close-btn">×</button>
       </div>
       <div class="privacy-body">
-        <p><strong>1. Data Minimization:</strong> HomeSteps sirf bache ka pehla naam/nickname aur roz ka learning record store karta hai. Bachon ki tasweer, pata ya school details kabhi collect nahi hotin.</p>
-        <p><strong>2. 100% Local-First:</strong> Tamam data aapke apne device par rehta hai. Koi third-party tracker ya advertising SDK nahi hai.</p>
-        <p><strong>3. Export & Delete Anytime:</strong> Aap kisi bhi waqt apna saara data JSON file mein download kar sakte hain ya ek click par wipe kar sakte hain.</p>
+        <p><strong>1. Data Minimization:</strong> HomeSteps only stores your child's first name/nickname and daily learning records. Photos, addresses, and private personal details are never collected.</p>
+        <p><strong>2. 100% Local-First:</strong> All data remains on your local device. There are zero third-party tracking scripts or advertising SDKs.</p>
+        <p><strong>3. Export & Delete Anytime:</strong> You can download a complete JSON backup of your records at any time or reset data with one click.</p>
       </div>
       <button id="dismissPrivacyModalBtn" class="btn btn-primary btn-small" style="width: 100%; margin-top: 14px;">
-        Samajh Aaya (Close)
+        Got It (Close)
       </button>
     </div>
   </div>
@@ -487,18 +487,18 @@
         <h3>💾 Data Backup & Restore</h3>
         <button id="closeBackupModalBtn" class="close-btn">×</button>
       </div>
-      <p class="modal-text">Aapka saara data aapke device par mahfooz hai. Safe backup ya doosre phone par transfer ke liye export karein:</p>
+      <p class="modal-text">All your data is stored locally in your browser. Download a backup copy or restore your records:</p>
       
       <div class="modal-actions-box">
         <button id="exportJsonBtn" class="btn btn-primary" style="width: 100%;">
-          ⬇️ Backup File Download Karein (JSON)
+          ⬇️ Download Backup File (JSON)
         </button>
         <div class="restore-group">
-          <label for="importJsonFile" class="restore-label">Backup Restore Karein:</label>
+          <label for="importJsonFile" class="restore-label">Restore Backup File:</label>
           <input id="importJsonFile" type="file" accept=".json" class="file-input">
         </div>
         <div class="danger-zone">
-          <button id="wipeAllDataBtn" class="btn-danger-link">⚠️ Saara Data Delete (Reset) Karein</button>
+          <button id="wipeAllDataBtn" class="btn-danger-link">⚠️ Reset & Delete All Data</button>
         </div>
       </div>
     </div>
