@@ -1,7 +1,8 @@
 // ========================================================
-// SeekhoTrack — Complete Application Logic (v1 + v1.x + v2)
-// Plain JavaScript, 100% Client-Side & Offline-Ready
-// Database: Browser localStorage
+// SeekhoTrack — Core Logic (v1 + v1.x + v2 + v3 Full)
+// "Teach it. Track it. Print it. — All in one place."
+// Plain JavaScript, 100% Client-Side, Local-First
+// Database: Browser localStorage with JSON Export/Import
 // ========================================================
 
 // ---------- Constants ----------
@@ -17,27 +18,141 @@ var SUBJECTS = [
 
 var STORE_KEY = "seekhotrack_v1";
 
-// ---------- State Initialization ----------
-// state structure: {
-//   kids: [{ id, name, age }],
-//   records: { "kidId_YYYY-MM-DD": { "Reading": true, ... } },
-//   notes: { "kidId_YYYY-MM-DD": "Note text" },
-//   stars: { "kidId_YYYY-MM-DD": true },
-//   activeKidId: "kidId"
-// }
+// ---------- Structured Syllabus Curriculum Data (PRD §8.2) ----------
+var SYLLABUS_DATA = {
+  "3-4": {
+    label: "Age 3–4 (Hafsa)",
+    subjects: {
+      English: [
+        { id: "e34_1", title: "Letter Recognition A to E", guide: "Identify A, B, C, D, E with phonics sounds", presetId: "en_trace_cap_ae", type: "tracing" },
+        { id: "e34_2", title: "Phonics Sounds (A for Apple, B for Ball)", guide: "Sing phonics song and trace letters", presetId: "en_color_apple", type: "coloring" },
+        { id: "e34_3", title: "Letter Recognition F to J", guide: "Identify F, G, H, I, J with objects", presetId: "en_trace_cap_fj", type: "tracing" },
+        { id: "e34_4", title: "Matching Letters A to D", guide: "Draw connecting lines between matching letters", presetId: "en_match_caps_small_1", type: "matching" },
+        { id: "e34_5", title: "Small Letter a to e Tracing", guide: "Gentle finger tracing & pencil practice", presetId: "en_trace_sml_ae", type: "tracing" }
+      ],
+      Urdu: [
+        { id: "u34_1", title: "حروف کی پہچان: ا ب پ", guide: "آوازوں کے ساتھ دہرائیں اور نقطوں پر ہاتھ پھیریں", presetId: "ur_trace_1", type: "tracing" },
+        { id: "u34_2", title: "حروف کی پہچان: ت ٹ ث", guide: "ٹماٹر اور تتلی کی تصاویر دکھائیں", presetId: "ur_trace_1", type: "tracing" },
+        { id: "u34_3", title: "حروف ملانا: ا ب ج", guide: "تصویر یا ہم شکل حروف سے لکیر ملائیں", presetId: "ur_match_huroof", type: "matching" },
+        { id: "u34_4", title: "رنگ بھریں: س سے سیب", guide: "سیب میں لال رنگ اور لفظ سیب ٹریس کریں", presetId: "ur_color_seb", type: "coloring" }
+      ],
+      Math: [
+        { id: "m34_1", title: "Counting 1 to 5 Objects", guide: "Count apples and stars with finger taps", presetId: "math_count_1to5", type: "counting" },
+        { id: "m34_2", title: "Numbers 1 to 5 Tracing", guide: "Learn number shapes 1, 2, 3, 4, 5", presetId: "math_trace_1to5", type: "tracing" },
+        { id: "m34_3", title: "Shapes Recognition (Circle, Square, Star)", guide: "Identify daily objects with these shapes", presetId: "act_trace_shapes", type: "tracing" },
+        { id: "m34_4", title: "Match Counts with Numbers 1–4", guide: "Count stars and connect to the right digit", presetId: "math_match_count", type: "matching" }
+      ],
+      Islamiat: [
+        { id: "i34_1", title: "بِسْمِ اللَّهِ کی مشق", guide: "کھانے اور پینے سے پہلے پڑھنے کی عادت", presetId: "isl_trace_bismillah", type: "tracing" },
+        { id: "i34_2", title: "پہلا کلمہ طیبہ (سیکھنا)", guide: "زبانی تلفظ اور اللہ کے نام کی ٹریسنگ", presetId: "isl_trace_allah", type: "tracing" },
+        { id: "i34_3", title: "مسجد کی پہچان اور رنگ", guide: "مسجد میں نماز اور مینار کی خوبصورت تصویر", presetId: "isl_color_masjid", type: "coloring" }
+      ],
+      Nazra: [
+        { id: "n34_1", title: "نورانی قاعدہ: مفردات (ا تا خ)", guide: "مخرج کے ساتھ ادائیگی اور شناخت", presetId: "ur_trace_1", type: "tracing" },
+        { id: "n34_2", title: "نورانی قاعدہ: مفردات (د تا ر)", guide: "روزانہ 3 سے 5 حروف دہرائیں", presetId: "ur_trace_3", type: "tracing" }
+      ]
+    }
+  },
+
+  "4-5": {
+    label: "Age 4–5 (Ahmed)",
+    subjects: {
+      English: [
+        { id: "e45_1", title: "CVC Words & Short Vowels (a, e, i, o, u)", guide: "Cat, Sun, Bat, Pen blending sounds", presetId: "en_fill_cvc", type: "fill" },
+        { id: "e45_2", title: "Missing Letters in Alphabet (A to L)", guide: "Fill in the blank boxes in order", presetId: "en_fill_abc_1", type: "fill" },
+        { id: "e45_3", title: "Circle the Target Letter (B vs D, M vs W)", guide: "Improve visual discrimination of mirror letters", presetId: "en_circle_letters", type: "circle" },
+        { id: "e45_4", title: "Sight Words & Picture Matching", guide: "Read basic words like Car, Sun, Star", presetId: "en_match_word_pic", type: "matching" },
+        { id: "e45_5", title: "Capital Letters K to O Practice", guide: "Pencil grip and line spacing", presetId: "en_trace_cap_ko", type: "tracing" }
+      ],
+      Urdu: [
+        { id: "u45_1", title: "حروفِ تہجی کی دہرائی: ج چ ح خ", guide: "نقطوں کی صحیح گنتی اور پہچان", presetId: "ur_trace_2", type: "tracing" },
+        { id: "u45_2", title: "آسان جوڑ توڑ (اب، جب، رب)", guide: "دو حروفی سادہ الفاظ کی پڑھائی", presetId: "ur_fill_1", type: "fill" },
+        { id: "u45_3", title: "حرف تلاش کریں اور دائرہ لگائیں", guide: "ب پ ت ث میں سے صحیح حرف چنیں", presetId: "ur_circle_huroof", type: "circle" },
+        { id: "u45_4", title: "پ سے پھول (رنگ اور ٹریسنگ)", guide: "پھول کا خاکہ اور ہجے کی مشق", presetId: "ur_color_phool", type: "coloring" }
+      ],
+      Math: [
+        { id: "m45_1", title: "Counting 1 to 10 (Objects & Numbers)", guide: "Count pencils, fishes, candies up to 10", presetId: "math_count_6to10", type: "counting" },
+        { id: "m45_2", title: "Missing Numbers 1 to 10", guide: "Fill blanks: 1, 2, _, 4, 5, _, 7, 8, _, 10", presetId: "math_fill_1to10", type: "fill" },
+        { id: "m45_3", title: "Numbers 6 to 10 Tracing & Writing", guide: "Write clean numerals in boxes", presetId: "math_trace_6to10", type: "tracing" },
+        { id: "m45_4", title: "Target Number Identification (Circle)", guide: "Spot the number 3, 5, 7 among distractors", presetId: "math_circle_num", type: "circle" }
+      ],
+      Islamiat: [
+        { id: "i45_1", title: "ارکانِ اسلام (5 ارکان کی پہچان)", guide: "کلمہ، نماز، روزہ، زکوٰۃ، حج کا تعارف", presetId: "isl_count_pillars", type: "counting" },
+        { id: "i45_2", title: "سورۃ الاخلاص زبانی یاد کرنا", guide: "مفہوم: اللہ ایک ہے، کوئی اس کا شریک نہیں", presetId: "isl_circle_basics", type: "circle" },
+        { id: "i45_3", title: "چاند تارا اور اسلامی مہینے", guide: "رمضان اور عید کا تصور اور رنگ بھرنا", presetId: "isl_color_moon", type: "coloring" }
+      ],
+      Nazra: [
+        { id: "n45_1", title: "مرکبات کی مشق (دو حروف کا جوڑ)", guide: "با، تا، ثا، جا، حا کے ساتھ روانگی", presetId: "ur_trace_2", type: "tracing" },
+        { id: "n45_2", title: "حرکات کا تعارف (زبر، زیر، پیش)", guide: "آواز کو لمبا کیے بغیر فوری ادائیگی", presetId: "ur_trace_1", type: "tracing" }
+      ]
+    }
+  },
+
+  "5-6": {
+    label: "Age 5–6",
+    subjects: {
+      English: [
+        { id: "e56_1", title: "4-Letter Words & Consonant Blends (st, bl, cl)", guide: "Star, Blue, Clap phonics practice", presetId: "en_fill_abc_1", type: "fill" },
+        { id: "e56_2", title: "Simple 3-word Sentences ('I see a cat')", guide: "Reading with finger tracking", presetId: "en_match_word_pic", type: "matching" },
+        { id: "e56_3", title: "Capital & Small Letters U to Z", guide: "Full alphabet mastery and punctuation", presetId: "en_trace_cap_uz", type: "tracing" }
+      ],
+      Urdu: [
+        { id: "u56_1", title: "تین حروفی الفاظ (سیب، مور، پانی)", guide: "جوڑ کر پڑھیں اور خوشخط لکھیں", presetId: "ur_trace_4", type: "tracing" },
+        { id: "u56_2", title: "حروفِ تہجی: س ش ص ض ط ظ", guide: "شوشوں اور نقطوں کا فرق سمجھیں", presetId: "ur_trace_4", type: "tracing" }
+      ],
+      Math: [
+        { id: "m56_1", title: "Simple Addition up to 10 (Picture math)", guide: "2 apples + 3 apples = 5 apples", presetId: "math_count_1to5", type: "counting" },
+        { id: "m56_2", title: "Numbers 11 to 20 Counting & Tracing", guide: "Teen numbers recognition and place value", presetId: "math_fill_1to10", type: "fill" }
+      ],
+      Islamiat: [
+        { id: "i56_1", title: "پہلا اور دوسرا کلمہ مع ترجمہ", guide: "شہادت کا مفہوم اور زبانی روانی", presetId: "isl_fill_kalima", type: "fill" },
+        { id: "i56_2", title: "حضرت محمد ﷺ کی سیرت کی کہانی", guide: "صادق اور امین کا لقب اور سچائی", presetId: "isl_match_basics", type: "matching" }
+      ],
+      Nazra: [
+        { id: "n56_1", title: "تنوین اور جزم کی پہچان", guide: "دو زبر، دو زیر، دو پیش کی نون والی آواز", presetId: "ur_trace_5", type: "tracing" }
+      ]
+    }
+  },
+
+  "6-7": {
+    label: "Age 6–7",
+    subjects: {
+      English: [
+        { id: "e67_1", title: "Short Paragraph Reading & Comprehension", guide: "3 to 4 sentences story reading", presetId: "en_match_word_pic", type: "matching" },
+        { id: "e67_2", title: "Creative Writing: My Favorite Animal", guide: "Write 3 complete sentences independently", presetId: "en_fill_abc_1", type: "fill" }
+      ],
+      Urdu: [
+        { id: "u67_1", title: "جملہ سازی (یہ میرا گھر ہے)", guide: "الفاظ سے جملے بنائیں اور خوشخط لکھیں", presetId: "ur_trace_6", type: "tracing" }
+      ],
+      Math: [
+        { id: "m67_1", title: "Times Table 2 and 3 Practice", guide: "Skip counting 2, 4, 6, 8, 10...", presetId: "math_fill_1to10", type: "fill" },
+        { id: "m67_2", title: "Simple Subtraction (5 - 2 = 3)", guide: "Crossing out objects to find remainder", presetId: "math_count_6to10", type: "counting" }
+      ],
+      Islamiat: [
+        { id: "i67_1", title: "وضو کے فرائض اور طریقے", guide: "چار فرائض کی ترتیب اور سنتیں", presetId: "isl_match_basics", type: "matching" }
+      ],
+      Nazra: [
+        { id: "n67_1", title: "حروفِ مدہ اور کھڑی حرکات", guide: "ایک الف کے برابر کھینچ کر پڑھنا", presetId: "ur_trace_6", type: "tracing" }
+      ]
+    }
+  }
+};
+
+
+// ---------- State Management ----------
 var state = loadState();
 
-// First-time setup: pre-add Ahmed (4) and Hafsa (3) per PRD
+// Ensure Ahmed and Hafsa are pre-seeded per PRD if first launch
 if (!state.kids || state.kids.length === 0) {
   state.kids = [
-    { id: makeId(), name: "Ahmed", age: 4 },
-    { id: makeId(), name: "Hafsa", age: 3 }
+    { id: makeId(), name: "Ahmed", age: 4, ageBand: "4-5" },
+    { id: makeId(), name: "Hafsa", age: 3, ageBand: "3-4" }
   ];
   state.activeKidId = state.kids[0].id;
   saveState();
 }
 
-// Current active view: "tracker" | "generator" | "report"
+// Current active view: "tracker" | "syllabus" | "generator" | "report"
 var currentView = "tracker";
 
 // ---------- Helpers ----------
@@ -45,7 +160,6 @@ function makeId() {
   return "k" + Date.now().toString(36) + Math.floor(Math.random() * 1000);
 }
 
-// Format Date as YYYY-MM-DD in local time
 function dateStr(d) {
   var y = d.getFullYear();
   var m = ("0" + (d.getMonth() + 1)).slice(-2);
@@ -53,7 +167,6 @@ function dateStr(d) {
   return y + "-" + m + "-" + day;
 }
 
-// Format friendly date like "Saturday, 10 Oct 2026"
 function friendlyDate(d) {
   var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -69,12 +182,22 @@ function loadState() {
       if (!parsed.records) parsed.records = {};
       if (!parsed.notes) parsed.notes = {};
       if (!parsed.stars) parsed.stars = {};
+      if (!parsed.customTopics) parsed.customTopics = [];
+      if (!parsed.taughtTopics) parsed.taughtTopics = {};
+
+      // Migrate existing kids to have ageBand if missing
+      parsed.kids.forEach(function (k) {
+        if (!k.ageBand) {
+          k.ageBand = k.age <= 3 ? "3-4" : (k.age <= 5 ? "4-5" : (k.age === 6 ? "5-6" : "6-7"));
+        }
+      });
+
       return parsed;
     }
   } catch (e) {
-    console.error("Failed to load state, starting fresh", e);
+    console.error("Failed to load state", e);
   }
-  return { kids: [], records: {}, notes: {}, stars: {}, activeKidId: null };
+  return { kids: [], records: {}, notes: {}, stars: {}, customTopics: [], taughtTopics: {}, activeKidId: null };
 }
 
 function saveState() {
@@ -120,12 +243,10 @@ function activeKid() {
   for (var i = 0; i < state.kids.length; i++) {
     if (state.kids[i].id === state.activeKidId) return state.kids[i];
   }
-  // Default to first kid if active ID not found
   state.activeKidId = state.kids[0].id;
   return state.kids[0];
 }
 
-// Get Monday of current week
 function getMonday(d) {
   var date = new Date(d);
   var day = (date.getDay() + 6) % 7; // Monday = 0
@@ -134,7 +255,6 @@ function getMonday(d) {
   return date;
 }
 
-// Count stars earned in the current week for a kid
 function getWeekStarsCount(kidId) {
   var count = 0;
   var mon = getMonday(new Date());
@@ -142,16 +262,14 @@ function getWeekStarsCount(kidId) {
     var cur = new Date(mon);
     cur.setDate(mon.getDate() + i);
     var ds = dateStr(cur);
-    if (isStarAwarded(kidId, ds)) {
-      count++;
-    }
+    if (isStarAwarded(kidId, ds)) count++;
   }
   return count;
 }
 
 
 // ========================================================
-// RENDERERS (UI Synchronization)
+// CORE UI RENDER
 // ========================================================
 function render() {
   renderTabs();
@@ -161,6 +279,8 @@ function render() {
     renderChecklist();
     renderDailyNote();
     renderWeek();
+  } else if (currentView === "syllabus") {
+    renderSyllabusPlanner();
   } else if (currentView === "generator") {
     updateGeneratorKidName();
     renderWorksheetPreview();
@@ -169,7 +289,7 @@ function render() {
   }
 }
 
-// ---------- Kid Tabs & Badge ----------
+// ---------- Kid Tabs & Info Pill ----------
 function renderTabs() {
   var nav = document.getElementById("kidTabs");
   nav.innerHTML = "";
@@ -179,14 +299,12 @@ function renderTabs() {
     btn.className = "tab" + (kid.id === state.activeKidId ? " active" : "");
     btn.innerHTML = '<span>' + kid.name + '</span> <span class="x" title="Delete">×</span>';
 
-    // Switch kid tab
     btn.onclick = function () {
       state.activeKidId = kid.id;
       saveState();
       render();
     };
 
-    // Remove kid tab
     btn.querySelector(".x").onclick = function (ev) {
       ev.stopPropagation();
       if (confirm(kid.name + " ko remove karna chahte hain? Inka record delete ho jayega.")) {
@@ -194,16 +312,6 @@ function renderTabs() {
         Object.keys(state.records).forEach(function (k) {
           if (k.indexOf(kid.id + "_") === 0) delete state.records[k];
         });
-        if (state.notes) {
-          Object.keys(state.notes).forEach(function (k) {
-            if (k.indexOf(kid.id + "_") === 0) delete state.notes[k];
-          });
-        }
-        if (state.stars) {
-          Object.keys(state.stars).forEach(function (k) {
-            if (k.indexOf(kid.id + "_") === 0) delete state.stars[k];
-          });
-        }
         state.activeKidId = state.kids.length ? state.kids[0].id : null;
         saveState();
         render();
@@ -218,17 +326,20 @@ function renderActiveChildBadge() {
   var badge = document.getElementById("activeChildBadge");
   var kid = activeKid();
   if (!kid) {
-    badge.innerHTML = "<span>Koi bacha add nahi hai. Upar se bacha add karein.</span>";
+    badge.innerHTML = "<span>Koi bacha add nahi hai. Upar se pehle bacha shamil karein.</span>";
     return;
   }
   var starsThisWeek = getWeekStarsCount(kid.id);
+  var bandText = kid.ageBand ? "Level: " + kid.ageBand : "Umar: " + kid.age + " saal";
   badge.innerHTML =
-    '<span>👤 <strong>' + kid.name + '</strong> (Umar: ' + kid.age + ' saal)</span>' +
+    '<span>👤 <strong>' + kid.name + '</strong> (' + bandText + ')</span>' +
     '<span>⭐ <strong>' + starsThisWeek + '</strong> stars this week</span>';
 }
 
 
-// ---------- VIEW 1: DAILY TRACKER ----------
+// ========================================================
+// VIEW 1: DAILY TRACKER (v1 + v1.x)
+// ========================================================
 function renderChecklist() {
   var box = document.getElementById("checklist");
   var kid = activeKid();
@@ -261,7 +372,7 @@ function renderChecklist() {
     cb.onchange = function () {
       rec[sub.name] = cb.checked;
       
-      // Auto-award star if all 7 subjects completed today!
+      // Auto-award star if all 7 subjects completed today
       var totalDone = 0;
       SUBJECTS.forEach(function (s) { if (rec[s.name]) totalDone++; });
       if (totalDone === SUBJECTS.length) {
@@ -320,9 +431,8 @@ function updateStarBadge(kidId, today, done) {
     text.textContent = done === SUBJECTS.length ? "Reward Star" : "Daily Star";
   }
 
-  // Clickable to award/unaward star manually
   pill.onclick = function () {
-    var newState = toggleStarAward(kidId, today);
+    toggleStarAward(kidId, today);
     updateStarBadge(kidId, today, done);
     renderWeek();
     renderActiveChildBadge();
@@ -398,10 +508,181 @@ function renderWeek() {
 
 
 // ========================================================
-// VIEW 2: PRINTABLE GENERATOR (v2 CORE)
+// VIEW 2: SYLLABUS & LESSON PLANNER (v3 CORE PILLAR)
 // ========================================================
+function renderSyllabusPlanner() {
+  var kid = activeKid();
+  var bandSelect = document.getElementById("currentKidBand");
+  var plannerList = document.getElementById("weeklyPlannerList");
+  var currBox = document.getElementById("fullCurriculumView");
 
-// Rich Library of Educational Presets per Subject and Type
+  if (!kid) {
+    plannerList.innerHTML = '<p class="empty-msg">Pehle bacha shamil karein.</p>';
+    return;
+  }
+
+  var currentBand = kid.ageBand || "4-5";
+  bandSelect.value = currentBand;
+
+  bandSelect.onchange = function () {
+    kid.ageBand = bandSelect.value;
+    saveState();
+    renderSyllabusPlanner();
+    renderActiveChildBadge();
+  };
+
+  // 1. Render 5-Day Weekly Planner (Days 1 to 5)
+  plannerList.innerHTML = "";
+  var syllabusForBand = SYLLABUS_DATA[currentBand] || SYLLABUS_DATA["4-5"];
+  var dayNames = ["Day 1 (Mon)", "Day 2 (Tue)", "Day 3 (Wed)", "Day 4 (Thu)", "Day 5 (Fri)"];
+  var subKeys = Object.keys(syllabusForBand.subjects); // English, Urdu, Math, Islamiat, Nazra
+
+  dayNames.forEach(function (dayLabel, dayIndex) {
+    var dayBlock = document.createElement("div");
+    dayBlock.className = "planner-day-block";
+
+    var dayHeader = document.createElement("div");
+    dayHeader.className = "planner-day-header";
+    dayHeader.innerHTML = '<span>' + dayLabel + '</span>';
+    dayBlock.appendChild(dayHeader);
+
+    var topicsContainer = document.createElement("div");
+    topicsContainer.className = "planner-topics-container";
+
+    // Suggest 2-3 topics per day across subjects
+    var primarySub = subKeys[dayIndex % subKeys.length];
+    var secondarySub = subKeys[(dayIndex + 1) % subKeys.length];
+    var topicsPool = [];
+
+    if (syllabusForBand.subjects[primarySub]) {
+      var itemA = syllabusForBand.subjects[primarySub][dayIndex % syllabusForBand.subjects[primarySub].length];
+      if (itemA) topicsPool.push({ sub: primarySub, item: itemA });
+    }
+    if (syllabusForBand.subjects[secondarySub]) {
+      var itemB = syllabusForBand.subjects[secondarySub][(dayIndex + 1) % syllabusForBand.subjects[secondarySub].length];
+      if (itemB) topicsPool.push({ sub: secondarySub, item: itemB });
+    }
+
+    topicsPool.forEach(function (tObj) {
+      var topicItem = document.createElement("div");
+      var isTaught = !!(state.taughtTopics && state.taughtTopics[kid.id + "_" + tObj.item.id]);
+      topicItem.className = "planner-topic-item" + (isTaught ? " completed" : "");
+
+      var infoSide = document.createElement("div");
+      infoSide.className = "topic-info-side";
+      infoSide.innerHTML =
+        '<div class="topic-badge-row">' +
+        '  <span class="topic-subject-tag">' + tObj.sub + '</span>' +
+        '  <span class="topic-title-text">' + tObj.item.title + '</span>' +
+        '</div>' +
+        '<div class="topic-guide-note">💡 ' + tObj.item.guide + '</div>';
+
+      // FLYWHEEL DEEP-LINK BUTTONS
+      var actions = document.createElement("div");
+      actions.className = "planner-actions";
+
+      // 1. Generator Deep-Link
+      var printBtn = document.createElement("button");
+      printBtn.className = "btn-plan-action btn-plan-print";
+      printBtn.type = "button";
+      printBtn.innerHTML = '🖨️ Practice Sheet';
+      printBtn.title = "Print practice worksheet for this topic";
+      printBtn.onclick = function () {
+        openGeneratorWithTopic(tObj.sub, tObj.item);
+      };
+
+      // 2. Tracker Sync (Mark Taught)
+      var teachBtn = document.createElement("button");
+      teachBtn.className = "btn-plan-action btn-plan-teach" + (isTaught ? " done" : "");
+      teachBtn.type = "button";
+      teachBtn.innerHTML = isTaught ? '✔ Taught' : 'Mark Taught';
+      teachBtn.onclick = function () {
+        if (!state.taughtTopics) state.taughtTopics = {};
+        var key = kid.id + "_" + tObj.item.id;
+        state.taughtTopics[key] = !state.taughtTopics[key];
+
+        // Also sync with today's checklist for that subject
+        var today = dateStr(new Date());
+        var rec = getRecord(kid.id, today);
+        var mappedSub = mapSyllabusToTrackerSubject(tObj.sub);
+        if (mappedSub) {
+          rec[mappedSub] = state.taughtTopics[key];
+        }
+
+        saveState();
+        renderSyllabusPlanner();
+        renderActiveChildBadge();
+      };
+
+      actions.appendChild(printBtn);
+      actions.appendChild(teachBtn);
+
+      topicItem.appendChild(infoSide);
+      topicItem.appendChild(actions);
+      topicsContainer.appendChild(topicItem);
+    });
+
+    dayBlock.appendChild(topicsContainer);
+    plannerList.appendChild(dayBlock);
+  });
+
+  // 2. Full Curriculum Accordion
+  currBox.innerHTML = "";
+  Object.keys(syllabusForBand.subjects).forEach(function (sName) {
+    var subBox = document.createElement("div");
+    subBox.className = "curr-subject-box";
+    subBox.innerHTML = '<div class="curr-subject-title">' + sName + '</div>';
+
+    var pillsWrap = document.createElement("div");
+    pillsWrap.className = "curr-topic-pills";
+
+    syllabusForBand.subjects[sName].forEach(function (top) {
+      var pill = document.createElement("span");
+      pill.className = "curr-pill";
+      pill.textContent = top.title;
+      pillsWrap.appendChild(pill);
+    });
+
+    subBox.appendChild(pillsWrap);
+    currBox.appendChild(subBox);
+  });
+}
+
+function mapSyllabusToTrackerSubject(subName) {
+  if (subName === "English") return "Reading";
+  if (subName === "Urdu") return "Urdu";
+  if (subName === "Math") return "Math/Counting";
+  if (subName === "Islamiat") return "Islamiat";
+  if (subName === "Nazra") return "Nazra";
+  return "Activity";
+}
+
+// FLYWHEEL JUMP: Open Generator preloaded with topic
+function openGeneratorWithTopic(subjectName, topicItem) {
+  switchView("generator");
+
+  var subKey = subjectName.toLowerCase();
+  if (subKey === "nazra") subKey = "urdu";
+  var subjectSelect = document.getElementById("wsSubject");
+  if (subjectSelect) subjectSelect.value = subKey;
+
+  var typeSelect = document.getElementById("wsType");
+  if (typeSelect && topicItem.type) typeSelect.value = topicItem.type;
+
+  updatePresetOptions();
+
+  var presetSelect = document.getElementById("wsPreset");
+  if (presetSelect && topicItem.presetId) {
+    presetSelect.value = topicItem.presetId;
+  }
+
+  renderWorksheetPreview();
+}
+
+
+// ========================================================
+// VIEW 3: PRINTABLE GENERATOR (v2 + A4 Engine)
+// ========================================================
 var WORKSHEET_PRESETS = {
   english: {
     tracing: [
@@ -603,7 +884,6 @@ var WORKSHEET_PRESETS = {
   }
 };
 
-// Clean vector outlines for coloring worksheets
 var COLORING_SVGS = {
   apple: '<svg viewBox="0 0 200 200" width="180" height="180"><path d="M100 45 C95 25 115 15 125 20 C120 35 105 45 100 45 Z" fill="#fff" stroke="#000" stroke-width="4"/><path d="M100 50 C100 30 105 20 110 15" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round"/><path d="M100 55 C80 35 30 50 30 105 C30 160 80 185 100 185 C120 185 170 160 170 105 C170 50 120 35 100 55 Z" fill="#fff" stroke="#000" stroke-width="5"/></svg>',
   star: '<svg viewBox="0 0 200 200" width="180" height="180"><polygon points="100,15 125,75 190,75 138,115 158,175 100,135 42,175 62,115 10,75 75,75" fill="#fff" stroke="#000" stroke-width="5" stroke-linejoin="round"/></svg>',
@@ -634,7 +914,6 @@ function updatePresetOptions() {
   var list = (WORKSHEET_PRESETS[sub] && WORKSHEET_PRESETS[sub][typ]) || [];
 
   if (list.length === 0) {
-    // Fallback if combination has no custom presets
     var opt = document.createElement("option");
     opt.value = "general";
     opt.textContent = "Standard Practice Template";
@@ -660,7 +939,6 @@ function renderWorksheetPreview() {
 
   var displayBox = document.getElementById("worksheetDisplayArea");
   
-  // Find selected preset object
   var list = (WORKSHEET_PRESETS[sub] && WORKSHEET_PRESETS[sub][typ]) || [];
   var preset = list.find(function (p) { return p.id === presetId; }) || list[0];
 
@@ -668,13 +946,11 @@ function renderWorksheetPreview() {
   displayBox.innerHTML = html;
 }
 
-// Generate the complete A4 worksheet document structure
 function buildWorksheetHTML(sub, typ, preset, kidName, wsDate) {
   var isUrdu = (sub === "urdu" || sub === "islamiat");
   var title = preset ? preset.name : "Practice Worksheet";
   var urduTitle = isUrdu ? "مشق شیٹ (پریکٹس ورک شیٹ)" : "";
 
-  // English & Urdu instruction pairs
   var instructions = {
     tracing: {
       en: "Trace carefully along the dotted lines with a pencil.",
@@ -706,7 +982,7 @@ function buildWorksheetHTML(sub, typ, preset, kidName, wsDate) {
 
   var out = '<div class="ws-container">';
 
-  // 1. HEADER
+  // 1. Header
   out += '  <div class="ws-header">';
   out += '    <div class="ws-brand-row">';
   out += '      <span>🌱 SeekhoTrack Homeschool</span>';
@@ -725,13 +1001,13 @@ function buildWorksheetHTML(sub, typ, preset, kidName, wsDate) {
   out += '    </div>';
   out += '  </div>';
 
-  // 2. INSTRUCTIONS
+  // 2. Instructions
   out += '  <div class="ws-instructions">';
   out += '    <span class="ws-inst-en">✏️ ' + inst.en + '</span>';
   out += '    <span class="ws-inst-ur">' + inst.ur + '</span>';
   out += '  </div>';
 
-  // 3. BODY (Per Type)
+  // 3. Body
   out += '  <div class="ws-body">';
 
   if (typ === "tracing") {
@@ -748,8 +1024,8 @@ function buildWorksheetHTML(sub, typ, preset, kidName, wsDate) {
     out += buildFillBody(preset);
   }
 
-  out += '  </div>'; // End ws-body
-  out += '</div>';   // End ws-container
+  out += '  </div>';
+  out += '</div>';
 
   return out;
 }
@@ -858,8 +1134,6 @@ function buildFillBody(preset) {
   var rows = (preset && preset.rows) || [["A", "", "C"]];
 
   var html = '<div class="fill-container">';
-  
-  // Word bank
   html += '<div class="fill-wordbank">';
   html += '  <span class="wordbank-label">📦 Word Bank:</span> ';
   bank.forEach(function (b) {
@@ -867,7 +1141,6 @@ function buildFillBody(preset) {
   });
   html += '</div>';
 
-  // Sequences
   html += '<div class="fill-sequences">';
   rows.forEach(function (row) {
     html += '<div class="fill-row">';
@@ -881,14 +1154,13 @@ function buildFillBody(preset) {
     html += '</div>';
   });
   html += '</div>';
-
   html += '</div>';
   return html;
 }
 
 
 // ========================================================
-// VIEW 3: WEEKLY REPORT
+// VIEW 4: WEEKLY REPORT
 // ========================================================
 function renderWeeklyReport() {
   var kid = activeKid();
@@ -914,7 +1186,6 @@ function renderWeeklyReport() {
   var totalStars = 0;
   var dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-  // Table setup
   var tableHtml = '<table class="report-table"><thead><tr><th>Mazmoon (Subject)</th>';
   for (var i = 0; i < 7; i++) {
     tableHtml += '<th>' + dayNames[i] + '</th>';
@@ -947,7 +1218,6 @@ function renderWeeklyReport() {
     });
   }
 
-  // Build Table Rows
   SUBJECTS.forEach(function (s) {
     tableHtml += '<tr><td class="sub-name">' + s.icon + ' ' + s.name + '</td>';
     for (var dIdx = 0; dIdx < 7; dIdx++) {
@@ -964,7 +1234,6 @@ function renderWeeklyReport() {
 
   var overallPct = Math.round((totalDone / totalPossible) * 100);
 
-  // Summary Stat Cards
   summaryBox.innerHTML =
     '<div class="report-stat-card">' +
     '  <div class="report-stat-value">' + totalDone + ' / ' + totalPossible + '</div>' +
@@ -981,7 +1250,6 @@ function renderWeeklyReport() {
 
   detailsBox.innerHTML = tableHtml;
 
-  // Notes List
   if (weeklyNotes.length > 0) {
     var notesHtml = '<h3 style="margin-bottom:8px; font-size:1.05rem;">📝 Hafte Ke Notes:</h3>';
     weeklyNotes.forEach(function (item) {
@@ -999,14 +1267,68 @@ function renderWeeklyReport() {
 
 
 // ========================================================
-// PRINT EXECUTION (A4 Pixel-Perfect Native Print)
+// PRINT & SOCIAL ACTIONS
 // ========================================================
 function executePrint(contentHtml) {
   var printBox = document.getElementById("printContainer");
   printBox.innerHTML = contentHtml;
-  
-  // Trigger standard browser print
   window.print();
+}
+
+// WhatsApp Share Win Generator
+function shareWinOnWhatsApp() {
+  var kid = activeKid();
+  if (!kid) return;
+
+  var text = "🎉 Alhamdulillah! " + kid.name + " ne aaj SeekhoTrack par apne tamam homeschool targets mukammal kar liye! ⭐⭐⭐\n\nParhao, track karo, print karo — sab ek jagah!";
+  var url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(text);
+  window.open(url, "_blank");
+}
+
+function shareReportOnWhatsApp() {
+  var kid = activeKid();
+  if (!kid) return;
+  var stars = getWeekStarsCount(kid.id);
+
+  var text = "📊 Homeschool Weekly Update (" + kid.name + "):\nIs hafte " + stars + " stars earn kiye aur seekhne ka silsila jari hai! 🌟\n#SeekhoTrack";
+  var url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(text);
+  window.open(url, "_blank");
+}
+
+
+// ========================================================
+// JSON BACKUP & RESTORE (Data Safety PRD §12 & §17)
+// ========================================================
+function exportJsonBackup() {
+  var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+  var downloadAnchor = document.createElement("a");
+  var today = dateStr(new Date());
+  downloadAnchor.setAttribute("href", dataStr);
+  downloadAnchor.setAttribute("download", "seekhotrack_backup_" + today + ".json");
+  document.body.appendChild(downloadAnchor);
+  downloadAnchor.click();
+  downloadAnchor.remove();
+}
+
+function importJsonBackup(file) {
+  var reader = new FileReader();
+  reader.onload = function (e) {
+    try {
+      var imported = JSON.parse(e.target.result);
+      if (imported.kids && imported.records) {
+        state = imported;
+        saveState();
+        alert("Backup kamyabi se restore ho gaya! 🎉");
+        document.getElementById("backupModal").classList.add("hidden");
+        render();
+      } else {
+        alert("Ghalat file format. Sahi backup file chunein.");
+      }
+    } catch (err) {
+      alert("File parhne mein masla hua: " + err.message);
+    }
+  };
+  reader.readAsText(file);
 }
 
 
@@ -1015,30 +1337,27 @@ function executePrint(contentHtml) {
 // ========================================================
 
 // 1. Navigation Mode Switcher
-document.getElementById("navTrackerBtn").onclick = function () {
-  switchView("tracker");
-};
-document.getElementById("navGeneratorBtn").onclick = function () {
-  switchView("generator");
-};
-document.getElementById("navReportBtn").onclick = function () {
-  switchView("report");
-};
+document.getElementById("navTrackerBtn").onclick = function () { switchView("tracker"); };
+document.getElementById("navSyllabusBtn").onclick = function () { switchView("syllabus"); };
+document.getElementById("navGeneratorBtn").onclick = function () { switchView("generator"); };
+document.getElementById("navReportBtn").onclick = function () { switchView("report"); };
 
 function switchView(view) {
   currentView = view;
   document.getElementById("navTrackerBtn").classList.toggle("active", view === "tracker");
+  document.getElementById("navSyllabusBtn").classList.toggle("active", view === "syllabus");
   document.getElementById("navGeneratorBtn").classList.toggle("active", view === "generator");
   document.getElementById("navReportBtn").classList.toggle("active", view === "report");
 
   document.getElementById("trackerView").classList.toggle("hidden", view !== "tracker");
+  document.getElementById("syllabusView").classList.toggle("hidden", view !== "syllabus");
   document.getElementById("generatorView").classList.toggle("hidden", view !== "generator");
   document.getElementById("reportView").classList.toggle("hidden", view !== "report");
 
   render();
 }
 
-// 2. Toggle Add-Kid Form
+// 2. Kid Form Toggle & Add
 document.getElementById("toggleAddKidBtn").onclick = function () {
   var form = document.getElementById("addKidForm");
   form.classList.toggle("hidden");
@@ -1047,23 +1366,19 @@ document.getElementById("toggleAddKidBtn").onclick = function () {
   }
 };
 
-// 3. Add-Kid Submit
 document.getElementById("addKidBtn").onclick = function () {
   var nameInput = document.getElementById("kidName");
   var ageInput = document.getElementById("kidAge");
+  var bandSelect = document.getElementById("kidAgeBand");
+
   var name = nameInput.value.trim();
   var age = parseInt(ageInput.value, 10);
+  var ageBand = bandSelect.value;
 
-  if (!name) {
-    alert("Bache ka naam likhein.");
-    return;
-  }
-  if (!age || age < 1) {
-    alert("Bache ki sahi umar likhein.");
-    return;
-  }
+  if (!name) { alert("Bache ka naam likhein."); return; }
+  if (!age || age < 1) { alert("Bache ki sahi umar likhein."); return; }
 
-  var kid = { id: makeId(), name: name, age: age };
+  var kid = { id: makeId(), name: name, age: age, ageBand: ageBand };
   state.kids.push(kid);
   state.activeKidId = kid.id;
   nameInput.value = "";
@@ -1072,6 +1387,47 @@ document.getElementById("addKidBtn").onclick = function () {
 
   saveState();
   render();
+};
+
+// 3. Syllabus Custom Topic Toggle & Save
+document.getElementById("toggleCustomTopicBtn").onclick = function () {
+  document.getElementById("addCustomTopicForm").classList.toggle("hidden");
+};
+
+document.getElementById("saveCustomTopicBtn").onclick = function () {
+  var sub = document.getElementById("newTopicSubject").value;
+  var title = document.getElementById("newTopicTitle").value.trim();
+  var kid = activeKid();
+
+  if (!title) {
+    alert("Topic ka naam likhein.");
+    return;
+  }
+
+  var band = kid ? kid.ageBand : "4-5";
+  if (!SYLLABUS_DATA[band].subjects[sub]) {
+    SYLLABUS_DATA[band].subjects[sub] = [];
+  }
+
+  var newTopic = {
+    id: "custom_" + makeId(),
+    title: title,
+    guide: "Mother's custom added topic",
+    presetId: sub.toLowerCase() === "english" ? "en_trace_cap_ae" : "ur_trace_1",
+    type: "tracing"
+  };
+
+  SYLLABUS_DATA[band].subjects[sub].push(newTopic);
+  document.getElementById("newTopicTitle").value = "";
+  document.getElementById("addCustomTopicForm").classList.add("hidden");
+
+  renderSyllabusPlanner();
+};
+
+document.getElementById("toggleCurriculumBtn").onclick = function () {
+  var box = document.getElementById("fullCurriculumView");
+  box.classList.toggle("hidden");
+  document.getElementById("toggleCurriculumBtn").textContent = box.classList.contains("hidden") ? "View Details ▼" : "Hide Details ▲";
 };
 
 // 4. Generator Controls
@@ -1092,7 +1448,6 @@ document.getElementById("wsKidName").oninput = function () {
 document.getElementById("wsDate").oninput = function () {
   renderWorksheetPreview();
 };
-
 document.getElementById("refreshWsBtn").onclick = function () {
   renderWorksheetPreview();
 };
@@ -1103,7 +1458,7 @@ document.getElementById("printWsBtn").onclick = function () {
   executePrint('<div class="paper-page">' + previewHtml + '</div>');
 };
 
-// 6. Print Weekly Report
+// 6. Print Report
 document.getElementById("printReportBtn").onclick = function () {
   var reportHtml =
     '<div class="paper-page">' +
@@ -1121,6 +1476,24 @@ document.getElementById("printReportBtn").onclick = function () {
     '</div>';
 
   executePrint(reportHtml);
+};
+
+// 7. Social Share Buttons
+document.getElementById("shareWinBtn").onclick = shareWinOnWhatsApp;
+document.getElementById("shareReportWhatsAppBtn").onclick = shareReportOnWhatsApp;
+
+// 8. Backup Modal Controls
+document.getElementById("backupModalBtn").onclick = function () {
+  document.getElementById("backupModal").classList.remove("hidden");
+};
+document.getElementById("closeBackupModalBtn").onclick = function () {
+  document.getElementById("backupModal").classList.add("hidden");
+};
+document.getElementById("exportJsonBtn").onclick = exportJsonBackup;
+document.getElementById("importJsonFile").onchange = function (e) {
+  if (e.target.files && e.target.files[0]) {
+    importJsonBackup(e.target.files[0]);
+  }
 };
 
 // ---------- Initial Boot ----------

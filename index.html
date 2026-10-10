@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <!-- Makes the page fit nicely on phone and desktop screens -->
+  <!-- Mobile-first viewport with touch target optimization -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SeekhoTrack — Parhao, Track Karo, Print Karo</title>
+  <title>SeekhoTrack — Teach it. Track it. Print it.</title>
   
-  <!-- Google Fonts for lovely child-friendly UI & correct Urdu shaping -->
+  <!-- Child-friendly font & Urdu Nastaleeq fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -20,23 +20,31 @@
 
     <!-- App Header -->
     <header class="app-header">
-      <div class="logo-row">
-        <span class="logo-icon">🌱</span>
-        <h1>SeekhoTrack</h1>
+      <div class="header-top-row">
+        <div class="logo-row">
+          <span class="logo-icon">🌱</span>
+          <div>
+            <h1>SeekhoTrack</h1>
+            <p class="tagline">Teach it. Track it. Print it. — Sab ek jagah 💛</p>
+          </div>
+        </div>
+        <button id="backupModalBtn" class="icon-btn" title="Backup & Restore Data">💾</button>
       </div>
-      <p class="tagline">Parhao, track karo, print karo — sab ek jagah 💛</p>
     </header>
 
-    <!-- Main Navigation Bar (v1 Tracker vs v2 Generator vs Report) -->
+    <!-- Main Navigation Bar (The 3 Flywheel Pillars + Reports) -->
     <nav class="mode-nav">
       <button id="navTrackerBtn" class="mode-btn active" type="button">
-        <span class="btn-icon">📋</span> Roz Ka Tracker
+        <span class="btn-icon">📋</span> Tracker
+      </button>
+      <button id="navSyllabusBtn" class="mode-btn" type="button">
+        <span class="btn-icon">📚</span> Syllabus
       </button>
       <button id="navGeneratorBtn" class="mode-btn" type="button">
-        <span class="btn-icon">🖨️</span> Printable Banao
+        <span class="btn-icon">🖨️</span> Printable
       </button>
       <button id="navReportBtn" class="mode-btn" type="button">
-        <span class="btn-icon">📊</span> Weekly Report
+        <span class="btn-icon">📊</span> Report
       </button>
     </nav>
 
@@ -54,12 +62,19 @@
       <form id="addKidForm" class="add-kid hidden" onsubmit="return false;">
         <input id="kidName" type="text" placeholder="Bache ka naam (e.g. Ahmed)" maxlength="20" required>
         <input id="kidAge" type="number" placeholder="Umar (Age)" min="1" max="18" required>
+        <select id="kidAgeBand" class="form-select">
+          <option value="3-4">Age 3–4 (Hafsa)</option>
+          <option value="4-5" selected>Age 4–5 (Ahmed)</option>
+          <option value="5-6">Age 5–6</option>
+          <option value="6-7">Age 6–7</option>
+        </select>
         <button id="addKidBtn" type="button">+ Add Kid</button>
       </form>
 
       <!-- Active Child Info Pill -->
       <div id="activeChildBadge" class="child-badge"></div>
     </section>
+
 
     <!-- ================= VIEW 1: DAILY TRACKER (v1 + v1.x) ================= -->
     <main id="trackerView" class="view-panel active">
@@ -77,7 +92,7 @@
           </div>
         </div>
 
-        <!-- 7 Subjects Checklist -->
+        <!-- 7 Subjects Checklist (includes Nazra) -->
         <div id="checklist" class="checklist"></div>
 
         <!-- Daily Progress Bar -->
@@ -86,9 +101,14 @@
           <p id="progressText">0 of 7 done</p>
         </div>
 
-        <!-- Celebration Banner when 7/7 done -->
+        <!-- Celebration Banner when 7/7 done + WhatsApp Share Win -->
         <div id="celebrationBanner" class="celebration-banner hidden">
-          🎉 <strong>Masha'Allah Shabaash!</strong> Aaj ka sab target mukammal ho gaya! Bache ko star reward dein! ⭐
+          <div class="celebration-text">
+            🎉 <strong>Masha'Allah Shabaash!</strong> Aaj ka sab target mukammal ho gaya! ⭐
+          </div>
+          <button id="shareWinBtn" class="btn btn-whatsapp" type="button">
+            📱 WhatsApp Status Par Share Karein
+          </button>
         </div>
       </section>
 
@@ -98,7 +118,7 @@
           <h2>📝 Roz Ka Note</h2>
           <span id="noteSaveStatus" class="save-tag">Saved ✓</span>
         </div>
-        <p class="card-subtext">Maa ki roz ki chhoti baat (jaise: <em>"Ahmed ne B likhna seekh liya"</em> ya <em>"Hafsa ne 5 tak counting ki"</em>):</p>
+        <p class="card-subtext">Maa ki roz ki chhoti baat (jaise: <em>"Ahmed ne B likhna seekh liya"</em>):</p>
         <textarea id="dailyNote" class="daily-note-input" placeholder="Aaj bache ne kya seekha ya kaisa perform kiya..." rows="3"></textarea>
       </section>
 
@@ -115,16 +135,88 @@
     </main>
 
 
-    <!-- ================= VIEW 2: PRINTABLE GENERATOR (v2) ================= -->
+    <!-- ================= VIEW 2: SYLLABUS & LESSON PLANNER (v3 CORE PILLAR) ================= -->
+    <main id="syllabusView" class="view-panel hidden">
+      
+      <!-- Planner Header & Age Band Selector -->
+      <section class="card">
+        <div class="card-header-flex">
+          <div>
+            <div class="card-title-badge">
+              <span class="badge-tag">Syllabus Engine</span>
+              <h2>📚 Guided Weekly Lesson Plan</h2>
+            </div>
+            <p class="card-subtext">Agla kya parhana hai? Built-in structured plan jo kabhi maa ko confuse na kare.</p>
+          </div>
+        </div>
+
+        <div class="syllabus-controls-bar">
+          <div class="band-selector-group">
+            <label for="currentKidBand">Child Level (Age Band):</label>
+            <select id="currentKidBand" class="form-select">
+              <option value="3-4">Age 3–4 (Hafsa level: Alphabet recognition, counting 1-10, duas)</option>
+              <option value="4-5">Age 4–5 (Ahmed level: CVC words, Urdu jor, counting to 50, surahs)</option>
+              <option value="5-6">Age 5–6 (4-5 letter words, addition/subtraction, Kalimas)</option>
+              <option value="6-7">Age 6–7 (Short paragraphs, tables 2-5, Wudu/Namaz, Seerah)</option>
+            </select>
+          </div>
+          <button id="toggleCustomTopicBtn" class="btn btn-secondary btn-small" type="button">
+            + Naya Topic Add Karein
+          </button>
+        </div>
+
+        <!-- Add Custom Topic Form (Collapsible) -->
+        <form id="addCustomTopicForm" class="custom-topic-box hidden" onsubmit="return false;">
+          <h4>Apna Topic Shamil Karein:</h4>
+          <div class="grid-2col">
+            <select id="newTopicSubject" class="form-select">
+              <option value="English">English</option>
+              <option value="Urdu">Urdu</option>
+              <option value="Math">Math</option>
+              <option value="Islamiat">Islamiat</option>
+              <option value="Nazra">Nazra</option>
+            </select>
+            <input id="newTopicTitle" type="text" class="form-input" placeholder="Topic ka naam (e.g. Letter S sound)" required>
+          </div>
+          <div class="form-actions-right">
+            <button id="saveCustomTopicBtn" class="btn btn-primary btn-small" type="button">Save Topic</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- The 5-Day Weekly Planner (Flywheel Hub) -->
+      <section class="card planner-card">
+        <div class="card-header-flex">
+          <h2>🗓️ 5-Day Weekly Schedule</h2>
+          <span class="badge-sub">Auto-syncs with Tracker & Generator</span>
+        </div>
+        <p class="card-subtext">Har din ke topics samne hain — ek click se <strong>Worksheet print</strong> karein ya <strong>Taught mark</strong> karein:</p>
+        
+        <div id="weeklyPlannerList" class="planner-days-list"></div>
+      </section>
+
+      <!-- Full Syllabus Curriculum Browser -->
+      <section class="card">
+        <div class="card-header-flex">
+          <h2>📖 Poora Curriculum (Subject Breakdown)</h2>
+          <button id="toggleCurriculumBtn" class="toggle-link" type="button">View Details ▼</button>
+        </div>
+        <div id="fullCurriculumView" class="curriculum-accordion hidden"></div>
+      </section>
+
+    </main>
+
+
+    <!-- ================= VIEW 3: PRINTABLE GENERATOR (v2 + Flywheel) ================= -->
     <main id="generatorView" class="view-panel hidden">
 
       <!-- Controls Card -->
       <section class="card generator-card">
         <div class="card-title-badge">
-          <span class="badge-tag">v2 Feature</span>
+          <span class="badge-tag">Printable Maker</span>
           <h2>🖨️ Printable Worksheet Generator</h2>
         </div>
-        <p class="card-subtext">Topic chunein, live preview dekhein aur ek click par A4 print nikaalein!</p>
+        <p class="card-subtext">Worksheet ka topic chunein, live preview dekhein aur direct A4 print nikaalein!</p>
 
         <div class="generator-grid">
           
@@ -191,18 +283,16 @@
           <span class="preview-hint">🖨️ A4 Paper Size ready</span>
         </div>
         
-        <!-- Screen container that displays the preview with nice paper shadows -->
+        <!-- Screen container displaying paper with realistic styling -->
         <div class="preview-paper-box">
-          <div id="worksheetDisplayArea" class="paper-page">
-            <!-- Dynamic worksheet HTML injected here -->
-          </div>
+          <div id="worksheetDisplayArea" class="paper-page"></div>
         </div>
       </section>
 
     </main>
 
 
-    <!-- ================= VIEW 3: WEEKLY REPORT (v1.x) ================= -->
+    <!-- ================= VIEW 4: WEEKLY REPORT (v1.x) ================= -->
     <main id="reportView" class="view-panel hidden">
       <section class="card">
         <div class="card-header-flex">
@@ -210,31 +300,54 @@
             <h2>📊 Hafte Ki Mukammal Report</h2>
             <span class="date" id="reportDateRange"></span>
           </div>
-          <button id="printReportBtn" class="btn btn-secondary btn-small" type="button">
-            🖨️ Print Report
-          </button>
+          <div class="report-btns">
+            <button id="shareReportWhatsAppBtn" class="btn btn-whatsapp btn-small" type="button">
+              📱 WhatsApp Share
+            </button>
+            <button id="printReportBtn" class="btn btn-secondary btn-small" type="button">
+              🖨️ Print Report
+            </button>
+          </div>
         </div>
 
         <div id="reportSummaryBox" class="report-summary-cards"></div>
-
         <div id="reportDetailsBox" class="report-details-table-wrap"></div>
-
         <div id="reportNotesBox" class="report-notes-list"></div>
       </section>
     </main>
 
     <!-- Footer -->
     <footer class="app-footer">
-      <p>SeekhoTrack 💛 Homeschooling maaon ke liye asaan aur free companion</p>
+      <p>SeekhoTrack 💛 Teach it. Track it. Print it. — All in one place.</p>
     </footer>
 
   </div>
 
 
-  <!-- ================= PRINT-ONLY CONTAINER (Only visible in Print) ================= -->
-  <div id="printContainer" class="print-only">
-    <!-- Clean A4 content injected right before window.print() -->
+  <!-- ================= BACKUP & DATA MODAL ================= -->
+  <div id="backupModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>💾 Data Backup & Restore</h3>
+        <button id="closeBackupModalBtn" class="close-btn">×</button>
+      </div>
+      <p class="modal-text">Aapka saara data aapke computer ke browser mein mahfooz hai. Kisi doosre device par le jane ya safe backup ke liye yahan se export karein:</p>
+      
+      <div class="modal-actions-box">
+        <button id="exportJsonBtn" class="btn btn-primary" style="width: 100%;">
+          ⬇️ Backup File Download Karein (JSON)
+        </button>
+        <div class="restore-group">
+          <label for="importJsonFile" class="restore-label">Backup Restore Karein:</label>
+          <input id="importJsonFile" type="file" accept=".json" class="file-input">
+        </div>
+      </div>
+    </div>
   </div>
+
+
+  <!-- ================= PRINT-ONLY CONTAINER (Only visible in Print) ================= -->
+  <div id="printContainer" class="print-only"></div>
 
   <script src="app.js"></script>
 </body>
