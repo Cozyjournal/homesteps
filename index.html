@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <!-- Mobile-first viewport with touch target optimization (>=44px) -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SeekhoTrack — Teach it. Track it. Print it.</title>
+  <title>HomeSteps — Teach it. Track it. Print it.</title>
   
   <!-- Child-friendly font & Urdu Nastaleeq fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,8 +24,8 @@
         <div class="logo-row">
           <span class="logo-icon">🌱</span>
           <div>
-            <h1>SeekhoTrack</h1>
-            <p class="tagline">Teach it. Track it. Print it. — Sab ek jagah 💛</p>
+            <h1>HomeSteps</h1>
+            <p class="tagline">Teach it. Track it. Print it. — All in one place 💛</p>
           </div>
         </div>
 
@@ -42,8 +42,8 @@
     <!-- 60-Second Onboarding Welcome Banner (PRD §19) -->
     <div id="onboardingBanner" class="onboarding-card hidden">
       <div class="onboarding-content">
-        <h3>👋 Khush Amdeed! Welcome to SeekhoTrack</h3>
-        <p>Bache ki parhai ka hisaab roz sirf <strong>2 minute</strong> mein rakhein. Shuru karne ke liye pehle bache ka naam likhein ya checklist mark karein!</p>
+        <h3>👋 Khush Amdeed! Welcome to HomeSteps</h3>
+        <p>Bache ki parhai ka hisaab roz sirf <strong>2 minute</strong> mein rakhein. Shuru karne ke liye bache ka naam likhein ya checklist mark karein!</p>
       </div>
       <button id="dismissOnboardingBtn" class="btn btn-secondary btn-small">Start Now ✓</button>
     </div>
@@ -92,7 +92,7 @@
     </section>
 
 
-    <!-- ================= VIEW 1: DAILY TRACKER (v3.2: 9 Subjects) ================= -->
+    <!-- ================= VIEW 1: DAILY TRACKER (v3.3: 9 Subjects) ================= -->
     <main id="trackerView" class="view-panel active">
 
       <!-- Today's Checklist Card -->
@@ -108,7 +108,7 @@
           </div>
         </div>
 
-        <!-- 9 Subjects Checklist (Reading, Writing, Math, Urdu, Islamiat, Nazra, Science, Social Studies, Art & Craft) -->
+        <!-- 9 Subjects Checklist -->
         <div id="checklist" class="checklist"></div>
 
         <!-- Daily Progress Bar -->
@@ -157,7 +157,7 @@
     </main>
 
 
-    <!-- ================= VIEW 2: SYLLABUS & LESSON PLANNER (v3.2) ================= -->
+    <!-- ================= VIEW 2: SYLLABUS & LESSON PLANNER ================= -->
     <main id="syllabusView" class="view-panel hidden">
       
       <!-- Planner Header & Age Band Selector -->
@@ -232,7 +232,7 @@
     </main>
 
 
-    <!-- ================= VIEW 3: PRINTABLE GENERATOR (v3.2: 7 Types including Map Labeling) ================= -->
+    <!-- ================= VIEW 3: PRINTABLE GENERATOR (v3.3: 7 Worksheet Types) ================= -->
     <main id="generatorView" class="view-panel hidden">
 
       <!-- Controls Card -->
@@ -245,7 +245,7 @@
 
         <div class="generator-grid">
           
-          <!-- Subject Selector (Includes Science, Social Studies, Art & Craft) -->
+          <!-- Subject Selector -->
           <div class="form-group">
             <label for="wsSubject">1. Mazmoon (Subject):</label>
             <select id="wsSubject" class="form-select">
@@ -260,7 +260,7 @@
             </select>
           </div>
 
-          <!-- Type Selector (7 types from PRD v3.2 including Map Labeling) -->
+          <!-- Type Selector (7 types from PRD v3.3) -->
           <div class="form-group">
             <label for="wsType">2. Worksheet Type:</label>
             <select id="wsType" class="form-select">
@@ -346,7 +346,7 @@
 
     <!-- Footer -->
     <footer class="app-footer">
-      <p>SeekhoTrack 💛 Teach it. Track it. Print it. — All in one place.</p>
+      <p>HomeSteps 💛 Teach it. Track it. Print it. — All in one place.</p>
       <div class="footer-links">
         <a href="javascript:void(0)" id="footerPrivacyLink">Privacy Policy</a> • 
         <a href="javascript:void(0)" id="footerHelpLink">Help & FAQ</a> • 
@@ -363,7 +363,7 @@
       <div class="modal-header">
         <div class="premium-badge-title">
           <span class="star-icon">⭐</span>
-          <h3>SeekhoTrack Premium</h3>
+          <h3>HomeSteps Premium</h3>
         </div>
         <button id="closePremiumModalBtn" class="close-btn">×</button>
       </div>
@@ -389,10 +389,10 @@
         <h4>📱 Asaan Payment (JazzCash / Easypaisa):</h4>
         <p class="pay-step">1. Raqam in numbers par transfer karein:</p>
         <div class="account-pill">
-          <strong>JazzCash:</strong> 0300-1234567 (Sualeha / SeekhoTrack)
+          <strong>JazzCash:</strong> 0300-1234567 (Sualeha / HomeSteps)
         </div>
         <div class="account-pill">
-          <strong>Easypaisa:</strong> 0345-1234567 (Sualeha / SeekhoTrack)
+          <strong>Easypaisa:</strong> 0345-1234567 (Sualeha / HomeSteps)
         </div>
         <p class="pay-step">2. Screenshot WhatsApp par bhej kar activate karwayen:</p>
         <button id="sendPaymentProofWhatsAppBtn" class="btn btn-whatsapp" style="width: 100%;">
@@ -469,7 +469,7 @@
         <button id="closePrivacyModalBtn" class="close-btn">×</button>
       </div>
       <div class="privacy-body">
-        <p><strong>1. Data Minimization:</strong> SeekhoTrack sirf bache ka pehla naam/nickname aur roz ka learning record store karta hai. Bachon ki tasweer, pata ya school details kabhi collect nahi hotin.</p>
+        <p><strong>1. Data Minimization:</strong> HomeSteps sirf bache ka pehla naam/nickname aur roz ka learning record store karta hai. Bachon ki tasweer, pata ya school details kabhi collect nahi hotin.</p>
         <p><strong>2. 100% Local-First:</strong> Tamam data aapke apne device par rehta hai. Koi third-party tracker ya advertising SDK nahi hai.</p>
         <p><strong>3. Export & Delete Anytime:</strong> Aap kisi bhi waqt apna saara data JSON file mein download kar sakte hain ya ek click par wipe kar sakte hain.</p>
       </div>

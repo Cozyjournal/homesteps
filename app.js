@@ -1,11 +1,11 @@
 // ========================================================
-// SeekhoTrack — Core Logic (v3.2 Full)
+// HomeSteps — Core Logic (v3.3 Full Rebrand)
 // "Teach it. Track it. Print it. — All in one place."
 // Plain JavaScript, 100% Client-Side, Local-First
 // Offline-Ready with LocalStorage & JSON Backup
 // ========================================================
 
-// ---------- Constants (v3.2: 9 Subjects) ----------
+// ---------- Constants (v3.3: 9 Subjects) ----------
 var SUBJECTS = [
   { name: "Reading", icon: "📖" },
   { name: "Writing", icon: "✍️" },
@@ -18,9 +18,10 @@ var SUBJECTS = [
   { name: "Art & Craft", icon: "🎨" }
 ];
 
-var STORE_KEY = "seekhotrack_v1";
+var STORE_KEY = "homesteps_v1";
+var OLD_STORE_KEY = "seekhotrack_v1";
 
-// ---------- Structured Syllabus Curriculum Data (PRD v3.2 §8.2) ----------
+// ---------- Structured Syllabus Curriculum Data (PRD v3.3 §8.2) ----------
 var SYLLABUS_DATA = {
   "3-4": {
     label: "Age 3–4 (Hafsa)",
@@ -113,7 +114,8 @@ var SYLLABUS_DATA = {
         { id: "e56_2", title: "Simple 3-word Sentences ('I see a cat')", guide: "Reading with finger tracking", presetId: "en_match_word_pic", type: "matching" }
       ],
       Urdu: [
-        { id: "u56_1", title: "تین حروفی الفاظ (سیب، مور، پانی)", guide: "جوڑ کر پڑھیں اور خوشخط لکھیں", presetId: "ur_trace_4", type: "tracing" }
+        { id: "u56_1", title: "تین حروفی الفاظ (سیب، مور، پانی)", guide: "جوڑ کر پڑھیں اور خوشخط لکھیں", presetId: "ur_trace_4", type: "tracing" },
+        { id: "u56_2", title: "حروفِ تہجی: س ش ص ض ط ظ", guide: "شوشوں اور نقطوں کا فرق سمجھیں", presetId: "ur_trace_4", type: "tracing" }
       ],
       Math: [
         { id: "m56_1", title: "Simple Addition up to 10", guide: "2 apples + 3 apples = 5 apples", presetId: "math_count_1to5", type: "counting" },
@@ -123,7 +125,7 @@ var SYLLABUS_DATA = {
         { id: "i56_1", title: "پہلا اور دوسرا کلمہ مع ترجمہ", guide: "شہادت کا مفہوم اور زبانی روانی", presetId: "isl_fill_kalima", type: "fill" }
       ],
       Nazra: [
-        { id: "n56_1", title: "تنوین اور جزم کی پہچان", guide: "دو زبر، دو زیر، دو پیش کی نون والی آواز", presetId: "ur_trace_5", type: "tracing" }
+        { id: "n56_1", title: "تنوین اور جزم کی پہچان", guide: "دو زبر، دو زیر، دو پیش کی نون والی آواز", presetId: "ur_trace_5", type: "tracing" },
       ],
       Science: [
         { id: "s56_1", title: "The Five Senses (Sight, Smell, Taste, Touch, Hearing)", guide: "Link each sense organ with activity", presetId: "sci_senses", type: "matching" },
@@ -173,7 +175,7 @@ var SYLLABUS_DATA = {
 };
 
 
-// ---------- State Management ----------
+// ---------- State Management & Migration ----------
 var state = loadState();
 
 if (!state.kids || state.kids.length === 0) {
@@ -207,7 +209,8 @@ function friendlyDate(d) {
 
 function loadState() {
   try {
-    var raw = localStorage.getItem(STORE_KEY);
+    // Check both new and old keys for seamless migration
+    var raw = localStorage.getItem(STORE_KEY) || localStorage.getItem(OLD_STORE_KEY);
     if (raw) {
       var parsed = JSON.parse(raw);
       if (!parsed.kids) parsed.kids = [];
@@ -369,7 +372,7 @@ function renderActiveChildBadge() {
 
 
 // ========================================================
-// VIEW 1: DAILY TRACKER (v3.2: 9 Subjects)
+// VIEW 1: DAILY TRACKER (v3.3: 9 Subjects)
 // ========================================================
 function renderChecklist() {
   var box = document.getElementById("checklist");
@@ -403,7 +406,6 @@ function renderChecklist() {
     cb.onchange = function () {
       rec[sub.name] = cb.checked;
       
-      // Auto-award star if all 9 subjects completed today!
       var totalDone = 0;
       SUBJECTS.forEach(function (s) { if (rec[s.name]) totalDone++; });
       if (totalDone === SUBJECTS.length) {
@@ -539,7 +541,7 @@ function renderWeek() {
 
 
 // ========================================================
-// VIEW 2: SYLLABUS & LESSON PLANNER (v3.2)
+// VIEW 2: SYLLABUS & LESSON PLANNER
 // ========================================================
 function renderSyllabusPlanner() {
   var kid = activeKid();
@@ -562,7 +564,6 @@ function renderSyllabusPlanner() {
     renderActiveChildBadge();
   };
 
-  // 1. 5-Day Weekly Planner (Days 1 to 5)
   plannerList.innerHTML = "";
   var syllabusForBand = SYLLABUS_DATA[currentBand] || SYLLABUS_DATA["4-5"];
   var dayNames = ["Day 1 (Mon)", "Day 2 (Tue)", "Day 3 (Wed)", "Day 4 (Thu)", "Day 5 (Fri)"];
@@ -652,7 +653,6 @@ function renderSyllabusPlanner() {
     plannerList.appendChild(dayBlock);
   });
 
-  // 2. Full Curriculum Accordion
   currBox.innerHTML = "";
   Object.keys(syllabusForBand.subjects).forEach(function (sName) {
     var subBox = document.createElement("div");
@@ -712,7 +712,7 @@ function openGeneratorWithTopic(subjectName, topicItem) {
 
 
 // ========================================================
-// VIEW 3: PRINTABLE GENERATOR (v3.2: 7 Worksheet Types)
+// VIEW 3: PRINTABLE GENERATOR (v3.3: 7 Worksheet Types)
 // ========================================================
 var WORKSHEET_PRESETS = {
   english: {
@@ -1127,10 +1127,10 @@ function buildWorksheetHTML(sub, typ, preset, kidName, wsDate) {
 
   var out = '<div class="ws-container">';
 
-  // 1. Header
+  // 1. Header (HomeSteps Branding)
   out += '  <div class="ws-header">';
   out += '    <div class="ws-brand-row">';
-  out += '      <span>🌱 SeekhoTrack Homeschool</span>';
+  out += '      <span>🌱 HomeSteps Homeschool</span>';
   out += '      <span>Ages 3–7 • Bilingual</span>';
   out += '    </div>';
   out += '    <div class="ws-title-row">';
@@ -1302,7 +1302,6 @@ function buildFillBody(preset) {
   return html;
 }
 
-// TYPE 7: MAP LABELING BODY (PRD v3.2)
 function buildMapLabelingBody(preset) {
   var kind = (preset && preset.kind) || "pak_provinces";
   var html = '<div class="map-worksheet-box">';
@@ -1345,7 +1344,6 @@ function buildMapLabelingBody(preset) {
     html += '  <div class="map-label-target-card"><span class="map-target-title">Left Direction (W):</span><div class="map-blank-input-box"></div></div>';
     html += '</div>';
   } else {
-    // Pakistan Provinces Map Outline
     html += '<div class="map-svg-container">';
     html += '  <svg viewBox="0 0 280 220" width="260" height="200" style="border: 2px solid #000; border-radius: 8px; background: #FAF9F6;">';
     html += '    <path d="M70 140 L120 130 L100 190 L40 180 Z" fill="#fff" stroke="#000" stroke-width="2" title="Balochistan"/>';
@@ -1376,7 +1374,7 @@ function buildMapLabelingBody(preset) {
 
 
 // ========================================================
-// VIEW 4: WEEKLY REPORT (v3.2: 9 Subjects)
+// VIEW 4: WEEKLY REPORT (v3.3: 9 Subjects)
 // ========================================================
 function renderWeeklyReport() {
   var kid = activeKid();
@@ -1495,7 +1493,7 @@ function shareWinOnWhatsApp() {
   var kid = activeKid();
   if (!kid) return;
 
-  var text = "🎉 Alhamdulillah! " + kid.name + " ne aaj SeekhoTrack par apne tamam homeschool targets mukammal kar liye! ⭐⭐⭐\n\nParhao, track karo, print karo — sab ek jagah!";
+  var text = "🎉 Alhamdulillah! " + kid.name + " ne aaj HomeSteps par apne tamam homeschool targets mukammal kar liye! ⭐⭐⭐\n\nTeach it. Track it. Print it. — All in one place! #HomeSteps";
   var url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(text);
   window.open(url, "_blank");
 }
@@ -1505,7 +1503,7 @@ function shareReportOnWhatsApp() {
   if (!kid) return;
   var stars = getWeekStarsCount(kid.id);
 
-  var text = "📊 Homeschool Weekly Update (" + kid.name + "):\nIs hafte " + stars + " stars earn kiye aur seekhne ka silsila jari hai! 🌟\n#SeekhoTrack";
+  var text = "📊 Homeschool Weekly Update (" + kid.name + "):\nIs hafte " + stars + " stars earn kiye aur seekhne ka silsila jari hai! 🌟\n#HomeSteps";
   var url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(text);
   window.open(url, "_blank");
 }
@@ -1515,8 +1513,7 @@ function shareReportOnWhatsApp() {
 // ACCESSIBILITY: BIG-TEXT & VOICE NOTES (PRD §23)
 // ========================================================
 function initAccessibility() {
-  // Check Big-Text Mode
-  var isBig = localStorage.getItem("seekho_big_text") === "true";
+  var isBig = localStorage.getItem("homesteps_big_text") === "true";
   if (isBig) {
     document.body.classList.add("big-text-mode");
   }
@@ -1524,10 +1521,9 @@ function initAccessibility() {
   document.getElementById("toggleBigTextBtn").onclick = function () {
     document.body.classList.toggle("big-text-mode");
     var active = document.body.classList.contains("big-text-mode");
-    localStorage.setItem("seekho_big_text", active ? "true" : "false");
+    localStorage.setItem("homesteps_big_text", active ? "true" : "false");
   };
 
-  // Voice Notes via SpeechRecognition
   var voiceBtn = document.getElementById("voiceNoteBtn");
   var statusText = document.getElementById("voiceStatus");
   var noteInput = document.getElementById("dailyNote");
@@ -1602,7 +1598,7 @@ function exportJsonBackup() {
   var downloadAnchor = document.createElement("a");
   var today = dateStr(new Date());
   downloadAnchor.setAttribute("href", dataStr);
-  downloadAnchor.setAttribute("download", "seekhotrack_backup_" + today + ".json");
+  downloadAnchor.setAttribute("download", "homesteps_backup_" + today + ".json");
   document.body.appendChild(downloadAnchor);
   downloadAnchor.click();
   downloadAnchor.remove();
@@ -1632,6 +1628,7 @@ function importJsonBackup(file) {
 function wipeAllData() {
   if (confirm("⚠️ Kya aap waqayi saara data delete karna chahte hain? Yeh wapis nahi aayega.")) {
     localStorage.removeItem(STORE_KEY);
+    localStorage.removeItem(OLD_STORE_KEY);
     state = {
       kids: [
         { id: makeId(), name: "Ahmed", age: 4, ageBand: "4-5" },
@@ -1782,7 +1779,7 @@ document.getElementById("printReportBtn").onclick = function () {
   var reportHtml =
     '<div class="paper-page">' +
     '  <div class="ws-header">' +
-    '    <div class="ws-brand-row"><span>🌱 SeekhoTrack</span><span>Weekly Progress Report</span></div>' +
+    '    <div class="ws-brand-row"><span>🌱 HomeSteps</span><span>Weekly Progress Report</span></div>' +
     '    <div class="ws-title-row"><div class="ws-title">Hafte Ki Mukammal Report</div></div>' +
     '    <div class="ws-meta-bar">' +
     '      <div class="ws-meta-item"><span>Student:</span> <span class="ws-meta-fill">' + (activeKid() ? activeKid().name : "") + '</span></div>' +
@@ -1827,14 +1824,14 @@ document.getElementById("wipeAllDataBtn").onclick = wipeAllData;
 
 // WhatsApp Payment Proof Action
 document.getElementById("sendPaymentProofWhatsAppBtn").onclick = function () {
-  var text = "Salam! Maine SeekhoTrack ke liye JazzCash / Easypaisa payment kar di hai. Yeh screenshot hai. Baraye meherbani mera account activate kar dein.";
+  var text = "Salam! Maine HomeSteps ke liye JazzCash / Easypaisa payment kar di hai. Yeh screenshot hai. Baraye meherbani mera account activate kar dein.";
   var url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(text);
   window.open(url, "_blank");
 };
 
 // WhatsApp Support Action
 document.getElementById("contactSupportWhatsAppBtn").onclick = function () {
-  var text = "Salam Sualeha! Mujhe SeekhoTrack ke mutalliq aik sawal poochna hai:";
+  var text = "Salam Sualeha! Mujhe HomeSteps ke mutalliq aik sawal poochna hai:";
   var url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(text);
   window.open(url, "_blank");
 };
@@ -1842,11 +1839,10 @@ document.getElementById("contactSupportWhatsAppBtn").onclick = function () {
 // Onboarding Dismiss
 document.getElementById("dismissOnboardingBtn").onclick = function () {
   document.getElementById("onboardingBanner").classList.add("hidden");
-  localStorage.setItem("seekho_onboarded", "true");
+  localStorage.setItem("homesteps_onboarded", "true");
 };
 
-// Show onboarding banner if first time
-if (localStorage.getItem("seekho_onboarded") !== "true") {
+if (localStorage.getItem("homesteps_onboarded") !== "true") {
   document.getElementById("onboardingBanner").classList.remove("hidden");
 }
 
