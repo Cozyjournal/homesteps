@@ -1,55 +1,66 @@
 // ========================================================
-// SeekhoTrack — Core Logic (v1 + v1.x + v2 + v3 Full)
+// SeekhoTrack — Core Logic (v3.2 Full)
 // "Teach it. Track it. Print it. — All in one place."
 // Plain JavaScript, 100% Client-Side, Local-First
-// Database: Browser localStorage with JSON Export/Import
+// Offline-Ready with LocalStorage & JSON Backup
 // ========================================================
 
-// ---------- Constants ----------
+// ---------- Constants (v3.2: 9 Subjects) ----------
 var SUBJECTS = [
   { name: "Reading", icon: "📖" },
   { name: "Writing", icon: "✍️" },
   { name: "Math/Counting", icon: "🔢" },
   { name: "Urdu", icon: "🇵🇰" },
   { name: "Islamiat", icon: "🌙" },
-  { name: "Nazra", icon: "📖" },       // Added 10 Oct per PRD!
-  { name: "Activity", icon: "🎨" }
+  { name: "Nazra", icon: "📖" },
+  { name: "Science", icon: "🔬" },
+  { name: "Social Studies", icon: "🌍" },
+  { name: "Art & Craft", icon: "🎨" }
 ];
 
 var STORE_KEY = "seekhotrack_v1";
 
-// ---------- Structured Syllabus Curriculum Data (PRD §8.2) ----------
+// ---------- Structured Syllabus Curriculum Data (PRD v3.2 §8.2) ----------
 var SYLLABUS_DATA = {
   "3-4": {
     label: "Age 3–4 (Hafsa)",
     subjects: {
       English: [
         { id: "e34_1", title: "Letter Recognition A to E", guide: "Identify A, B, C, D, E with phonics sounds", presetId: "en_trace_cap_ae", type: "tracing" },
-        { id: "e34_2", title: "Phonics Sounds (A for Apple, B for Ball)", guide: "Sing phonics song and trace letters", presetId: "en_color_apple", type: "coloring" },
-        { id: "e34_3", title: "Letter Recognition F to J", guide: "Identify F, G, H, I, J with objects", presetId: "en_trace_cap_fj", type: "tracing" },
-        { id: "e34_4", title: "Matching Letters A to D", guide: "Draw connecting lines between matching letters", presetId: "en_match_caps_small_1", type: "matching" },
-        { id: "e34_5", title: "Small Letter a to e Tracing", guide: "Gentle finger tracing & pencil practice", presetId: "en_trace_sml_ae", type: "tracing" }
+        { id: "e34_2", title: "Phonics Sounds (A for Apple)", guide: "Sing phonics song and color apple", presetId: "en_color_apple", type: "coloring" },
+        { id: "e34_3", title: "Matching Letters A to D", guide: "Draw connecting lines between matching letters", presetId: "en_match_caps_small_1", type: "matching" },
+        { id: "e34_4", title: "Small Letter a to e Tracing", guide: "Gentle finger tracing & pencil practice", presetId: "en_trace_sml_ae", type: "tracing" }
       ],
       Urdu: [
         { id: "u34_1", title: "حروف کی پہچان: ا ب پ", guide: "آوازوں کے ساتھ دہرائیں اور نقطوں پر ہاتھ پھیریں", presetId: "ur_trace_1", type: "tracing" },
         { id: "u34_2", title: "حروف کی پہچان: ت ٹ ث", guide: "ٹماٹر اور تتلی کی تصاویر دکھائیں", presetId: "ur_trace_1", type: "tracing" },
-        { id: "u34_3", title: "حروف ملانا: ا ب ج", guide: "تصویر یا ہم شکل حروف سے لکیر ملائیں", presetId: "ur_match_huroof", type: "matching" },
+        { id: "u34_3", title: "حروف ملانا: ا ب ج", guide: "ہم شکل حروف سے لکیر ملائیں", presetId: "ur_match_huroof", type: "matching" },
         { id: "u34_4", title: "رنگ بھریں: س سے سیب", guide: "سیب میں لال رنگ اور لفظ سیب ٹریس کریں", presetId: "ur_color_seb", type: "coloring" }
       ],
       Math: [
         { id: "m34_1", title: "Counting 1 to 5 Objects", guide: "Count apples and stars with finger taps", presetId: "math_count_1to5", type: "counting" },
         { id: "m34_2", title: "Numbers 1 to 5 Tracing", guide: "Learn number shapes 1, 2, 3, 4, 5", presetId: "math_trace_1to5", type: "tracing" },
-        { id: "m34_3", title: "Shapes Recognition (Circle, Square, Star)", guide: "Identify daily objects with these shapes", presetId: "act_trace_shapes", type: "tracing" },
-        { id: "m34_4", title: "Match Counts with Numbers 1–4", guide: "Count stars and connect to the right digit", presetId: "math_match_count", type: "matching" }
+        { id: "m34_3", title: "Shapes Recognition (Circle, Square, Star)", guide: "Identify daily objects with shapes", presetId: "act_trace_shapes", type: "tracing" }
       ],
       Islamiat: [
         { id: "i34_1", title: "بِسْمِ اللَّهِ کی مشق", guide: "کھانے اور پینے سے پہلے پڑھنے کی عادت", presetId: "isl_trace_bismillah", type: "tracing" },
-        { id: "i34_2", title: "پہلا کلمہ طیبہ (سیکھنا)", guide: "زبانی تلفظ اور اللہ کے نام کی ٹریسنگ", presetId: "isl_trace_allah", type: "tracing" },
-        { id: "i34_3", title: "مسجد کی پہچان اور رنگ", guide: "مسجد میں نماز اور مینار کی خوبصورت تصویر", presetId: "isl_color_masjid", type: "coloring" }
+        { id: "i34_2", title: "پہلا کلمہ طیبہ (سیکھنا)", guide: "زبانی تلفظ اور اللہ کے نام کی ٹریسنگ", presetId: "isl_trace_allah", type: "tracing" }
       ],
       Nazra: [
-        { id: "n34_1", title: "نورانی قاعدہ: مفردات (ا تا خ)", guide: "مخرج کے ساتھ ادائیگی اور شناخت", presetId: "ur_trace_1", type: "tracing" },
-        { id: "n34_2", title: "نورانی قاعدہ: مفردات (د تا ر)", guide: "روزانہ 3 سے 5 حروف دہرائیں", presetId: "ur_trace_3", type: "tracing" }
+        { id: "n34_1", title: "نورانی قاعدہ: مفردات (ا تا خ)", guide: "مخرج کے ساتھ ادائیگی اور شناخت", presetId: "ur_trace_1", type: "tracing" }
+      ],
+      Science: [
+        { id: "s34_1", title: "Common Animals & Their Sounds", guide: "Identify Cat, Dog, Cow, Lion sounds", presetId: "act_match_animals", type: "matching" },
+        { id: "s34_2", title: "Body Parts (Eyes, Nose, Ears, Hands)", guide: "Point to body parts and repeat names", presetId: "sci_body_parts", type: "matching" },
+        { id: "s34_3", title: "Day and Night (Sun vs Moon)", guide: "Observe bright sun and glowing moon", presetId: "isl_color_moon", type: "coloring" }
+      ],
+      "Social Studies": [
+        { id: "ss34_1", title: "My Family (Ammi, Abu, Bhai, Behn)", guide: "Talk with affection about family members", presetId: "soc_family", type: "matching" },
+        { id: "ss34_2", title: "My Home & Cleanliness", guide: "Keeping toys in order after playtime", presetId: "act_color_flower", type: "coloring" }
+      ],
+      "Art & Craft": [
+        { id: "ac34_1", title: "Coloring & Scribbling Practice", guide: "Holding crayons with three fingers", presetId: "en_color_apple", type: "coloring" },
+        { id: "ac34_2", title: "Sticking & Pasting Shapes", guide: "Cut colorful papers and stick in notebook", presetId: "act_trace_shapes", type: "tracing" }
       ]
     }
   },
@@ -58,32 +69,38 @@ var SYLLABUS_DATA = {
     label: "Age 4–5 (Ahmed)",
     subjects: {
       English: [
-        { id: "e45_1", title: "CVC Words & Short Vowels (a, e, i, o, u)", guide: "Cat, Sun, Bat, Pen blending sounds", presetId: "en_fill_cvc", type: "fill" },
-        { id: "e45_2", title: "Missing Letters in Alphabet (A to L)", guide: "Fill in the blank boxes in order", presetId: "en_fill_abc_1", type: "fill" },
-        { id: "e45_3", title: "Circle the Target Letter (B vs D, M vs W)", guide: "Improve visual discrimination of mirror letters", presetId: "en_circle_letters", type: "circle" },
-        { id: "e45_4", title: "Sight Words & Picture Matching", guide: "Read basic words like Car, Sun, Star", presetId: "en_match_word_pic", type: "matching" },
-        { id: "e45_5", title: "Capital Letters K to O Practice", guide: "Pencil grip and line spacing", presetId: "en_trace_cap_ko", type: "tracing" }
+        { id: "e45_1", title: "CVC Words & Short Vowels", guide: "Cat, Sun, Bat, Pen blending sounds", presetId: "en_fill_cvc", type: "fill" },
+        { id: "e45_2", title: "Missing Letters Alphabet A to L", guide: "Fill in the blank boxes in order", presetId: "en_fill_abc_1", type: "fill" },
+        { id: "e45_3", title: "Sight Words & Picture Matching", guide: "Read basic words like Car, Sun, Star", presetId: "en_match_word_pic", type: "matching" }
       ],
       Urdu: [
         { id: "u45_1", title: "حروفِ تہجی کی دہرائی: ج چ ح خ", guide: "نقطوں کی صحیح گنتی اور پہچان", presetId: "ur_trace_2", type: "tracing" },
-        { id: "u45_2", title: "آسان جوڑ توڑ (اب، جب، رب)", guide: "دو حروفی سادہ الفاظ کی پڑھائی", presetId: "ur_fill_1", type: "fill" },
-        { id: "u45_3", title: "حرف تلاش کریں اور دائرہ لگائیں", guide: "ب پ ت ث میں سے صحیح حرف چنیں", presetId: "ur_circle_huroof", type: "circle" },
-        { id: "u45_4", title: "پ سے پھول (رنگ اور ٹریسنگ)", guide: "پھول کا خاکہ اور ہجے کی مشق", presetId: "ur_color_phool", type: "coloring" }
+        { id: "u45_2", title: "آسان جوڑ توڑ (اب، جب، رب)", guide: "دو حروفی سادہ الفاظ کی پڑھائی", presetId: "ur_fill_1", type: "fill" }
       ],
       Math: [
         { id: "m45_1", title: "Counting 1 to 10 (Objects & Numbers)", guide: "Count pencils, fishes, candies up to 10", presetId: "math_count_6to10", type: "counting" },
         { id: "m45_2", title: "Missing Numbers 1 to 10", guide: "Fill blanks: 1, 2, _, 4, 5, _, 7, 8, _, 10", presetId: "math_fill_1to10", type: "fill" },
-        { id: "m45_3", title: "Numbers 6 to 10 Tracing & Writing", guide: "Write clean numerals in boxes", presetId: "math_trace_6to10", type: "tracing" },
-        { id: "m45_4", title: "Target Number Identification (Circle)", guide: "Spot the number 3, 5, 7 among distractors", presetId: "math_circle_num", type: "circle" }
+        { id: "m45_3", title: "Numbers 6 to 10 Tracing & Writing", guide: "Write clean numerals in boxes", presetId: "math_trace_6to10", type: "tracing" }
       ],
       Islamiat: [
         { id: "i45_1", title: "ارکانِ اسلام (5 ارکان کی پہچان)", guide: "کلمہ، نماز، روزہ، زکوٰۃ، حج کا تعارف", presetId: "isl_count_pillars", type: "counting" },
-        { id: "i45_2", title: "سورۃ الاخلاص زبانی یاد کرنا", guide: "مفہوم: اللہ ایک ہے، کوئی اس کا شریک نہیں", presetId: "isl_circle_basics", type: "circle" },
-        { id: "i45_3", title: "چاند تارا اور اسلامی مہینے", guide: "رمضان اور عید کا تصور اور رنگ بھرنا", presetId: "isl_color_moon", type: "coloring" }
+        { id: "i45_2", title: "سورۃ الاخلاص زبانی یاد کرنا", guide: "مفہوم: اللہ ایک ہے، کوئی اس کا شریک نہیں", presetId: "isl_circle_basics", type: "circle" }
       ],
       Nazra: [
-        { id: "n45_1", title: "مرکبات کی مشق (دو حروف کا جوڑ)", guide: "با، تا، ثا، جا، حا کے ساتھ روانگی", presetId: "ur_trace_2", type: "tracing" },
-        { id: "n45_2", title: "حرکات کا تعارف (زبر، زیر، پیش)", guide: "آواز کو لمبا کیے بغیر فوری ادائیگی", presetId: "ur_trace_1", type: "tracing" }
+        { id: "n45_1", title: "مرکبات کی مشق (دو حروف کا جوڑ)", guide: "با، تا، ثا، جا، حا کے ساتھ روانگی", presetId: "ur_trace_2", type: "tracing" }
+      ],
+      Science: [
+        { id: "s45_1", title: "Pets vs Wild Animals", guide: "Differentiate cat/goat from lion/bear", presetId: "sci_wild_pets", type: "circle" },
+        { id: "s45_2", title: "Parts of a Plant (Root, Stem, Leaf, Flower)", guide: "Observe real garden plants and label", presetId: "sci_plant_parts", type: "matching" },
+        { id: "s45_3", title: "Weather Types (Sunny, Rainy, Windy)", guide: "Notice daily sky conditions", presetId: "en_color_star", type: "coloring" }
+      ],
+      "Social Studies": [
+        { id: "ss45_1", title: "Community Helpers (Doctor, Teacher, Driver)", guide: "Discuss how they help our neighborhood", presetId: "soc_helpers", type: "matching" },
+        { id: "ss45_2", title: "My School & Classroom Rules", guide: "Sharing toys and respecting elders", presetId: "soc_school", type: "circle" }
+      ],
+      "Art & Craft": [
+        { id: "ac45_1", title: "Coloring Within Borders", guide: "Slow controlled hand movements inside lines", presetId: "act_color_flower", type: "coloring" },
+        { id: "ac45_2", title: "Paper Folding & Boat Making", guide: "Basic origami boat and hat folding", presetId: "act_trace_shapes", type: "tracing" }
       ]
     }
   },
@@ -93,23 +110,31 @@ var SYLLABUS_DATA = {
     subjects: {
       English: [
         { id: "e56_1", title: "4-Letter Words & Consonant Blends (st, bl, cl)", guide: "Star, Blue, Clap phonics practice", presetId: "en_fill_abc_1", type: "fill" },
-        { id: "e56_2", title: "Simple 3-word Sentences ('I see a cat')", guide: "Reading with finger tracking", presetId: "en_match_word_pic", type: "matching" },
-        { id: "e56_3", title: "Capital & Small Letters U to Z", guide: "Full alphabet mastery and punctuation", presetId: "en_trace_cap_uz", type: "tracing" }
+        { id: "e56_2", title: "Simple 3-word Sentences ('I see a cat')", guide: "Reading with finger tracking", presetId: "en_match_word_pic", type: "matching" }
       ],
       Urdu: [
-        { id: "u56_1", title: "تین حروفی الفاظ (سیب، مور، پانی)", guide: "جوڑ کر پڑھیں اور خوشخط لکھیں", presetId: "ur_trace_4", type: "tracing" },
-        { id: "u56_2", title: "حروفِ تہجی: س ش ص ض ط ظ", guide: "شوشوں اور نقطوں کا فرق سمجھیں", presetId: "ur_trace_4", type: "tracing" }
+        { id: "u56_1", title: "تین حروفی الفاظ (سیب، مور، پانی)", guide: "جوڑ کر پڑھیں اور خوشخط لکھیں", presetId: "ur_trace_4", type: "tracing" }
       ],
       Math: [
-        { id: "m56_1", title: "Simple Addition up to 10 (Picture math)", guide: "2 apples + 3 apples = 5 apples", presetId: "math_count_1to5", type: "counting" },
-        { id: "m56_2", title: "Numbers 11 to 20 Counting & Tracing", guide: "Teen numbers recognition and place value", presetId: "math_fill_1to10", type: "fill" }
+        { id: "m56_1", title: "Simple Addition up to 10", guide: "2 apples + 3 apples = 5 apples", presetId: "math_count_1to5", type: "counting" },
+        { id: "m56_2", title: "Numbers 11 to 20 Counting & Tracing", guide: "Teen numbers recognition", presetId: "math_fill_1to10", type: "fill" }
       ],
       Islamiat: [
-        { id: "i56_1", title: "پہلا اور دوسرا کلمہ مع ترجمہ", guide: "شہادت کا مفہوم اور زبانی روانی", presetId: "isl_fill_kalima", type: "fill" },
-        { id: "i56_2", title: "حضرت محمد ﷺ کی سیرت کی کہانی", guide: "صادق اور امین کا لقب اور سچائی", presetId: "isl_match_basics", type: "matching" }
+        { id: "i56_1", title: "پہلا اور دوسرا کلمہ مع ترجمہ", guide: "شہادت کا مفہوم اور زبانی روانی", presetId: "isl_fill_kalima", type: "fill" }
       ],
       Nazra: [
         { id: "n56_1", title: "تنوین اور جزم کی پہچان", guide: "دو زبر، دو زیر، دو پیش کی نون والی آواز", presetId: "ur_trace_5", type: "tracing" }
+      ],
+      Science: [
+        { id: "s56_1", title: "The Five Senses (Sight, Smell, Taste, Touch, Hearing)", guide: "Link each sense organ with activity", presetId: "sci_senses", type: "matching" },
+        { id: "s56_2", title: "Water and Float vs Sink Experiment", guide: "Testing coins and leaves in a water bowl", presetId: "sci_float_sink", type: "circle" }
+      ],
+      "Social Studies": [
+        { id: "ss56_1", title: "Pakistan Flag & National Colors", guide: "White crescent and green stripe meaning", presetId: "map_pak_flag", type: "map" },
+        { id: "ss56_2", title: "Introduction to Globe & Our Earth", guide: "Continents and oceans on globe", presetId: "map_compass", type: "map" }
+      ],
+      "Art & Craft": [
+        { id: "ac56_1", title: "Drawing Basic Objects & Animals", guide: "Using circles and triangles to draw cat/house", presetId: "act_color_car", type: "coloring" }
       ]
     }
   },
@@ -118,21 +143,30 @@ var SYLLABUS_DATA = {
     label: "Age 6–7",
     subjects: {
       English: [
-        { id: "e67_1", title: "Short Paragraph Reading & Comprehension", guide: "3 to 4 sentences story reading", presetId: "en_match_word_pic", type: "matching" },
-        { id: "e67_2", title: "Creative Writing: My Favorite Animal", guide: "Write 3 complete sentences independently", presetId: "en_fill_abc_1", type: "fill" }
+        { id: "e67_1", title: "Short Paragraph Reading & Comprehension", guide: "3 to 4 sentences story reading", presetId: "en_match_word_pic", type: "matching" }
       ],
       Urdu: [
         { id: "u67_1", title: "جملہ سازی (یہ میرا گھر ہے)", guide: "الفاظ سے جملے بنائیں اور خوشخط لکھیں", presetId: "ur_trace_6", type: "tracing" }
       ],
       Math: [
-        { id: "m67_1", title: "Times Table 2 and 3 Practice", guide: "Skip counting 2, 4, 6, 8, 10...", presetId: "math_fill_1to10", type: "fill" },
-        { id: "m67_2", title: "Simple Subtraction (5 - 2 = 3)", guide: "Crossing out objects to find remainder", presetId: "math_count_6to10", type: "counting" }
+        { id: "m67_1", title: "Times Table 2 and 3 Practice", guide: "Skip counting 2, 4, 6, 8, 10...", presetId: "math_fill_1to10", type: "fill" }
       ],
       Islamiat: [
         { id: "i67_1", title: "وضو کے فرائض اور طریقے", guide: "چار فرائض کی ترتیب اور سنتیں", presetId: "isl_match_basics", type: "matching" }
       ],
       Nazra: [
         { id: "n67_1", title: "حروفِ مدہ اور کھڑی حرکات", guide: "ایک الف کے برابر کھینچ کر پڑھنا", presetId: "ur_trace_6", type: "tracing" }
+      ],
+      Science: [
+        { id: "s67_1", title: "Human Skeleton & Vital Organs", guide: "Heart, brain, lungs and bones roles", presetId: "sci_body_organs", type: "matching" },
+        { id: "s67_2", title: "Solar System (The 8 Planets)", guide: "Earth orbit, Sun and planet names", presetId: "sci_solar_system", type: "circle" }
+      ],
+      "Social Studies": [
+        { id: "ss67_1", title: "Provinces of Pakistan (Map Labeling)", guide: "Punjab, Sindh, KPK, Balochistan, GB", presetId: "map_pak_provinces", type: "map" },
+        { id: "ss67_2", title: "Directions & Map Reading (N, S, E, W)", guide: "Compass rose and finding directions", presetId: "map_compass", type: "map" }
+      ],
+      "Art & Craft": [
+        { id: "ac67_1", title: "Landscape Drawing & Scenery", guide: "Mountains, sun, river and trees drawing", presetId: "act_color_flower", type: "coloring" }
       ]
     }
   }
@@ -142,7 +176,6 @@ var SYLLABUS_DATA = {
 // ---------- State Management ----------
 var state = loadState();
 
-// Ensure Ahmed and Hafsa are pre-seeded per PRD if first launch
 if (!state.kids || state.kids.length === 0) {
   state.kids = [
     { id: makeId(), name: "Ahmed", age: 4, ageBand: "4-5" },
@@ -152,7 +185,6 @@ if (!state.kids || state.kids.length === 0) {
   saveState();
 }
 
-// Current active view: "tracker" | "syllabus" | "generator" | "report"
 var currentView = "tracker";
 
 // ---------- Helpers ----------
@@ -185,7 +217,6 @@ function loadState() {
       if (!parsed.customTopics) parsed.customTopics = [];
       if (!parsed.taughtTopics) parsed.taughtTopics = {};
 
-      // Migrate existing kids to have ageBand if missing
       parsed.kids.forEach(function (k) {
         if (!k.ageBand) {
           k.ageBand = k.age <= 3 ? "3-4" : (k.age <= 5 ? "4-5" : (k.age === 6 ? "5-6" : "6-7"));
@@ -249,7 +280,7 @@ function activeKid() {
 
 function getMonday(d) {
   var date = new Date(d);
-  var day = (date.getDay() + 6) % 7; // Monday = 0
+  var day = (date.getDay() + 6) % 7;
   date.setDate(date.getDate() - day);
   date.setHours(0, 0, 0, 0);
   return date;
@@ -326,7 +357,7 @@ function renderActiveChildBadge() {
   var badge = document.getElementById("activeChildBadge");
   var kid = activeKid();
   if (!kid) {
-    badge.innerHTML = "<span>Koi bacha add nahi hai. Upar se pehle bacha shamil karein.</span>";
+    badge.innerHTML = "<span>Koi bacha add nahi hai. Upar se bacha shamil karein.</span>";
     return;
   }
   var starsThisWeek = getWeekStarsCount(kid.id);
@@ -338,7 +369,7 @@ function renderActiveChildBadge() {
 
 
 // ========================================================
-// VIEW 1: DAILY TRACKER (v1 + v1.x)
+// VIEW 1: DAILY TRACKER (v3.2: 9 Subjects)
 // ========================================================
 function renderChecklist() {
   var box = document.getElementById("checklist");
@@ -372,7 +403,7 @@ function renderChecklist() {
     cb.onchange = function () {
       rec[sub.name] = cb.checked;
       
-      // Auto-award star if all 7 subjects completed today
+      // Auto-award star if all 9 subjects completed today!
       var totalDone = 0;
       SUBJECTS.forEach(function (s) { if (rec[s.name]) totalDone++; });
       if (totalDone === SUBJECTS.length) {
@@ -508,7 +539,7 @@ function renderWeek() {
 
 
 // ========================================================
-// VIEW 2: SYLLABUS & LESSON PLANNER (v3 CORE PILLAR)
+// VIEW 2: SYLLABUS & LESSON PLANNER (v3.2)
 // ========================================================
 function renderSyllabusPlanner() {
   var kid = activeKid();
@@ -531,11 +562,11 @@ function renderSyllabusPlanner() {
     renderActiveChildBadge();
   };
 
-  // 1. Render 5-Day Weekly Planner (Days 1 to 5)
+  // 1. 5-Day Weekly Planner (Days 1 to 5)
   plannerList.innerHTML = "";
   var syllabusForBand = SYLLABUS_DATA[currentBand] || SYLLABUS_DATA["4-5"];
   var dayNames = ["Day 1 (Mon)", "Day 2 (Tue)", "Day 3 (Wed)", "Day 4 (Thu)", "Day 5 (Fri)"];
-  var subKeys = Object.keys(syllabusForBand.subjects); // English, Urdu, Math, Islamiat, Nazra
+  var subKeys = Object.keys(syllabusForBand.subjects);
 
   dayNames.forEach(function (dayLabel, dayIndex) {
     var dayBlock = document.createElement("div");
@@ -549,7 +580,6 @@ function renderSyllabusPlanner() {
     var topicsContainer = document.createElement("div");
     topicsContainer.className = "planner-topics-container";
 
-    // Suggest 2-3 topics per day across subjects
     var primarySub = subKeys[dayIndex % subKeys.length];
     var secondarySub = subKeys[(dayIndex + 1) % subKeys.length];
     var topicsPool = [];
@@ -577,11 +607,9 @@ function renderSyllabusPlanner() {
         '</div>' +
         '<div class="topic-guide-note">💡 ' + tObj.item.guide + '</div>';
 
-      // FLYWHEEL DEEP-LINK BUTTONS
       var actions = document.createElement("div");
       actions.className = "planner-actions";
 
-      // 1. Generator Deep-Link
       var printBtn = document.createElement("button");
       printBtn.className = "btn-plan-action btn-plan-print";
       printBtn.type = "button";
@@ -591,7 +619,6 @@ function renderSyllabusPlanner() {
         openGeneratorWithTopic(tObj.sub, tObj.item);
       };
 
-      // 2. Tracker Sync (Mark Taught)
       var teachBtn = document.createElement("button");
       teachBtn.className = "btn-plan-action btn-plan-teach" + (isTaught ? " done" : "");
       teachBtn.type = "button";
@@ -601,7 +628,6 @@ function renderSyllabusPlanner() {
         var key = kid.id + "_" + tObj.item.id;
         state.taughtTopics[key] = !state.taughtTopics[key];
 
-        // Also sync with today's checklist for that subject
         var today = dateStr(new Date());
         var rec = getRecord(kid.id, today);
         var mappedSub = mapSyllabusToTrackerSubject(tObj.sub);
@@ -654,15 +680,20 @@ function mapSyllabusToTrackerSubject(subName) {
   if (subName === "Math") return "Math/Counting";
   if (subName === "Islamiat") return "Islamiat";
   if (subName === "Nazra") return "Nazra";
-  return "Activity";
+  if (subName === "Science") return "Science";
+  if (subName === "Social Studies") return "Social Studies";
+  if (subName === "Art & Craft") return "Art & Craft";
+  return "Reading";
 }
 
-// FLYWHEEL JUMP: Open Generator preloaded with topic
 function openGeneratorWithTopic(subjectName, topicItem) {
   switchView("generator");
 
   var subKey = subjectName.toLowerCase();
+  if (subKey === "social studies") subKey = "social";
+  if (subKey === "art & craft") subKey = "art";
   if (subKey === "nazra") subKey = "urdu";
+
   var subjectSelect = document.getElementById("wsSubject");
   if (subjectSelect) subjectSelect.value = subKey;
 
@@ -681,7 +712,7 @@ function openGeneratorWithTopic(subjectName, topicItem) {
 
 
 // ========================================================
-// VIEW 3: PRINTABLE GENERATOR (v2 + A4 Engine)
+// VIEW 3: PRINTABLE GENERATOR (v3.2: 7 Worksheet Types)
 // ========================================================
 var WORKSHEET_PRESETS = {
   english: {
@@ -716,8 +747,7 @@ var WORKSHEET_PRESETS = {
       { id: "en_circle_letters", name: "Find & Circle Letter", questions: [
         { target: "B", options: ["D", "B", "P", "R"] },
         { target: "M", options: ["W", "N", "M", "H"] },
-        { target: "S", options: ["C", "S", "Z", "O"] },
-        { target: "A", options: ["V", "A", "H", "K"] }
+        { target: "S", options: ["C", "S", "Z", "O"] }
       ]}
     ],
     fill: [
@@ -729,9 +759,11 @@ var WORKSHEET_PRESETS = {
       { id: "en_fill_cvc", name: "CVC Missing Vowels", bank: ["A", "E", "I", "O", "U"], rows: [
         ["C", "", "T (Cat)"],
         ["S", "", "N (Sun)"],
-        ["B", "", "T (Bat)"],
-        ["P", "", "N (Pen)"]
+        ["B", "", "T (Bat)"]
       ]}
+    ],
+    map: [
+      { id: "en_map_directions", name: "Cardinal Directions (N, S, E, W)", kind: "compass" }
     ]
   },
 
@@ -745,15 +777,13 @@ var WORKSHEET_PRESETS = {
       { id: "ur_trace_6", name: "حروفِ تہجی: ل م ن و ہ ی", letters: ["ل", "م", "ن", "و", "ہ", "ی"], type: "urdu" }
     ],
     matching: [
-      { id: "ur_match_huroof", name: "حروف کو حروف سے ملائیں", left: ["ا", "ب", "ج", "د"], right: ["ب", "ا", "د", "ج"] },
-      { id: "ur_match_alif_bey", name: "حروف کی پہچان (ت ث ر ز)", left: ["ت", "ث", "ر", "ز"], right: ["ث", "ت", "ز", "ر"] }
+      { id: "ur_match_huroof", name: "حروف کو حروف سے ملائیں", left: ["ا", "ب", "ج", "د"], right: ["ب", "ا", "د", "ج"] }
     ],
     counting: [
       { id: "ur_count_1to5", name: "گنتی: ۱ سے ۵ تک", items: [
         { icon: "⭐", count: 2, label: "ستارے" },
         { icon: "🍎", count: 4, label: "سیب" },
-        { icon: "🌸", count: 3, label: "پھول" },
-        { icon: "🎈", count: 5, label: "غبارے" }
+        { icon: "🌸", count: 3, label: "پھول" }
       ]}
     ],
     coloring: [
@@ -763,17 +793,17 @@ var WORKSHEET_PRESETS = {
     circle: [
       { id: "ur_circle_huroof", name: "صحیح حرف پر دائرہ لگائیں", questions: [
         { target: "ب", options: ["ت", "پ", "ب", "ث"] },
-        { target: "ج", options: ["چ", "ح", "ج", "خ"] },
-        { target: "د", options: ["ڈ", "د", "ذ", "ر"] },
-        { target: "س", options: ["ش", "ص", "س", "ض"] }
+        { target: "ج", options: ["چ", "ح", "ج", "خ"] }
       ]}
     ],
     fill: [
-      { id: "ur_fill_1", name: "خالی جگہ پُر کریں (ا سے خ)", bank: ["ب", "ٹ", "چ", "خ"], rows: [
+      { id: "ur_fill_1", name: "خالی جگہ پُر کریں (ا سے خ)", bank: ["ب", "ٹ", "چ"], rows: [
         ["ا", "", "پ", "ت"],
-        ["", "ث", "ج", ""],
-        ["ح", ""]
+        ["", "ث", "ج", ""]
       ]}
+    ],
+    map: [
+      { id: "ur_map_directions", name: "سمتیں (شمال، جنوب، مشرق، مغرب)", kind: "compass_ur" }
     ]
   },
 
@@ -786,18 +816,16 @@ var WORKSHEET_PRESETS = {
       { id: "math_count_1to5", name: "Count Objects (1 to 5)", items: [
         { icon: "🚗", count: 2, label: "Cars" },
         { icon: "⭐", count: 4, label: "Stars" },
-        { icon: "🐱", count: 1, label: "Cat" },
-        { icon: "🎈", count: 5, label: "Balloons" }
+        { icon: "🐱", count: 1, label: "Cat" }
       ]},
       { id: "math_count_6to10", name: "Count Objects (6 to 10)", items: [
         { icon: "✏️", count: 6, label: "Pencils" },
         { icon: "🐟", count: 8, label: "Fishes" },
-        { icon: "🌸", count: 7, label: "Flowers" },
         { icon: "🍬", count: 10, label: "Candies" }
       ]}
     ],
     matching: [
-      { id: "math_match_count", name: "Count to Numbers", left: ["⭐⭐", "⭐⭐⭐⭐", "⭐", "⭐⭐⭐"], right: ["4", "1", "3", "2"] }
+      { id: "math_match_count", name: "Count to Numbers", left: ["⭐⭐", "⭐⭐⭐⭐", "⭐"], right: ["4", "1", "2"] }
     ],
     coloring: [
       { id: "math_color_star", name: "Number One Star", word: "ONE 1", svg: "star", prompt: "Color the big number 1 star!" }
@@ -805,9 +833,7 @@ var WORKSHEET_PRESETS = {
     circle: [
       { id: "math_circle_num", name: "Circle the Target Number", questions: [
         { target: "3", options: ["1", "3", "5", "8"] },
-        { target: "7", options: ["4", "2", "7", "9"] },
-        { target: "5", options: ["2", "5", "6", "3"] },
-        { target: "9", options: ["6", "9", "8", "0"] }
+        { target: "7", options: ["4", "2", "7", "9"] }
       ]}
     ],
     fill: [
@@ -815,6 +841,9 @@ var WORKSHEET_PRESETS = {
         ["1", "2", "", "4", "5"],
         ["", "7", "8", "", "10"]
       ]}
+    ],
+    map: [
+      { id: "math_map_grid", name: "Coordinate Compass Math", kind: "compass" }
     ]
   },
 
@@ -824,13 +853,12 @@ var WORKSHEET_PRESETS = {
       { id: "isl_trace_bismillah", name: "بِسْمِ اللَّهِ", letters: ["بِسْمِ اللَّهِ"], type: "urdu" }
     ],
     matching: [
-      { id: "isl_match_basics", name: "اسلامی معلومات ملائیں", left: ["قرآن", "کعبہ", "مسجد", "رمضان"], right: ["مکہ مکرمہ", "اللہ کی کتاب", "روزہ", "نماز کی جگہ"] }
+      { id: "isl_match_basics", name: "اسلامی معلومات ملائیں", left: ["قرآن", "کعبہ", "مسجد"], right: ["مکہ مکرمہ", "اللہ کی کتاب", "نماز کی جگہ"] }
     ],
     counting: [
       { id: "isl_count_pillars", name: "ارکانِ اسلام (Pillars of Islam)", items: [
         { icon: "🕌", count: 5, label: "روزانہ کی نمازیں (5)" },
-        { icon: "🕋", count: 1, label: "ایک کعبہ (1)" },
-        { icon: "🌙", count: 2, label: "سال کی عیدیں (2)" }
+        { icon: "🕋", count: 1, label: "ایک کعبہ (1)" }
       ]}
     ],
     coloring: [
@@ -839,14 +867,130 @@ var WORKSHEET_PRESETS = {
     ],
     circle: [
       { id: "isl_circle_basics", name: "صحیح اسلامی جواب پر دائرہ لگائیں", questions: [
-        { target: "اللہ کتنے ہیں؟", options: ["1", "2", "3"] },
-        { target: "ہمارے نبی کا نام؟", options: ["محمد ﷺ", "علی", "احمد"] }
+        { target: "اللہ کتنے ہیں؟", options: ["1", "2", "3"] }
       ]}
     ],
     fill: [
       { id: "isl_fill_kalima", name: "پہلا کلمہ", bank: ["اللہ", "رسولُ"], rows: [
         ["لَا إِلٰهَ إِلَّا", "", "مُحَمَّدٌ", "", "اللَّهِ"]
       ]}
+    ],
+    map: [
+      { id: "isl_map_makkah", name: "قبلہ رخ سمت (Qibla Direction)", kind: "compass" }
+    ]
+  },
+
+  science: {
+    tracing: [
+      { id: "sci_trace_words", name: "Science Terms Tracing", letters: ["SUN", "MOON", "RAIN", "TREE"], type: "letters" }
+    ],
+    matching: [
+      { id: "sci_body_parts", name: "Body Parts to Senses", left: ["👀 Eyes", "👃 Nose", "👅 Tongue", "👂 Ears"], right: ["Smell", "See", "Hear", "Taste"] },
+      { id: "sci_plant_parts", name: "Plant Parts Matching", left: ["Root", "Stem", "Leaf", "Flower"], right: ["Blossom", "Underground", "Green", "Trunk"] },
+      { id: "sci_senses", name: "Five Senses & Daily Objects", left: ["👀 Eyes", "👃 Nose", "🖐️ Hands"], right: ["Perfume", "Picture", "Soft Pillow"] },
+      { id: "sci_body_organs", name: "Internal Organs", left: ["❤️ Heart", "🧠 Brain", "🫁 Lungs"], right: ["Thinking", "Breathing", "Pumping Blood"] }
+    ],
+    counting: [
+      { id: "sci_count_nature", name: "Nature Counting", items: [
+        { icon: "🍃", count: 4, label: "Leaves" },
+        { icon: "☀️", count: 1, label: "Sun" },
+        { icon: "🌧️", count: 3, label: "Raindrops" }
+      ]}
+    ],
+    coloring: [
+      { id: "sci_color_flower", name: "Parts of a Flower", word: "FLOWER", svg: "flower", prompt: "Color petal, stem and leaf with natural colors!" },
+      { id: "sci_color_moon", name: "Night Sky Crescent", word: "NIGHT SKY", svg: "crescent", prompt: "Color sky deep blue and moon yellow!" }
+    ],
+    circle: [
+      { id: "sci_wild_pets", name: "Circle the Wild Animal", questions: [
+        { target: "Wild Animal", options: ["🐱 Cat", "🦁 Lion", "🐑 Sheep"] },
+        { target: "Living Thing", options: ["🌱 Plant", "🪨 Stone", "🚗 Car"] }
+      ]},
+      { id: "sci_float_sink", name: "Circle the Object that Floats", questions: [
+        { target: "Floats on Water", options: ["🪙 Coin", "🍃 Leaf", "🔑 Key"] }
+      ]},
+      { id: "sci_solar_system", name: "Circle the Planet We Live On", questions: [
+        { target: "Our Planet", options: ["Mars", "Earth", "Jupiter"] }
+      ]}
+    ],
+    fill: [
+      { id: "sci_fill_day_night", name: "Day & Night Words", bank: ["SUN", "MOON", "STARS"], rows: [
+        ["Day brings the bright", ""],
+        ["Night brings the glowing", ""],
+        ["Twinkling in sky are", ""]
+      ]}
+    ],
+    map: [
+      { id: "sci_solar_map", name: "Solar System Orbit", kind: "compass" }
+    ]
+  },
+
+  social: {
+    tracing: [
+      { id: "soc_trace_pak", name: "Pakistan & Lahore Tracing", letters: ["PAKISTAN", "LAHORE"], type: "letters" }
+    ],
+    matching: [
+      { id: "soc_family", name: "My Family Words", left: ["Ammi", "Abu", "Bhai", "Behn"], right: ["Brother", "Mother", "Sister", "Father"] },
+      { id: "soc_helpers", name: "Community Helpers", left: ["👨‍⚕️ Doctor", "👩‍🏫 Teacher", "👮 Police"], right: ["School", "Safety", "Hospital"] }
+    ],
+    counting: [
+      { id: "soc_count_houses", name: "Neighborhood Counting", items: [
+        { icon: "🏠", count: 3, label: "Houses" },
+        { icon: "🚗", count: 2, label: "Cars" },
+        { icon: "🌳", count: 5, label: "Trees" }
+      ]}
+    ],
+    coloring: [
+      { id: "soc_color_flag", name: "Pakistan National Flag", word: "PAKISTAN", svg: "crescent", prompt: "Color the crescent & star white, and the flag dark green!" }
+    ],
+    circle: [
+      { id: "soc_school", name: "Good Habits in School", questions: [
+        { target: "Good Habit", options: ["Sharing Toys", "Throwing Litter", "Yelling"] }
+      ]}
+    ],
+    fill: [
+      { id: "soc_fill_pak", name: "National Symbols of Pakistan", bank: ["Jasmine", "Urdu", "Islamabad"], rows: [
+        ["National Flower is", ""],
+        ["National Language is", ""],
+        ["Federal Capital is", ""]
+      ]}
+    ],
+    map: [
+      { id: "map_pak_provinces", name: "Provinces of Pakistan (Map Labeling)", kind: "pak_provinces" },
+      { id: "map_pak_flag", name: "Pakistan Flag Diagram & Labels", kind: "pak_flag" },
+      { id: "map_compass", name: "Compass Rose (N, S, E, W)", kind: "compass" }
+    ]
+  },
+
+  art: {
+    tracing: [
+      { id: "art_trace_patterns", name: "Pattern Lines & Shapes", letters: ["◯", "△", "▢", "⭐"], type: "math" }
+    ],
+    matching: [
+      { id: "art_match_colors", name: "Colors to Real Objects", left: ["🔴 Red", "🟡 Yellow", "🟢 Green"], right: ["Leaf", "Apple", "Sun"] }
+    ],
+    counting: [
+      { id: "art_count_crayons", name: "Counting Colors", items: [
+        { icon: "🖍️", count: 5, label: "Crayons" },
+        { icon: "🎨", count: 2, label: "Palettes" }
+      ]}
+    ],
+    coloring: [
+      { id: "art_color_flower", name: "Rainbow Flower Art", word: "ART & FUN", svg: "flower", prompt: "Color every petal with a different shade!" },
+      { id: "art_color_car", name: "Sports Car Design", word: "MY CAR", svg: "car", prompt: "Design your dream sports car!" }
+    ],
+    circle: [
+      { id: "art_circle_shape", name: "Circle the Round Shape", questions: [
+        { target: "Round Shape", options: ["▢ Square", "◯ Circle", "△ Triangle"] }
+      ]}
+    ],
+    fill: [
+      { id: "art_fill_patterns", name: "Color Pattern Sequence", bank: ["RED", "BLUE"], rows: [
+        ["RED", "BLUE", "RED", ""]
+      ]}
+    ],
+    map: [
+      { id: "art_map_art", name: "Coloring Pakistan's Map", kind: "pak_provinces" }
     ]
   },
 
@@ -855,31 +999,29 @@ var WORKSHEET_PRESETS = {
       { id: "act_trace_shapes", name: "Shapes Tracing (Circle, Square, Triangle)", letters: ["◯", "▢", "△", "⭐"], type: "math" }
     ],
     matching: [
-      { id: "act_match_animals", name: "Animals to Sounds", left: ["🐱 Cat", "🐶 Dog", "🐮 Cow", "🦁 Lion"], right: ["Moo", "Meow", "Roar", "Woof"] }
+      { id: "act_match_animals", name: "Animals to Sounds", left: ["🐱 Cat", "🐶 Dog", "🐮 Cow"], right: ["Moo", "Meow", "Woof"] }
     ],
     counting: [
       { id: "act_count_party", name: "Fun Party Counting", items: [
         { icon: "🎈", count: 4, label: "Balloons" },
-        { icon: "🍰", count: 3, label: "Cakes" },
-        { icon: "🎁", count: 5, label: "Gifts" },
-        { icon: "🍭", count: 2, label: "Lollipops" }
+        { icon: "🍰", count: 3, label: "Cakes" }
       ]}
     ],
     coloring: [
-      { id: "act_color_flower", name: "Beautiful Flower", word: "FLOWER", svg: "flower", prompt: "Color petals with rainbow colors!" },
-      { id: "act_color_car", name: "Fast Sports Car", word: "CAR", svg: "car", prompt: "Make the car super shiny!" }
+      { id: "act_color_flower", name: "Beautiful Flower", word: "FLOWER", svg: "flower", prompt: "Color petals with rainbow colors!" }
     ],
     circle: [
       { id: "act_circle_odd", name: "Odd One Out", questions: [
-        { target: "Different One", options: ["🍎", "🍎", "⭐", "🍎"] },
-        { target: "Different One", options: ["🐱", "🐶", "🐱", "🐱"] }
+        { target: "Different One", options: ["🍎", "🍎", "⭐", "🍎"] }
       ]}
     ],
     fill: [
-      { id: "act_fill_patterns", name: "Shape Patterns", bank: ["⭐", "◯", "▢"], rows: [
-        ["⭐", "◯", "⭐", ""],
-        ["▢", "▢", "△", ""]
+      { id: "act_fill_patterns", name: "Shape Patterns", bank: ["⭐", "◯"], rows: [
+        ["⭐", "◯", "⭐", ""]
       ]}
+    ],
+    map: [
+      { id: "act_map_compass", name: "Treasure Map Compass", kind: "compass" }
     ]
   }
 };
@@ -938,7 +1080,6 @@ function renderWorksheetPreview() {
   var wsDate = document.getElementById("wsDate").value || friendlyDate(new Date());
 
   var displayBox = document.getElementById("worksheetDisplayArea");
-  
   var list = (WORKSHEET_PRESETS[sub] && WORKSHEET_PRESETS[sub][typ]) || [];
   var preset = list.find(function (p) { return p.id === presetId; }) || list[0];
 
@@ -975,6 +1116,10 @@ function buildWorksheetHTML(sub, typ, preset, kidName, wsDate) {
     fill: {
       en: "Use the word bank to fill in the missing blanks.",
       ur: "اوپر دیے گئے خانے کی مدد سے خالی جگہ پُر کریں۔"
+    },
+    map: {
+      en: "Look at the diagram, color neatly and label each province/direction in the blank box.",
+      ur: "نقشہ دیکھیں، رنگ بھریں اور خالی خانے میں صوبے کا نام لکھیں۔"
     }
   };
 
@@ -986,7 +1131,7 @@ function buildWorksheetHTML(sub, typ, preset, kidName, wsDate) {
   out += '  <div class="ws-header">';
   out += '    <div class="ws-brand-row">';
   out += '      <span>🌱 SeekhoTrack Homeschool</span>';
-  out += '      <span>Level: Ages 3–6</span>';
+  out += '      <span>Ages 3–7 • Bilingual</span>';
   out += '    </div>';
   out += '    <div class="ws-title-row">';
   out += '      <div class="ws-title">' + title + '</div>';
@@ -1022,6 +1167,8 @@ function buildWorksheetHTML(sub, typ, preset, kidName, wsDate) {
     out += buildCircleBody(preset);
   } else if (typ === "fill") {
     out += buildFillBody(preset);
+  } else if (typ === "map") {
+    out += buildMapLabelingBody(preset);
   }
 
   out += '  </div>';
@@ -1075,7 +1222,6 @@ function buildMatchingBody(preset) {
   var right = (preset && preset.right) || ["c", "a", "d", "b"];
 
   var html = '<div class="matching-container">';
-  
   html += '<div class="matching-column">';
   left.forEach(function (item) {
     html += '<div class="match-item left">' + item + '</div>';
@@ -1087,7 +1233,6 @@ function buildMatchingBody(preset) {
     html += '<div class="match-item right">' + item + '</div>';
   });
   html += '</div>';
-
   html += '</div>';
   return html;
 }
@@ -1096,7 +1241,6 @@ function buildColoringBody(preset) {
   var svgKey = (preset && preset.svg) || "apple";
   var svgCode = COLORING_SVGS[svgKey] || COLORING_SVGS.apple;
   var word = (preset && preset.word) || "COLOR";
-
   var isUrdu = word.match(/[\u0600-\u06FF]/);
 
   var html = '<div class="coloring-container">';
@@ -1137,7 +1281,7 @@ function buildFillBody(preset) {
   html += '<div class="fill-wordbank">';
   html += '  <span class="wordbank-label">📦 Word Bank:</span> ';
   bank.forEach(function (b) {
-    html += '  <strong style="margin: 0 8px; font-size: 1.2rem;">' + b + '</strong>';
+    html += '  <strong style="margin: 0 8px; font-size: 1.15rem;">' + b + '</strong>';
   });
   html += '</div>';
 
@@ -1158,9 +1302,81 @@ function buildFillBody(preset) {
   return html;
 }
 
+// TYPE 7: MAP LABELING BODY (PRD v3.2)
+function buildMapLabelingBody(preset) {
+  var kind = (preset && preset.kind) || "pak_provinces";
+  var html = '<div class="map-worksheet-box">';
+
+  if (kind === "pak_flag") {
+    html += '<div class="map-svg-container">';
+    html += '  <svg viewBox="0 0 240 160" width="220" height="150" style="border: 2px solid #000; border-radius: 6px;">';
+    html += '    <rect x="0" y="0" width="60" height="160" fill="#fff" stroke="#000" stroke-width="2"/>';
+    html += '    <rect x="60" y="0" width="180" height="160" fill="#fff" stroke="#000" stroke-width="2"/>';
+    html += '    <path d="M165 50 C140 50 125 70 125 90 C125 110 140 130 165 130 C150 120 140 105 140 90 C140 75 150 60 165 50 Z" fill="#fff" stroke="#000" stroke-width="3"/>';
+    html += '    <polygon points="175,70 180,82 192,82 182,90 186,102 175,94 164,102 168,90 158,82 170,82" fill="#fff" stroke="#000" stroke-width="2"/>';
+    html += '  </svg>';
+    html += '</div>';
+    html += '<div class="fill-wordbank"><span class="wordbank-label">📦 Word Bank:</span> <strong>White Stripe (سفید پٹی)</strong> • <strong>Green Field (سبز حصہ)</strong> • <strong>Crescent (ہلال)</strong> • <strong>Star (ستارہ)</strong></div>';
+    html += '<div class="map-labels-grid">';
+    html += '  <div class="map-label-target-card"><span class="map-target-title">1. Left vertical band:</span><div class="map-blank-input-box"></div></div>';
+    html += '  <div class="map-label-target-card"><span class="map-target-title">2. Main background:</span><div class="map-blank-input-box"></div></div>';
+    html += '  <div class="map-label-target-card"><span class="map-target-title">3. Moon symbol:</span><div class="map-blank-input-box"></div></div>';
+    html += '  <div class="map-label-target-card"><span class="map-target-title">4. Five-pointed:</span><div class="map-blank-input-box"></div></div>';
+    html += '</div>';
+  } else if (kind === "compass" || kind === "compass_ur") {
+    html += '<div class="map-svg-container">';
+    html += '  <svg viewBox="0 0 200 200" width="180" height="180">';
+    html += '    <circle cx="100" cy="100" r="80" fill="#fff" stroke="#000" stroke-width="4"/>';
+    html += '    <line x1="100" y1="20" x2="100" y2="180" stroke="#000" stroke-width="3"/>';
+    html += '    <line x1="20" y1="100" x2="180" y2="100" stroke="#000" stroke-width="3"/>';
+    html += '    <polygon points="100,25 108,80 100,70 92,80" fill="#000"/>';
+    html += '    <text x="94" y="20" font-weight="bold" font-size="16">N</text>';
+    html += '    <text x="94" y="196" font-weight="bold" font-size="16">S</text>';
+    html += '    <text x="184" y="105" font-weight="bold" font-size="16">E</text>';
+    html += '    <text x="6" y="105" font-weight="bold" font-size="16">W</text>';
+    html += '  </svg>';
+    html += '</div>';
+    var bankStr = kind === "compass_ur" ? "شمال (North) • جنوب (South) • مشرق (East) • مغرب (West)" : "North (شمال) • South (جنوب) • East (مشرق) • West (مغرب)";
+    html += '<div class="fill-wordbank"><span class="wordbank-label">📦 Word Bank:</span> <strong>' + bankStr + '</strong></div>';
+    html += '<div class="map-labels-grid">';
+    html += '  <div class="map-label-target-card"><span class="map-target-title">Top Direction (N):</span><div class="map-blank-input-box"></div></div>';
+    html += '  <div class="map-label-target-card"><span class="map-target-title">Bottom Direction (S):</span><div class="map-blank-input-box"></div></div>';
+    html += '  <div class="map-label-target-card"><span class="map-target-title">Right Direction (E):</span><div class="map-blank-input-box"></div></div>';
+    html += '  <div class="map-label-target-card"><span class="map-target-title">Left Direction (W):</span><div class="map-blank-input-box"></div></div>';
+    html += '</div>';
+  } else {
+    // Pakistan Provinces Map Outline
+    html += '<div class="map-svg-container">';
+    html += '  <svg viewBox="0 0 280 220" width="260" height="200" style="border: 2px solid #000; border-radius: 8px; background: #FAF9F6;">';
+    html += '    <path d="M70 140 L120 130 L100 190 L40 180 Z" fill="#fff" stroke="#000" stroke-width="2" title="Balochistan"/>';
+    html += '    <path d="M120 130 L170 120 L150 185 L100 190 Z" fill="#fff" stroke="#000" stroke-width="2" title="Sindh"/>';
+    html += '    <path d="M120 70 L190 70 L170 120 L120 130 Z" fill="#fff" stroke="#000" stroke-width="2" title="Punjab"/>';
+    html += '    <path d="M75 60 L120 70 L110 120 L65 100 Z" fill="#fff" stroke="#000" stroke-width="2" title="KPK"/>';
+    html += '    <path d="M140 25 L210 30 L190 70 L125 65 Z" fill="#fff" stroke="#000" stroke-width="2" title="GB & Kashmir"/>';
+    html += '    <text x="60" y="160" font-size="12" font-weight="bold">1</text>';
+    html += '    <text x="135" y="160" font-size="12" font-weight="bold">2</text>';
+    html += '    <text x="150" y="100" font-size="12" font-weight="bold">3</text>';
+    html += '    <text x="85" y="85" font-size="12" font-weight="bold">4</text>';
+    html += '    <text x="165" y="45" font-size="12" font-weight="bold">5</text>';
+    html += '  </svg>';
+    html += '</div>';
+    html += '<div class="fill-wordbank"><span class="wordbank-label">📦 Word Bank:</span> <strong>Punjab (پنجاب)</strong> • <strong>Sindh (سندھ)</strong> • <strong>KPK (خیبر پختونخوا)</strong> • <strong>Balochistan (بلوچستان)</strong> • <strong>Gilgit-Baltistan (گلگت بلتستان)</strong></div>';
+    html += '<div class="map-labels-grid">';
+    html += '  <div class="map-label-target-card"><span class="map-target-title">1. Largest area (South-West):</span><div class="map-blank-input-box"></div></div>';
+    html += '  <div class="map-label-target-card"><span class="map-target-title">2. Indus Delta (South-East):</span><div class="map-blank-input-box"></div></div>';
+    html += '  <div class="map-label-target-card"><span class="map-target-title">3. Land of 5 Rivers (Central):</span><div class="map-blank-input-box"></div></div>';
+    html += '  <div class="map-label-target-card"><span class="map-target-title">4. Mountain Valley (North-West):</span><div class="map-blank-input-box"></div></div>';
+    html += '  <div class="map-label-target-card"><span class="map-target-title">5. High Peaks (North):</span><div class="map-blank-input-box"></div></div>';
+    html += '</div>';
+  }
+
+  html += '</div>';
+  return html;
+}
+
 
 // ========================================================
-// VIEW 4: WEEKLY REPORT
+// VIEW 4: WEEKLY REPORT (v3.2: 9 Subjects)
 // ========================================================
 function renderWeeklyReport() {
   var kid = activeKid();
@@ -1275,7 +1491,6 @@ function executePrint(contentHtml) {
   window.print();
 }
 
-// WhatsApp Share Win Generator
 function shareWinOnWhatsApp() {
   var kid = activeKid();
   if (!kid) return;
@@ -1297,7 +1512,90 @@ function shareReportOnWhatsApp() {
 
 
 // ========================================================
-// JSON BACKUP & RESTORE (Data Safety PRD §12 & §17)
+// ACCESSIBILITY: BIG-TEXT & VOICE NOTES (PRD §23)
+// ========================================================
+function initAccessibility() {
+  // Check Big-Text Mode
+  var isBig = localStorage.getItem("seekho_big_text") === "true";
+  if (isBig) {
+    document.body.classList.add("big-text-mode");
+  }
+
+  document.getElementById("toggleBigTextBtn").onclick = function () {
+    document.body.classList.toggle("big-text-mode");
+    var active = document.body.classList.contains("big-text-mode");
+    localStorage.setItem("seekho_big_text", active ? "true" : "false");
+  };
+
+  // Voice Notes via SpeechRecognition
+  var voiceBtn = document.getElementById("voiceNoteBtn");
+  var statusText = document.getElementById("voiceStatus");
+  var noteInput = document.getElementById("dailyNote");
+
+  var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    voiceBtn.title = "Voice recognition browser mein supported nahi hai";
+    voiceBtn.onclick = function () {
+      alert("Aapka browser Speech Recognition ko direct support nahi karta. Google Chrome ya Android Chrome use karein.");
+    };
+    return;
+  }
+
+  var recognition = new SpeechRecognition();
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.lang = "ur-PK";
+
+  var isListening = false;
+
+  voiceBtn.onclick = function () {
+    if (!isListening) {
+      try {
+        recognition.start();
+        isListening = true;
+        voiceBtn.classList.add("recording");
+        voiceBtn.innerHTML = "⏹️ Stop Mic";
+        statusText.classList.remove("hidden");
+      } catch (err) {
+        console.warn(err);
+      }
+    } else {
+      recognition.stop();
+    }
+  };
+
+  recognition.onresult = function (event) {
+    var transcript = event.results[0][0].transcript;
+    if (transcript) {
+      var current = noteInput.value.trim();
+      noteInput.value = current ? current + " " + transcript : transcript;
+      var kid = activeKid();
+      if (kid) {
+        saveNote(kid.id, dateStr(new Date()), noteInput.value);
+        document.getElementById("noteSaveStatus").textContent = "Saved ✓";
+      }
+    }
+  };
+
+  recognition.onend = function () {
+    isListening = false;
+    voiceBtn.classList.remove("recording");
+    voiceBtn.innerHTML = "🎙️ Voice Note";
+    statusText.classList.add("hidden");
+  };
+
+  recognition.onerror = function (event) {
+    console.warn("Speech recognition error", event.error);
+    isListening = false;
+    voiceBtn.classList.remove("recording");
+    voiceBtn.innerHTML = "🎙️ Voice Note";
+    statusText.classList.add("hidden");
+  };
+}
+
+
+// ========================================================
+// JSON BACKUP & RESTORE & WIPE (Data Safety PRD §12 & §18)
 // ========================================================
 function exportJsonBackup() {
   var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
@@ -1329,6 +1627,27 @@ function importJsonBackup(file) {
     }
   };
   reader.readAsText(file);
+}
+
+function wipeAllData() {
+  if (confirm("⚠️ Kya aap waqayi saara data delete karna chahte hain? Yeh wapis nahi aayega.")) {
+    localStorage.removeItem(STORE_KEY);
+    state = {
+      kids: [
+        { id: makeId(), name: "Ahmed", age: 4, ageBand: "4-5" },
+        { id: makeId(), name: "Hafsa", age: 3, ageBand: "3-4" }
+      ],
+      records: {},
+      notes: {},
+      stars: {},
+      taughtTopics: {},
+      activeKidId: null
+    };
+    saveState();
+    alert("Saara data wipe ho gaya aur defaults restore ho gaye.");
+    document.getElementById("backupModal").classList.add("hidden");
+    render();
+  }
 }
 
 
@@ -1413,7 +1732,7 @@ document.getElementById("saveCustomTopicBtn").onclick = function () {
     id: "custom_" + makeId(),
     title: title,
     guide: "Mother's custom added topic",
-    presetId: sub.toLowerCase() === "english" ? "en_trace_cap_ae" : "ur_trace_1",
+    presetId: "en_trace_cap_ae",
     type: "tracing"
   };
 
@@ -1482,20 +1801,56 @@ document.getElementById("printReportBtn").onclick = function () {
 document.getElementById("shareWinBtn").onclick = shareWinOnWhatsApp;
 document.getElementById("shareReportWhatsAppBtn").onclick = shareReportOnWhatsApp;
 
-// 8. Backup Modal Controls
-document.getElementById("backupModalBtn").onclick = function () {
-  document.getElementById("backupModal").classList.remove("hidden");
-};
-document.getElementById("closeBackupModalBtn").onclick = function () {
-  document.getElementById("backupModal").classList.add("hidden");
-};
+// 8. Modals (Premium, Help, Privacy, Backup)
+document.getElementById("premiumModalBtn").onclick = function () { document.getElementById("premiumModal").classList.remove("hidden"); };
+document.getElementById("closePremiumModalBtn").onclick = function () { document.getElementById("premiumModal").classList.add("hidden"); };
+document.getElementById("footerGoPremiumLink").onclick = function () { document.getElementById("premiumModal").classList.remove("hidden"); };
+
+document.getElementById("helpModalBtn").onclick = function () { document.getElementById("helpModal").classList.remove("hidden"); };
+document.getElementById("closeHelpModalBtn").onclick = function () { document.getElementById("helpModal").classList.add("hidden"); };
+document.getElementById("footerHelpLink").onclick = function () { document.getElementById("helpModal").classList.remove("hidden"); };
+
+document.getElementById("footerPrivacyLink").onclick = function () { document.getElementById("privacyModal").classList.remove("hidden"); };
+document.getElementById("closePrivacyModalBtn").onclick = function () { document.getElementById("privacyModal").classList.add("hidden"); };
+document.getElementById("dismissPrivacyModalBtn").onclick = function () { document.getElementById("privacyModal").classList.add("hidden"); };
+
+document.getElementById("backupModalBtn").onclick = function () { document.getElementById("backupModal").classList.remove("hidden"); };
+document.getElementById("closeBackupModalBtn").onclick = function () { document.getElementById("backupModal").classList.add("hidden"); };
+
 document.getElementById("exportJsonBtn").onclick = exportJsonBackup;
 document.getElementById("importJsonFile").onchange = function (e) {
   if (e.target.files && e.target.files[0]) {
     importJsonBackup(e.target.files[0]);
   }
 };
+document.getElementById("wipeAllDataBtn").onclick = wipeAllData;
+
+// WhatsApp Payment Proof Action
+document.getElementById("sendPaymentProofWhatsAppBtn").onclick = function () {
+  var text = "Salam! Maine SeekhoTrack ke liye JazzCash / Easypaisa payment kar di hai. Yeh screenshot hai. Baraye meherbani mera account activate kar dein.";
+  var url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(text);
+  window.open(url, "_blank");
+};
+
+// WhatsApp Support Action
+document.getElementById("contactSupportWhatsAppBtn").onclick = function () {
+  var text = "Salam Sualeha! Mujhe SeekhoTrack ke mutalliq aik sawal poochna hai:";
+  var url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(text);
+  window.open(url, "_blank");
+};
+
+// Onboarding Dismiss
+document.getElementById("dismissOnboardingBtn").onclick = function () {
+  document.getElementById("onboardingBanner").classList.add("hidden");
+  localStorage.setItem("seekho_onboarded", "true");
+};
+
+// Show onboarding banner if first time
+if (localStorage.getItem("seekho_onboarded") !== "true") {
+  document.getElementById("onboardingBanner").classList.remove("hidden");
+}
 
 // ---------- Initial Boot ----------
+initAccessibility();
 updatePresetOptions();
 render();

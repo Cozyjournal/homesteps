@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <!-- Mobile-first viewport with touch target optimization -->
+  <!-- Mobile-first viewport with touch target optimization (>=44px) -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SeekhoTrack — Teach it. Track it. Print it.</title>
   
@@ -28,11 +28,27 @@
             <p class="tagline">Teach it. Track it. Print it. — Sab ek jagah 💛</p>
           </div>
         </div>
-        <button id="backupModalBtn" class="icon-btn" title="Backup & Restore Data">💾</button>
+
+        <!-- Header Action Icons (Accessibility, Help, Premium, Backup) -->
+        <div class="header-actions">
+          <button id="toggleBigTextBtn" class="icon-btn" title="Big Text Mode (Aa+)" aria-label="Toggle Big Text">Aa+</button>
+          <button id="helpModalBtn" class="icon-btn" title="Help & Guide (?)" aria-label="Help">❓</button>
+          <button id="premiumModalBtn" class="icon-btn premium-btn" title="Go Premium" aria-label="Premium">⭐</button>
+          <button id="backupModalBtn" class="icon-btn" title="Backup & Restore Data" aria-label="Backup">💾</button>
+        </div>
       </div>
     </header>
 
-    <!-- Main Navigation Bar (The 3 Flywheel Pillars + Reports) -->
+    <!-- 60-Second Onboarding Welcome Banner (PRD §19) -->
+    <div id="onboardingBanner" class="onboarding-card hidden">
+      <div class="onboarding-content">
+        <h3>👋 Khush Amdeed! Welcome to SeekhoTrack</h3>
+        <p>Bache ki parhai ka hisaab roz sirf <strong>2 minute</strong> mein rakhein. Shuru karne ke liye pehle bache ka naam likhein ya checklist mark karein!</p>
+      </div>
+      <button id="dismissOnboardingBtn" class="btn btn-secondary btn-small">Start Now ✓</button>
+    </div>
+
+    <!-- Main Navigation Bar (Flywheel: Tracker, Syllabus, Generator, Report) -->
     <nav class="mode-nav">
       <button id="navTrackerBtn" class="mode-btn active" type="button">
         <span class="btn-icon">📋</span> Tracker
@@ -76,7 +92,7 @@
     </section>
 
 
-    <!-- ================= VIEW 1: DAILY TRACKER (v1 + v1.x) ================= -->
+    <!-- ================= VIEW 1: DAILY TRACKER (v3.2: 9 Subjects) ================= -->
     <main id="trackerView" class="view-panel active">
 
       <!-- Today's Checklist Card -->
@@ -92,16 +108,16 @@
           </div>
         </div>
 
-        <!-- 7 Subjects Checklist (includes Nazra) -->
+        <!-- 9 Subjects Checklist (Reading, Writing, Math, Urdu, Islamiat, Nazra, Science, Social Studies, Art & Craft) -->
         <div id="checklist" class="checklist"></div>
 
         <!-- Daily Progress Bar -->
         <div class="progress-wrap">
           <div class="progress-bar"><div id="progressFill"></div></div>
-          <p id="progressText">0 of 7 done</p>
+          <p id="progressText">0 of 9 done</p>
         </div>
 
-        <!-- Celebration Banner when 7/7 done + WhatsApp Share Win -->
+        <!-- Celebration Banner when 9/9 done + WhatsApp Share Win -->
         <div id="celebrationBanner" class="celebration-banner hidden">
           <div class="celebration-text">
             🎉 <strong>Masha'Allah Shabaash!</strong> Aaj ka sab target mukammal ho gaya! ⭐
@@ -112,14 +128,20 @@
         </div>
       </section>
 
-      <!-- Daily Notes Card (v1.x improvement) -->
+      <!-- Daily Notes Card with Voice Notes (PRD §23) -->
       <section class="card notes-card">
         <div class="card-header-flex">
-          <h2>📝 Roz Ka Note</h2>
-          <span id="noteSaveStatus" class="save-tag">Saved ✓</span>
+          <div class="notes-title-group">
+            <h2>📝 Roz Ka Note</h2>
+            <span id="noteSaveStatus" class="save-tag">Saved ✓</span>
+          </div>
+          <button id="voiceNoteBtn" class="btn btn-secondary btn-small voice-btn" type="button" title="Speak to write note">
+            🎙️ Voice Note
+          </button>
         </div>
-        <p class="card-subtext">Maa ki roz ki chhoti baat (jaise: <em>"Ahmed ne B likhna seekh liya"</em>):</p>
+        <p class="card-subtext">Maa ki roz ki chhoti baat (jaise: <em>"Ahmed ne Science mein body parts seekh liye"</em>):</p>
         <textarea id="dailyNote" class="daily-note-input" placeholder="Aaj bache ne kya seekha ya kaisa perform kiya..." rows="3"></textarea>
+        <div id="voiceStatus" class="voice-status-text hidden">Listening... Speak now 🎙️</div>
       </section>
 
       <!-- Weekly Overview Card -->
@@ -135,7 +157,7 @@
     </main>
 
 
-    <!-- ================= VIEW 2: SYLLABUS & LESSON PLANNER (v3 CORE PILLAR) ================= -->
+    <!-- ================= VIEW 2: SYLLABUS & LESSON PLANNER (v3.2) ================= -->
     <main id="syllabusView" class="view-panel hidden">
       
       <!-- Planner Header & Age Band Selector -->
@@ -146,7 +168,7 @@
               <span class="badge-tag">Syllabus Engine</span>
               <h2>📚 Guided Weekly Lesson Plan</h2>
             </div>
-            <p class="card-subtext">Agla kya parhana hai? Built-in structured plan jo kabhi maa ko confuse na kare.</p>
+            <p class="card-subtext">Agla kya parhana hai? Built-in structured plan for all 4 age bands.</p>
           </div>
         </div>
 
@@ -154,10 +176,10 @@
           <div class="band-selector-group">
             <label for="currentKidBand">Child Level (Age Band):</label>
             <select id="currentKidBand" class="form-select">
-              <option value="3-4">Age 3–4 (Hafsa level: Alphabet recognition, counting 1-10, duas)</option>
-              <option value="4-5">Age 4–5 (Ahmed level: CVC words, Urdu jor, counting to 50, surahs)</option>
-              <option value="5-6">Age 5–6 (4-5 letter words, addition/subtraction, Kalimas)</option>
-              <option value="6-7">Age 6–7 (Short paragraphs, tables 2-5, Wudu/Namaz, Seerah)</option>
+              <option value="3-4">Age 3–4 (Hafsa: Alphabet, counting 1-10, animals, day/night, scribbling)</option>
+              <option value="4-5">Age 4–5 (Ahmed: CVC words, Urdu jor, counting to 50, plants, community helpers)</option>
+              <option value="5-6">Age 5–6 (4-5 letter words, addition/subtraction, 5 senses, Pakistan flag)</option>
+              <option value="6-7">Age 6–7 (Short paragraphs, tables 2-5, human body, provinces & maps)</option>
             </select>
           </div>
           <button id="toggleCustomTopicBtn" class="btn btn-secondary btn-small" type="button">
@@ -165,7 +187,7 @@
           </button>
         </div>
 
-        <!-- Add Custom Topic Form (Collapsible) -->
+        <!-- Add Custom Topic Form -->
         <form id="addCustomTopicForm" class="custom-topic-box hidden" onsubmit="return false;">
           <h4>Apna Topic Shamil Karein:</h4>
           <div class="grid-2col">
@@ -175,8 +197,11 @@
               <option value="Math">Math</option>
               <option value="Islamiat">Islamiat</option>
               <option value="Nazra">Nazra</option>
+              <option value="Science">Science</option>
+              <option value="Social Studies">Social Studies</option>
+              <option value="Art & Craft">Art & Craft</option>
             </select>
-            <input id="newTopicTitle" type="text" class="form-input" placeholder="Topic ka naam (e.g. Letter S sound)" required>
+            <input id="newTopicTitle" type="text" class="form-input" placeholder="Topic ka naam (e.g. Parts of Plant)" required>
           </div>
           <div class="form-actions-right">
             <button id="saveCustomTopicBtn" class="btn btn-primary btn-small" type="button">Save Topic</button>
@@ -184,7 +209,7 @@
         </form>
       </section>
 
-      <!-- The 5-Day Weekly Planner (Flywheel Hub) -->
+      <!-- 5-Day Weekly Planner (Flywheel Hub) -->
       <section class="card planner-card">
         <div class="card-header-flex">
           <h2>🗓️ 5-Day Weekly Schedule</h2>
@@ -207,7 +232,7 @@
     </main>
 
 
-    <!-- ================= VIEW 3: PRINTABLE GENERATOR (v2 + Flywheel) ================= -->
+    <!-- ================= VIEW 3: PRINTABLE GENERATOR (v3.2: 7 Types including Map Labeling) ================= -->
     <main id="generatorView" class="view-panel hidden">
 
       <!-- Controls Card -->
@@ -220,7 +245,7 @@
 
         <div class="generator-grid">
           
-          <!-- Subject Selector -->
+          <!-- Subject Selector (Includes Science, Social Studies, Art & Craft) -->
           <div class="form-group">
             <label for="wsSubject">1. Mazmoon (Subject):</label>
             <select id="wsSubject" class="form-select">
@@ -228,20 +253,24 @@
               <option value="urdu">🇵🇰 Urdu (اردو)</option>
               <option value="math">🔢 Math / Counting</option>
               <option value="islamiat">🌙 Islamiat (اسلامیات)</option>
-              <option value="activity">🎨 Fun & Activity</option>
+              <option value="science">🔬 Science</option>
+              <option value="social">🌍 Social Studies</option>
+              <option value="art">🎨 Art & Craft</option>
+              <option value="activity">🎈 Fun & Activity</option>
             </select>
           </div>
 
-          <!-- Type Selector (6 types from PRD) -->
+          <!-- Type Selector (7 types from PRD v3.2 including Map Labeling) -->
           <div class="form-group">
             <label for="wsType">2. Worksheet Type:</label>
             <select id="wsType" class="form-select">
               <option value="tracing">✍️ Tracing (Letters / Numbers / Huroof)</option>
               <option value="matching">🔀 Matching (Picture se Word / Number)</option>
               <option value="counting">🔢 Counting (Objects gino aur likho)</option>
-              <option value="coloring">🖍️ Coloring (Clean Outlines + Lafz)</option>
-              <option value="circle">⭕ Circle the Correct (Sahi jawab pe gol karo)</option>
-              <option value="fill">📝 Fill in the Blanks (Khali jagah bharo)</option>
+              <option value="coloring">🖍️ Coloring + Label (Clean Outlines)</option>
+              <option value="circle">⭕ Circle the Correct (Sahi jawab pe gol)</option>
+              <option value="fill">📝 Fill in the Blank (Khali jagah bharo)</option>
+              <option value="map">🗺️ Map Labeling (Pakistan Map / Flag / Compass)</option>
             </select>
           </div>
 
@@ -283,7 +312,6 @@
           <span class="preview-hint">🖨️ A4 Paper Size ready</span>
         </div>
         
-        <!-- Screen container displaying paper with realistic styling -->
         <div class="preview-paper-box">
           <div id="worksheetDisplayArea" class="paper-page"></div>
         </div>
@@ -292,7 +320,7 @@
     </main>
 
 
-    <!-- ================= VIEW 4: WEEKLY REPORT (v1.x) ================= -->
+    <!-- ================= VIEW 4: WEEKLY REPORT ================= -->
     <main id="reportView" class="view-panel hidden">
       <section class="card">
         <div class="card-header-flex">
@@ -319,19 +347,147 @@
     <!-- Footer -->
     <footer class="app-footer">
       <p>SeekhoTrack 💛 Teach it. Track it. Print it. — All in one place.</p>
+      <div class="footer-links">
+        <a href="javascript:void(0)" id="footerPrivacyLink">Privacy Policy</a> • 
+        <a href="javascript:void(0)" id="footerHelpLink">Help & FAQ</a> • 
+        <a href="javascript:void(0)" id="footerGoPremiumLink">Go Premium (JazzCash/Easypaisa)</a>
+      </div>
     </footer>
 
   </div>
 
 
-  <!-- ================= BACKUP & DATA MODAL ================= -->
+  <!-- ================= MODAL 1: GO PREMIUM (PRD §10 & §21) ================= -->
+  <div id="premiumModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="premium-badge-title">
+          <span class="star-icon">⭐</span>
+          <h3>SeekhoTrack Premium</h3>
+        </div>
+        <button id="closePremiumModalBtn" class="close-btn">×</button>
+      </div>
+
+      <div class="pricing-card-banner">
+        <span class="pricing-sub">Free Core is Permanent! Tracking, basic worksheets & syllabus are free forever.</span>
+      </div>
+
+      <div class="pricing-options-grid">
+        <div class="price-box selected">
+          <div class="price-title">Yearly Plan (Recommended)</div>
+          <div class="price-amount">Rs 3,000 <span>/ year</span></div>
+          <div class="price-saving">2 months free! Less than 1 workbook/month</div>
+        </div>
+        <div class="price-box">
+          <div class="price-title">Monthly Plan</div>
+          <div class="price-amount">Rs 350 <span>/ month</span></div>
+          <div class="price-saving">Cancel anytime</div>
+        </div>
+      </div>
+
+      <div class="payment-instructions-box">
+        <h4>📱 Asaan Payment (JazzCash / Easypaisa):</h4>
+        <p class="pay-step">1. Raqam in numbers par transfer karein:</p>
+        <div class="account-pill">
+          <strong>JazzCash:</strong> 0300-1234567 (Sualeha / SeekhoTrack)
+        </div>
+        <div class="account-pill">
+          <strong>Easypaisa:</strong> 0345-1234567 (Sualeha / SeekhoTrack)
+        </div>
+        <p class="pay-step">2. Screenshot WhatsApp par bhej kar activate karwayen:</p>
+        <button id="sendPaymentProofWhatsAppBtn" class="btn btn-whatsapp" style="width: 100%;">
+          📱 WhatsApp Par Screenshot Bhejein
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ================= MODAL 2: IN-APP HELP & FAQ (PRD §25) ================= -->
+  <div id="helpModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>❓ Help & Quick Guide</h3>
+        <button id="closeHelpModalBtn" class="close-btn">×</button>
+      </div>
+
+      <div class="help-steps-box">
+        <div class="help-step-item">
+          <span class="step-num">1</span>
+          <div>
+            <strong>📋 Rozana Checklist (2 min):</strong>
+            <p>Roz ka kaam ungli se tap karke mark karein. Sab done hone par bache ko star milega!</p>
+          </div>
+        </div>
+        <div class="help-step-item">
+          <span class="step-num">2</span>
+          <div>
+            <strong>📚 Syllabus (Agla kya parhana hai):</strong>
+            <p>Hafte ka 5-day plan dekhein. Samne button se direct worksheet nikaalein.</p>
+          </div>
+        </div>
+        <div class="help-step-item">
+          <span class="step-num">3</span>
+          <div>
+            <strong>🖨️ Printable Generator:</strong>
+            <p>Worksheet chunein aur Print dabayein. Clean A4 sheet print hogi!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-section">
+        <h4>Aksar Poochhe Jane Wale Sawalat (FAQs):</h4>
+        <details class="faq-item">
+          <summary>Kya ye waqayi bilkul free hai?</summary>
+          <p>Ji haan! Daily tracker, 7 types ki worksheets aur full syllabus hamesha ke liye 100% free hain.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Mera data kahan save hota hai?</summary>
+          <p>Aapka saara data aapke phone/laptop ke browser mein save hota hai. Koi server ya tracker nahi hai.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Worksheet print kaise karein?</summary>
+          <p>Print button dabane se browser ka print window khul jata hai jo page ko saaf A4 par fit karta hai.</p>
+        </details>
+      </div>
+
+      <div class="modal-footer-contact">
+        <p>Koi masla ya mashwara ho? Sualeha se direct rabta karein:</p>
+        <button id="contactSupportWhatsAppBtn" class="btn btn-secondary btn-small">
+          💬 WhatsApp Support
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ================= MODAL 3: PRIVACY POLICY (PRD §18) ================= -->
+  <div id="privacyModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>🔒 Privacy & Child Safety Policy</h3>
+        <button id="closePrivacyModalBtn" class="close-btn">×</button>
+      </div>
+      <div class="privacy-body">
+        <p><strong>1. Data Minimization:</strong> SeekhoTrack sirf bache ka pehla naam/nickname aur roz ka learning record store karta hai. Bachon ki tasweer, pata ya school details kabhi collect nahi hotin.</p>
+        <p><strong>2. 100% Local-First:</strong> Tamam data aapke apne device par rehta hai. Koi third-party tracker ya advertising SDK nahi hai.</p>
+        <p><strong>3. Export & Delete Anytime:</strong> Aap kisi bhi waqt apna saara data JSON file mein download kar sakte hain ya ek click par wipe kar sakte hain.</p>
+      </div>
+      <button id="dismissPrivacyModalBtn" class="btn btn-primary btn-small" style="width: 100%; margin-top: 14px;">
+        Samajh Aaya (Close)
+      </button>
+    </div>
+  </div>
+
+
+  <!-- ================= MODAL 4: BACKUP & DATA RESTORE ================= -->
   <div id="backupModal" class="modal-overlay hidden">
     <div class="modal-card">
       <div class="modal-header">
         <h3>💾 Data Backup & Restore</h3>
         <button id="closeBackupModalBtn" class="close-btn">×</button>
       </div>
-      <p class="modal-text">Aapka saara data aapke computer ke browser mein mahfooz hai. Kisi doosre device par le jane ya safe backup ke liye yahan se export karein:</p>
+      <p class="modal-text">Aapka saara data aapke device par mahfooz hai. Safe backup ya doosre phone par transfer ke liye export karein:</p>
       
       <div class="modal-actions-box">
         <button id="exportJsonBtn" class="btn btn-primary" style="width: 100%;">
@@ -340,6 +496,9 @@
         <div class="restore-group">
           <label for="importJsonFile" class="restore-label">Backup Restore Karein:</label>
           <input id="importJsonFile" type="file" accept=".json" class="file-input">
+        </div>
+        <div class="danger-zone">
+          <button id="wipeAllDataBtn" class="btn-danger-link">⚠️ Saara Data Delete (Reset) Karein</button>
         </div>
       </div>
     </div>
