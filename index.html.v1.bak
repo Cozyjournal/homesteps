@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!-- Makes the page fit nicely on phone screens -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SeekhoTrack</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- App header -->
+  <header>
+    <h1>🌱 SeekhoTrack</h1>
+    <p class="tagline">Daily learning progress</p>
+  </header>
+
+  <!-- Tabs to switch between kids -->
+  <nav id="kidTabs" class="tabs"></nav>
+
+  <!-- Form to add a new kid -->
+  <div class="add-kid">
+    <input id="kidName" type="text" placeholder="Child's name" maxlength="20">
+    <input id="kidAge" type="number" placeholder="Age" min="1" max="18">
+    <button id="addKidBtn">+ Add Kid</button>
+  </div>
+
+  <!-- Today's checklist card -->
+  <section class="card">
+    <h2>Today's Checklist <span id="todayDate" class="date"></span></h2>
+    <div id="checklist"></div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div id="progressFill"></div></div>
+      <p id="progressText">0 of 6 done</p>
+    </div>
+  </section>
+
+  <!-- Weekly overview card -->
+  <section class="card">
+    <h2>This Week</h2>
+    <div id="weekView" class="week"></div>
+    <p class="hint">🟢 all done &nbsp; 🟡 partial &nbsp; ⚪ not started</p>
+  </section>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

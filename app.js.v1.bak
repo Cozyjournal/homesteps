@@ -1,0 +1,201 @@
+// SeekhoTrack app logic — plain JavaScript, no frameworks.
+// All data is saved in the browser's localStorage (acts like our tiny database).
+
+// ---------- Constants ----------
+var SUBJECTS = ["Reading", "Writing", "Math/Counting", "Urdu", "Islamiat", "Activity"];
+var STORE_KEY = "seekhotrack_v1";
+
+// ---------- State ----------
+// state = { kids: [{id, name, age}], records: {"kidId_YYYY-MM-DD": {Subject: true}}, activeKidId }
+var state = loadState();
+
+// First run: pre-add Ahmed and Hafsa so the app is ready to use.
+if (state.kids.length === 0) {
+  state.kids.push({ id: makeId(), name: "Ahmed", age: 4 });
+  state.kids.push({ id: makeId(), name: "Hafsa", age: 3 });
+  state.activeKidId = state.kids[0].id;
+  saveState();
+}
+
+// ---------- Helpers ----------
+function makeId() {
+  return "k" + Date.now().toString(36) + Math.floor(Math.random() * 1000);
+}
+
+// Local date as YYYY-MM-DD (timezone-safe, no UTC shift).
+function dateStr(d) {
+  var y = d.getFullYear();
+  var m = ("0" + (d.getMonth() + 1)).slice(-2);
+  var day = ("0" + d.getDate()).slice(-2);
+  return y + "-" + m + "-" + day;
+}
+
+function loadState() {
+  try {
+    var raw = localStorage.getItem(STORE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) { /* corrupted data -> start fresh */ }
+  return { kids: [], records: {}, activeKidId: null };
+}
+
+function saveState() {
+  localStorage.setItem(STORE_KEY, JSON.stringify(state));
+}
+
+function recordKey(kidId, ds) { return kidId + "_" + ds; }
+
+function getRecord(kidId, ds) {
+  var rec = state.records[recordKey(kidId, ds)];
+  if (!rec) { rec = {}; state.records[recordKey(kidId, ds)] = rec; }
+  return rec;
+}
+
+function activeKid() {
+  for (var i = 0; i < state.kids.length; i++) {
+    if (state.kids[i].id === state.activeKidId) return state.kids[i];
+  }
+  return null;
+}
+
+// ---------- Rendering ----------
+function render() {
+  renderTabs();
+  renderChecklist();
+  renderWeek();
+}
+
+function renderTabs() {
+  var nav = document.getElementById("kidTabs");
+  nav.innerHTML = "";
+  state.kids.forEach(function (kid) {
+    var btn = document.createElement("button");
+    btn.className = "tab" + (kid.id === state.activeKidId ? " active" : "");
+    btn.innerHTML = kid.name + ' <span class="x" title="Remove">×</span>';
+    // Switch kid when tab is clicked...
+    btn.onclick = function () {
+      state.activeKidId = kid.id; saveState(); render();
+    };
+    // ...but the × removes the kid instead.
+    btn.querySelector(".x").onclick = function (ev) {
+      ev.stopPropagation();
+      if (confirm("Remove " + kid.name + "? Their records will be deleted.")) {
+        state.kids = state.kids.filter(function (k) { return k.id !== kid.id; });
+        Object.keys(state.records).forEach(function (k) {
+          if (k.indexOf(kid.id + "_") === 0) delete state.records[k];
+        });
+        if (state.activeKidId === kid.id) {
+          state.activeKidId = state.kids.length ? state.kids[0].id : null;
+        }
+        saveState(); render();
+      }
+    };
+    nav.appendChild(btn);
+  });
+}
+
+function renderChecklist() {
+  var box = document.getElementById("checklist");
+  var kid = activeKid();
+  document.getElementById("todayDate").textContent = new Date().toDateString();
+  box.innerHTML = "";
+
+  if (!kid) {
+    box.innerHTML = '<p class="empty-msg">Add your first kid above to start! 👆</p>';
+    updateProgress(0);
+    return;
+  }
+
+  var today = dateStr(new Date());
+  var rec = getRecord(kid.id, today);
+  var done = 0;
+
+  SUBJECTS.forEach(function (subject) {
+    var isDone = !!rec[subject];
+    if (isDone) done++;
+
+    var label = document.createElement("label");
+    label.className = "check-item" + (isDone ? " done" : "");
+
+    var cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.checked = isDone;
+    cb.onchange = function () {
+      rec[subject] = cb.checked;
+      saveState();
+      renderChecklist();
+      renderWeek();
+    };
+
+    label.appendChild(cb);
+    label.appendChild(document.createTextNode(subject));
+    box.appendChild(label);
+  });
+
+  updateProgress(done);
+}
+
+function updateProgress(done) {
+  var total = SUBJECTS.length;
+  var pct = Math.round((done / total) * 100);
+  document.getElementById("progressFill").style.width = pct + "%";
+  document.getElementById("progressText").textContent = done + " of " + total + " done";
+}
+
+function renderWeek() {
+  var wrap = document.getElementById("weekView");
+  var kid = activeKid();
+  wrap.innerHTML = "";
+  if (!kid) return;
+
+  // Find Monday of the current week.
+  var now = new Date();
+  var monday = new Date(now);
+  var dow = (now.getDay() + 6) % 7; // Monday = 0
+  monday.setDate(now.getDate() - dow);
+
+  var dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  var todayS = dateStr(now);
+
+  for (var i = 0; i < 7; i++) {
+    var d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    var ds = dateStr(d);
+    var rec = state.records[recordKey(kid.id, ds)] || {};
+
+    var done = 0;
+    SUBJECTS.forEach(function (s) { if (rec[s]) done++; });
+
+    var cell = document.createElement("div");
+    cell.className = "day" + (ds === todayS ? " today" : "");
+    if (done === SUBJECTS.length && done > 0) cell.classList.add("full");
+    else if (done > 0) cell.classList.add("partial");
+
+    cell.innerHTML =
+      "<div>" + dayNames[i] + "</div>" +
+      '<div class="dot"></div>' +
+      "<div>" + Math.round((done / SUBJECTS.length) * 100) + "%</div>";
+    wrap.appendChild(cell);
+  }
+}
+
+// ---------- Add-kid form ----------
+document.getElementById("addKidBtn").onclick = function () {
+  var nameInput = document.getElementById("kidName");
+  var ageInput = document.getElementById("kidAge");
+  var name = nameInput.value.trim();
+  var age = parseInt(ageInput.value, 10);
+
+  if (!name) { alert("Please enter the child's name."); return; }
+  if (!age || age < 1) { alert("Please enter a valid age."); return; }
+
+  var kid = { id: makeId(), name: name, age: age };
+  state.kids.push(kid);
+  state.activeKidId = kid.id;
+  nameInput.value = "";
+  ageInput.value = "";
+  saveState();
+  render();
+};
+
+// ---------- Start ----------
+render();

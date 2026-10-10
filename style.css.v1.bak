@@ -1,0 +1,95 @@
+/* SeekhoTrack styles — warm, colorful, mobile-first */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #FFF8F0;          /* warm cream */
+  color: #4A3728;               /* soft brown text */
+  padding: 12px;
+}
+
+.app { max-width: 520px; margin: 0 auto; }
+
+/* ---------- Header ---------- */
+header { text-align: center; padding: 18px 0 10px; }
+header h1 { font-size: 2rem; color: #C96F4A; }   /* terracotta */
+.tagline { color: #A08B7A; font-size: 0.95rem; }
+
+/* ---------- Kid tabs ---------- */
+.tabs { display: flex; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
+.tab {
+  flex: 1; min-width: 120px;
+  padding: 12px; font-size: 1.05rem; font-weight: bold;
+  border: 2px solid #EAD9C6; border-radius: 14px;
+  background: #fff; color: #8A6F5C; cursor: pointer;
+}
+.tab.active {
+  background: #C96F4A; border-color: #C96F4A; color: #fff;
+}
+.tab .x {
+  margin-left: 6px; font-weight: normal; opacity: 0.7;
+}
+
+/* ---------- Add kid form ---------- */
+.add-kid { display: flex; gap: 8px; margin-bottom: 14px; }
+.add-kid input {
+  padding: 10px; font-size: 1rem; border-radius: 10px;
+  border: 2px solid #EAD9C6; background: #fff; width: 100%;
+}
+.add-kid input[type="number"] { max-width: 70px; }
+.add-kid button {
+  padding: 10px 14px; font-size: 1rem; font-weight: bold;
+  border: none; border-radius: 10px; cursor: pointer;
+  background: #7FB069; color: #fff; white-space: nowrap;
+}
+
+/* ---------- Cards ---------- */
+.card {
+  background: #fff; border-radius: 18px;
+  padding: 16px; margin-bottom: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.card h2 { font-size: 1.2rem; margin-bottom: 12px; color: #5C4633; }
+.date { font-size: 0.85rem; color: #A08B7A; font-weight: normal; }
+
+/* ---------- Checklist ---------- */
+.check-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px; margin-bottom: 8px;
+  background: #FDF6EC; border-radius: 12px; cursor: pointer;
+  font-size: 1.1rem;
+}
+.check-item input {
+  width: 28px; height: 28px; accent-color: #7FB069; cursor: pointer;
+}
+.check-item.done { background: #EAF5E4; text-decoration: line-through; color: #7A9A6D; }
+.empty-msg { text-align: center; color: #A08B7A; padding: 20px 0; }
+
+/* ---------- Progress bar ---------- */
+.progress-wrap { margin-top: 12px; }
+.progress-bar {
+  height: 14px; background: #F0E6D8;
+  border-radius: 8px; overflow: hidden;
+}
+#progressFill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, #7FB069, #A8D5A2);
+  border-radius: 8px; transition: width 0.3s;
+}
+#progressText { text-align: center; margin-top: 6px; font-weight: bold; color: #7FB069; }
+
+/* ---------- Weekly view ---------- */
+.week { display: flex; gap: 6px; }
+.day {
+  flex: 1; text-align: center; padding: 8px 2px;
+  background: #FDF6EC; border-radius: 10px; font-size: 0.75rem;
+}
+.day .dot {
+  width: 18px; height: 18px; border-radius: 50%;
+  margin: 6px auto 4px; background: #E0D5C5;   /* gray = not started */
+}
+.day.full .dot { background: #7FB069; }          /* green = all done */
+.day.partial .dot { background: #F4B942; }       /* yellow = partial */
+.day.today { outline: 2px solid #C96F4A; }
+.hint { text-align: center; font-size: 0.8rem; color: #A08B7A; margin-top: 8px; }

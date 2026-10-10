@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!-- Makes the page fit nicely on phone and desktop screens -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SeekhoTrack — Parhao, Track Karo, Print Karo</title>
+  
+  <!-- Google Fonts for lovely child-friendly UI & correct Urdu shaping -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ================= MAIN APP SHELL (NO-PRINT) ================= -->
+  <div class="app no-print">
+
+    <!-- App Header -->
+    <header class="app-header">
+      <div class="logo-row">
+        <span class="logo-icon">🌱</span>
+        <h1>SeekhoTrack</h1>
+      </div>
+      <p class="tagline">Parhao, track karo, print karo — sab ek jagah 💛</p>
+    </header>
+
+    <!-- Main Navigation Bar (v1 Tracker vs v2 Generator vs Report) -->
+    <nav class="mode-nav">
+      <button id="navTrackerBtn" class="mode-btn active" type="button">
+        <span class="btn-icon">📋</span> Roz Ka Tracker
+      </button>
+      <button id="navGeneratorBtn" class="mode-btn" type="button">
+        <span class="btn-icon">🖨️</span> Printable Banao
+      </button>
+      <button id="navReportBtn" class="mode-btn" type="button">
+        <span class="btn-icon">📊</span> Weekly Report
+      </button>
+    </nav>
+
+    <!-- Child Selector & Quick Add Section -->
+    <section class="kid-section">
+      <div class="kid-header-row">
+        <span class="kid-section-title">Bacha chunein:</span>
+        <button id="toggleAddKidBtn" class="toggle-link" type="button">+ Naya Bacha Add Karein</button>
+      </div>
+
+      <!-- Tabs to switch between kids -->
+      <nav id="kidTabs" class="tabs"></nav>
+
+      <!-- Collapsible Form to add a new kid -->
+      <form id="addKidForm" class="add-kid hidden" onsubmit="return false;">
+        <input id="kidName" type="text" placeholder="Bache ka naam (e.g. Ahmed)" maxlength="20" required>
+        <input id="kidAge" type="number" placeholder="Umar (Age)" min="1" max="18" required>
+        <button id="addKidBtn" type="button">+ Add Kid</button>
+      </form>
+
+      <!-- Active Child Info Pill -->
+      <div id="activeChildBadge" class="child-badge"></div>
+    </section>
+
+    <!-- ================= VIEW 1: DAILY TRACKER (v1 + v1.x) ================= -->
+    <main id="trackerView" class="view-panel active">
+
+      <!-- Today's Checklist Card -->
+      <section class="card">
+        <div class="card-header-flex">
+          <div>
+            <h2>Rozana Checklist</h2>
+            <span id="todayDate" class="date"></span>
+          </div>
+          <div id="starRewardBadge" class="reward-pill" title="Aaj ka Star">
+            <span class="star-icon">⭐</span>
+            <span id="starRewardText">Star Reward</span>
+          </div>
+        </div>
+
+        <!-- 7 Subjects Checklist -->
+        <div id="checklist" class="checklist"></div>
+
+        <!-- Daily Progress Bar -->
+        <div class="progress-wrap">
+          <div class="progress-bar"><div id="progressFill"></div></div>
+          <p id="progressText">0 of 7 done</p>
+        </div>
+
+        <!-- Celebration Banner when 7/7 done -->
+        <div id="celebrationBanner" class="celebration-banner hidden">
+          🎉 <strong>Masha'Allah Shabaash!</strong> Aaj ka sab target mukammal ho gaya! Bache ko star reward dein! ⭐
+        </div>
+      </section>
+
+      <!-- Daily Notes Card (v1.x improvement) -->
+      <section class="card notes-card">
+        <div class="card-header-flex">
+          <h2>📝 Roz Ka Note</h2>
+          <span id="noteSaveStatus" class="save-tag">Saved ✓</span>
+        </div>
+        <p class="card-subtext">Maa ki roz ki chhoti baat (jaise: <em>"Ahmed ne B likhna seekh liya"</em> ya <em>"Hafsa ne 5 tak counting ki"</em>):</p>
+        <textarea id="dailyNote" class="daily-note-input" placeholder="Aaj bache ne kya seekha ya kaisa perform kiya..." rows="3"></textarea>
+      </section>
+
+      <!-- Weekly Overview Card -->
+      <section class="card">
+        <div class="card-header-flex">
+          <h2>Hafte Ka Progress (Mon–Sun)</h2>
+          <span id="weekStarsSummary" class="stars-counter">⭐ 0 stars</span>
+        </div>
+        <div id="weekView" class="week"></div>
+        <p class="hint">🟢 all done &nbsp; 🟡 partial &nbsp; ⚪ not started</p>
+      </section>
+
+    </main>
+
+
+    <!-- ================= VIEW 2: PRINTABLE GENERATOR (v2) ================= -->
+    <main id="generatorView" class="view-panel hidden">
+
+      <!-- Controls Card -->
+      <section class="card generator-card">
+        <div class="card-title-badge">
+          <span class="badge-tag">v2 Feature</span>
+          <h2>🖨️ Printable Worksheet Generator</h2>
+        </div>
+        <p class="card-subtext">Topic chunein, live preview dekhein aur ek click par A4 print nikaalein!</p>
+
+        <div class="generator-grid">
+          
+          <!-- Subject Selector -->
+          <div class="form-group">
+            <label for="wsSubject">1. Mazmoon (Subject):</label>
+            <select id="wsSubject" class="form-select">
+              <option value="english">🔤 English</option>
+              <option value="urdu">🇵🇰 Urdu (اردو)</option>
+              <option value="math">🔢 Math / Counting</option>
+              <option value="islamiat">🌙 Islamiat (اسلامیات)</option>
+              <option value="activity">🎨 Fun & Activity</option>
+            </select>
+          </div>
+
+          <!-- Type Selector (6 types from PRD) -->
+          <div class="form-group">
+            <label for="wsType">2. Worksheet Type:</label>
+            <select id="wsType" class="form-select">
+              <option value="tracing">✍️ Tracing (Letters / Numbers / Huroof)</option>
+              <option value="matching">🔀 Matching (Picture se Word / Number)</option>
+              <option value="counting">🔢 Counting (Objects gino aur likho)</option>
+              <option value="coloring">🖍️ Coloring (Clean Outlines + Lafz)</option>
+              <option value="circle">⭕ Circle the Correct (Sahi jawab pe gol karo)</option>
+              <option value="fill">📝 Fill in the Blanks (Khali jagah bharo)</option>
+            </select>
+          </div>
+
+          <!-- Topic / Preset Selector -->
+          <div class="form-group full-width">
+            <label for="wsPreset">3. Topic / Worksheet Level:</label>
+            <select id="wsPreset" class="form-select"></select>
+          </div>
+
+          <!-- Child Name for Header -->
+          <div class="form-group">
+            <label for="wsKidName">Worksheet pe bache ka naam:</label>
+            <input id="wsKidName" type="text" class="form-input" placeholder="Bache ka naam">
+          </div>
+
+          <!-- Worksheet Date -->
+          <div class="form-group">
+            <label for="wsDate">Date:</label>
+            <input id="wsDate" type="text" class="form-input">
+          </div>
+
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="generator-actions">
+          <button id="refreshWsBtn" class="btn btn-secondary" type="button">
+            🔄 Refresh Worksheet
+          </button>
+          <button id="printWsBtn" class="btn btn-primary btn-print" type="button">
+            🖨️ Print Worksheet (A4)
+          </button>
+        </div>
+      </section>
+
+      <!-- Live Preview Container -->
+      <section class="preview-section">
+        <div class="preview-title-row">
+          <h3>Worksheet Live Preview</h3>
+          <span class="preview-hint">🖨️ A4 Paper Size ready</span>
+        </div>
+        
+        <!-- Screen container that displays the preview with nice paper shadows -->
+        <div class="preview-paper-box">
+          <div id="worksheetDisplayArea" class="paper-page">
+            <!-- Dynamic worksheet HTML injected here -->
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+
+    <!-- ================= VIEW 3: WEEKLY REPORT (v1.x) ================= -->
+    <main id="reportView" class="view-panel hidden">
+      <section class="card">
+        <div class="card-header-flex">
+          <div>
+            <h2>📊 Hafte Ki Mukammal Report</h2>
+            <span class="date" id="reportDateRange"></span>
+          </div>
+          <button id="printReportBtn" class="btn btn-secondary btn-small" type="button">
+            🖨️ Print Report
+          </button>
+        </div>
+
+        <div id="reportSummaryBox" class="report-summary-cards"></div>
+
+        <div id="reportDetailsBox" class="report-details-table-wrap"></div>
+
+        <div id="reportNotesBox" class="report-notes-list"></div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>SeekhoTrack 💛 Homeschooling maaon ke liye asaan aur free companion</p>
+    </footer>
+
+  </div>
+
+
+  <!-- ================= PRINT-ONLY CONTAINER (Only visible in Print) ================= -->
+  <div id="printContainer" class="print-only">
+    <!-- Clean A4 content injected right before window.print() -->
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
