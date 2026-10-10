@@ -33,7 +33,7 @@
         <div class="header-actions">
           <button id="toggleBigTextBtn" class="icon-btn" title="Big Text Mode (Aa+)" aria-label="Toggle Big Text">Aa+</button>
           <button id="helpModalBtn" class="icon-btn" title="Help & Guide (?)" aria-label="Help">❓</button>
-          <button id="premiumModalBtn" class="icon-btn premium-btn" title="Go Premium" aria-label="Premium">⭐</button>
+          <button id="premiumModalBtn" class="premium-header-btn" title="HomeSteps Premium (Coming Soon)" aria-label="Premium">✨ Premium</button>
           <button id="backupModalBtn" class="icon-btn" title="Backup & Restore Data" aria-label="Backup">💾</button>
         </div>
       </div>
@@ -350,55 +350,120 @@
       <div class="footer-links">
         <a href="javascript:void(0)" id="footerPrivacyLink">Privacy Policy</a> • 
         <a href="javascript:void(0)" id="footerHelpLink">Help & FAQ</a> • 
-        <a href="javascript:void(0)" id="footerGoPremiumLink">Go Premium (JazzCash/Easypaisa)</a>
+        <a href="javascript:void(0)" id="footerGoPremiumLink">✨ Go Premium (Coming Soon)</a>
       </div>
     </footer>
 
   </div>
 
 
-  <!-- ================= MODAL 1: GO PREMIUM (PRD §10 & §21) ================= -->
-  <div id="premiumModal" class="modal-overlay hidden">
-    <div class="modal-card">
-      <div class="modal-header">
-        <div class="premium-badge-title">
-          <span class="star-icon">⭐</span>
-          <h3>HomeSteps Premium</h3>
-        </div>
-        <button id="closePremiumModalBtn" class="close-btn">×</button>
+  <!-- ================= MODAL 1: GO PREMIUM UPSELL (COMING SOON) ================= -->
+  <div id="premiumModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="premiumModalTitle">
+    <div class="modal-card premium-modal-card">
+      
+      <!-- Top Bar: Coming Soon Badge & Close Button -->
+      <div class="premium-modal-top-bar">
+        <span class="premium-coming-soon-badge">✨ COMING SOON</span>
+        <button id="closePremiumModalBtn" class="close-btn" aria-label="Close Premium Modal">×</button>
       </div>
 
-      <div class="pricing-card-banner">
-        <span class="pricing-sub">Free Core is Permanent! Tracking, basic worksheets & syllabus are free forever.</span>
+      <!-- Hero Header -->
+      <div class="premium-hero-section">
+        <div class="premium-crown-icon">👑</div>
+        <h2 id="premiumModalTitle" class="premium-hero-title">HomeSteps Premium</h2>
+        <p class="premium-hero-subtext">Superpowers for serious homeschooling mothers.</p>
       </div>
 
-      <div class="pricing-options-grid">
-        <div class="price-box selected">
-          <div class="price-title">Yearly Plan (Recommended)</div>
-          <div class="price-amount">Rs 3,000 <span>/ year</span></div>
-          <div class="price-saving">2 months free! Less than 1 workbook/month</div>
-        </div>
-        <div class="price-box">
-          <div class="price-title">Monthly Plan</div>
-          <div class="price-amount">Rs 350 <span>/ month</span></div>
-          <div class="price-saving">Cancel anytime</div>
+      <!-- Benefits List -->
+      <div class="premium-benefits-card">
+        <h4 class="premium-benefits-heading">Everything in Free, plus:</h4>
+        <ul class="premium-benefits-list">
+          <li class="premium-benefit-item">
+            <span class="benefit-icon">☁️</span>
+            <div class="benefit-text">
+              <strong>Cloud Sync</strong>
+              <span>Your data on phone AND laptop, always backed up</span>
+            </div>
+          </li>
+          <li class="premium-benefit-item">
+            <span class="benefit-icon">🎨</span>
+            <div class="benefit-text">
+              <strong>Premium Worksheet Packs</strong>
+              <span>Ramadan, Eid, seasons & more themes</span>
+            </div>
+          </li>
+          <li class="premium-benefit-item">
+            <span class="benefit-icon">🤖</span>
+            <div class="benefit-text">
+              <strong>AI Worksheet Builder</strong>
+              <span>Type a topic, get a worksheet instantly</span>
+            </div>
+          </li>
+          <li class="premium-benefit-item">
+            <span class="benefit-icon">🏷️</span>
+            <div class="benefit-text">
+              <strong>Custom Branding</strong>
+              <span>Your name & logo on every printout</span>
+            </div>
+          </li>
+          <li class="premium-benefit-item">
+            <span class="benefit-icon">⚡</span>
+            <div class="benefit-text">
+              <strong>Priority Support</strong>
+              <span>Your questions answered first</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Pricing Plans Cards -->
+      <div class="premium-pricing-section">
+        <div class="premium-pricing-grid">
+          <!-- Monthly Plan -->
+          <div id="premiumMonthlyCard" class="premium-plan-card">
+            <div class="plan-header">
+              <span class="plan-name">Monthly</span>
+            </div>
+            <div class="plan-price">
+              <span class="currency">Rs</span>
+              <span class="amount">350</span>
+              <span class="period">/month</span>
+            </div>
+            <div class="plan-note">Billed monthly</div>
+          </div>
+
+          <!-- Yearly Plan (Best Value) -->
+          <div id="premiumYearlyCard" class="premium-plan-card featured-plan selected">
+            <div class="plan-ribbon">2 months FREE — Best Value</div>
+            <div class="plan-header">
+              <span class="plan-name">Yearly</span>
+            </div>
+            <div class="plan-price">
+              <span class="currency">Rs</span>
+              <span class="amount">3,000</span>
+              <span class="period">/year</span>
+            </div>
+            <div class="plan-note">Only Rs 250/mo equivalent</div>
+          </div>
         </div>
       </div>
 
-      <div class="payment-instructions-box">
-        <h4>📱 Simple Local Payment (JazzCash / Easypaisa):</h4>
-        <p class="pay-step">1. Transfer subscription fee to either account:</p>
-        <div class="account-pill">
-          <strong>JazzCash:</strong> 0300-1234567 (Sualeha / HomeSteps)
-        </div>
-        <div class="account-pill">
-          <strong>Easypaisa:</strong> 0345-1234567 (Sualeha / HomeSteps)
-        </div>
-        <p class="pay-step">2. Send screenshot on WhatsApp for instant activation:</p>
-        <button id="sendPaymentProofWhatsAppBtn" class="btn btn-whatsapp" style="width: 100%;">
-          📱 Send Screenshot on WhatsApp
+      <!-- Free Plan Reassurance -->
+      <div class="premium-reassurance-box">
+        <span class="reassurance-icon">🛡️</span>
+        <span class="reassurance-text">Free plan stays free forever. Premium is optional.</span>
+      </div>
+
+      <!-- Primary CTA & Close Action -->
+      <div class="premium-cta-section">
+        <button id="notifyPremiumWhatsAppBtn" class="btn btn-premium-cta">
+          <span class="btn-icon">🔔</span> Notify Me on WhatsApp
+        </button>
+        <button id="dismissPremiumModalBtn" class="btn btn-dismiss-premium">
+          Maybe Later
         </button>
       </div>
+
     </div>
   </div>
 

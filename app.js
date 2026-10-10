@@ -1799,7 +1799,13 @@ document.getElementById("shareReportWhatsAppBtn").onclick = shareReportOnWhatsAp
 // 8. Modals (Premium, Help, Privacy, Backup)
 document.getElementById("premiumModalBtn").onclick = function () { document.getElementById("premiumModal").classList.remove("hidden"); };
 document.getElementById("closePremiumModalBtn").onclick = function () { document.getElementById("premiumModal").classList.add("hidden"); };
+document.getElementById("dismissPremiumModalBtn").onclick = function () { document.getElementById("premiumModal").classList.add("hidden"); };
 document.getElementById("footerGoPremiumLink").onclick = function () { document.getElementById("premiumModal").classList.remove("hidden"); };
+document.getElementById("premiumModal").onclick = function (e) {
+  if (e.target === this) {
+    this.classList.add("hidden");
+  }
+};
 
 document.getElementById("helpModalBtn").onclick = function () { document.getElementById("helpModal").classList.remove("hidden"); };
 document.getElementById("closeHelpModalBtn").onclick = function () { document.getElementById("helpModal").classList.add("hidden"); };
@@ -1820,12 +1826,25 @@ document.getElementById("importJsonFile").onchange = function (e) {
 };
 document.getElementById("wipeAllDataBtn").onclick = wipeAllData;
 
-// WhatsApp Payment Proof Action
-document.getElementById("sendPaymentProofWhatsAppBtn").onclick = function () {
-  var text = "Hello! I have sent the payment for HomeSteps subscription via JazzCash/Easypaisa. The screenshot is attached. Please activate my premium account.";
-  var url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(text);
+// WhatsApp Premium Waitlist Notification Action
+document.getElementById("notifyPremiumWhatsAppBtn").onclick = function () {
+  var url = "https://wa.me/923226817030?text=Hi!%20I%20want%20HomeSteps%20Premium.%20Please%20notify%20me%20at%20launch.";
   window.open(url, "_blank");
 };
+
+// Premium Plan Card Selection (Monthly vs Yearly)
+var monthlyCard = document.getElementById("premiumMonthlyCard");
+var yearlyCard = document.getElementById("premiumYearlyCard");
+if (monthlyCard && yearlyCard) {
+  monthlyCard.onclick = function () {
+    monthlyCard.classList.add("selected");
+    yearlyCard.classList.remove("selected");
+  };
+  yearlyCard.onclick = function () {
+    yearlyCard.classList.add("selected");
+    monthlyCard.classList.remove("selected");
+  };
+}
 
 // WhatsApp Support Action
 document.getElementById("contactSupportWhatsAppBtn").onclick = function () {
