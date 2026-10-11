@@ -1,5 +1,5 @@
 // HomeSteps Service Worker for Offline Homeschooling
-const CACHE_NAME = 'homesteps-v1.2';
+const CACHE_NAME = 'homesteps-v1.3';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -12,12 +12,12 @@ const STATIC_ASSETS = [
 ];
 
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(STATIC_ASSETS);
     })
   );
-  self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
@@ -26,7 +26,7 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
       );
-    })
+    }).then(() => self.clients.claim())
   );
   self.clients.claim();
 });
