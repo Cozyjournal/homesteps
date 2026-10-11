@@ -2041,6 +2041,24 @@ h1, h2, h3, h4 {
     z-index: 3;
     background-color: #F4EAE0;
   }
+
+  .generator-grid > * {
+    min-width: 0;
+  }
+
+  .form-select, .form-input {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .generator-actions {
+    flex-wrap: wrap;
+  }
+
+  .generator-actions .btn {
+    flex: 1 1 100%;
+  }
 }
 
 .report-notes-list {
