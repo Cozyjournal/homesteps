@@ -1070,14 +1070,18 @@ h1, h2, h3, h4 {
 
 /* ========================================================
    WORKSHEET INTERIOR STYLES (Used in Preview and Print)
+   Ages 3–7 Kindergarten Standards: Ruled Guides & Ink-Friendly
    ======================================================== */
 .ws-container {
   width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
+/* 1. Header (HomeSteps Standard Branding) */
 .ws-header {
-  border-bottom: 2px solid #222;
-  padding-bottom: 10px;
+  border-bottom: 2px solid #64748B;
+  padding-bottom: 12px;
   margin-bottom: 16px;
 }
 
@@ -1085,30 +1089,53 @@ h1, h2, h3, h4 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.8rem;
-  color: #555;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-size: 0.85rem;
+  color: #475569;
   font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.ws-brand-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.02em;
+}
+
+.ws-brand-badge {
+  background: #F1F5F9;
+  border: 1px solid #CBD5E1;
+  padding: 3px 10px;
+  border-radius: 14px;
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+  color: #334155;
 }
 
 .ws-title-row {
   text-align: center;
-  margin: 8px 0;
+  margin: 10px 0 12px 0;
 }
 
 .ws-title {
-  font-size: 1.5rem;
+  font-size: 1.65rem;
   font-weight: 800;
-  color: #111;
-  font-family: 'Fredoka', sans-serif;
+  color: #0F172A;
+  margin: 0;
+  font-family: 'Fredoka', var(--font-family);
+  letter-spacing: -0.01em;
 }
 
-.ws-title-urdu {
-  font-family: var(--font-urdu);
-  font-size: 1.4rem;
+.urdu-title {
+  font-family: var(--font-urdu), 'Jameel Noori Nastaleeq', serif;
+  font-size: 1.9rem;
   direction: rtl;
-  margin-top: 2px;
+  line-height: 1.3;
+}
+
+.urdu-text {
+  direction: rtl;
+  font-family: var(--font-urdu), 'Jameel Noori Nastaleeq', serif;
 }
 
 .ws-meta-bar {
@@ -1116,299 +1143,630 @@ h1, h2, h3, h4 {
   justify-content: space-between;
   align-items: center;
   margin-top: 10px;
-  padding-top: 6px;
-  border-top: 1px dashed #777;
+  padding-top: 10px;
+  border-top: 1.5px dashed #CBD5E1;
   font-size: 0.95rem;
   font-weight: 600;
+  color: #334155;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
 }
 
 .ws-meta-item {
   display: flex;
-  gap: 4px;
+  align-items: center;
+  gap: 6px;
 }
 
 .ws-meta-fill {
-  border-bottom: 1px solid #333;
-  min-width: 120px;
+  border-bottom: 1.5px solid #475569;
+  min-width: 130px;
   display: inline-block;
-  padding-left: 4px;
+  padding-left: 6px;
+  padding-right: 6px;
+  color: #0F172A;
+  font-weight: 700;
 }
 
-.ws-instructions {
-  background: #F8F9FA;
-  border: 1px solid #DDD;
-  border-radius: 6px;
-  padding: 8px 12px;
-  margin-bottom: 18px;
-  font-size: 0.95rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-}
-
-.ws-inst-en {
-  font-weight: 600;
-  color: #333;
-}
-
-.ws-inst-ur {
-  font-family: var(--font-urdu);
-  direction: rtl;
+.ws-stars {
   font-size: 1.05rem;
-  color: #222;
-}
-
-/* TYPE 1: TRACING GRIDS */
-.tracing-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 14px;
-  margin-top: 12px;
-}
-
-.trace-card {
-  border: 2px solid #444;
-  border-radius: 10px;
-  padding: 14px 8px;
-  text-align: center;
-  background: #fff;
-  position: relative;
-}
-
-.trace-letter-big {
-  font-size: 3.5rem;
-  line-height: 1.1;
-  font-weight: bold;
-  letter-spacing: normal;
-  color: #999;
-  border: 2px dashed #AAA;
-  border-radius: 8px;
-  display: inline-block;
-  padding: 2px 14px;
+  letter-spacing: 3px;
   user-select: none;
 }
 
+/* 2. Instructions Banner */
+.ws-instructions {
+  background: #F8FAFC;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 10px 16px;
+  margin-bottom: 20px;
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: #1E293B;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.urdu-instructions {
+  direction: rtl;
+  font-family: var(--font-urdu), 'Jameel Noori Nastaleeq', serif;
+  font-size: 1.25rem;
+  justify-content: flex-start;
+}
+
+.ws-inst-text {
+  line-height: 1.4;
+}
+
+/* ========================================================
+   TYPE 1: TRACING GRIDS & KINDERGARTEN RULED GUIDELINES
+   ======================================================== */
+.tracing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.trace-card {
+  border: 1.5px solid #CBD5E1;
+  border-radius: 14px;
+  padding: 12px 10px;
+  text-align: center;
+  background: #FFFFFF;
+  position: relative;
+  transition: all 0.15s ease;
+}
+
+.trace-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 0.75rem;
+  color: #64748B;
+  font-weight: 700;
+}
+
+.trace-num-badge {
+  background: #F1F5F9;
+  border-radius: 6px;
+  padding: 2px 6px;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.03em;
+}
+
+.trace-star-cue {
+  font-size: 0.85rem;
+  color: #CBD5E1;
+}
+
+.trace-letter-big {
+  font-size: 3.8rem;
+  line-height: 1.05;
+  font-weight: 800;
+  color: #64748B;
+  border: 2px dashed #CBD5E1;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  min-height: 75px;
+  padding: 4px 14px;
+  user-select: none;
+  font-family: 'Fredoka', var(--font-family);
+  background: #FAFBFD;
+}
+
 .trace-letter-urdu {
-  font-family: var(--font-urdu);
+  font-family: var(--font-urdu), 'Jameel Noori Nastaleeq', serif;
+  direction: rtl;
+  font-size: 4rem;
+  line-height: 1.15;
+}
+
+.trace-letter-arabic {
+  font-family: 'Scheherazade New', 'Amiri', 'Traditional Arabic', serif;
   direction: rtl;
   font-size: 3.8rem;
-  line-height: 1.2;
+  line-height: 1.15;
 }
 
-.trace-lines-box {
-  margin-top: 10px;
-  border-top: 1px dashed #CCC;
-  border-bottom: 1px solid #777;
-  height: 36px;
+/* Kindergarten 3-Line Ruled Guidelines */
+.trace-guidelines-container {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.trace-guidelines-container.rtl-guide {
+  direction: rtl;
+}
+
+.ruled-line-guide {
   position: relative;
+  height: 50px;
+  border-top: 1.5px solid #94A3B8;
+  border-bottom: 2px solid #475569;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 4px;
 }
 
-.trace-lines-box::after {
+.ruled-line-guide::before {
   content: "";
   position: absolute;
   top: 50%;
   left: 0;
   right: 0;
-  border-top: 1px dotted #AAA;
+  border-top: 1.5px dashed #94A3B8;
+  pointer-events: none;
 }
 
-/* TYPE 2: COUNTING WORKSHEET */
+.guide-slot {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fredoka', var(--font-family);
+  font-size: 2.1rem;
+  font-weight: 700;
+  min-width: 40px;
+  line-height: 1;
+}
+
+.guide-slot.urdu-char {
+  font-family: var(--font-urdu), 'Jameel Noori Nastaleeq', serif;
+  font-size: 2.4rem;
+}
+
+.guide-slot.arabic-char {
+  font-family: 'Scheherazade New', 'Amiri', serif;
+  font-size: 2.2rem;
+}
+
+.trace-dotted-sample {
+  color: #94A3B8;
+  letter-spacing: normal;
+  user-select: none;
+}
+
+.guide-slot-empty {
+  min-width: 40px;
+}
+
+/* ========================================================
+   TYPE 2: COUNTING WORKSHEET
+   ======================================================== */
 .counting-list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
+}
+
+.urdu-counting {
+  direction: rtl;
 }
 
 .counting-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border: 2px solid #333;
-  border-radius: 10px;
-  padding: 10px 16px;
-  background: #fff;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 14px;
+  padding: 14px 20px;
+  background: #FFFFFF;
+  gap: 14px;
 }
 
-.counting-objects {
+.counting-index-badge {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #64748B;
+  background: #F1F5F9;
+  padding: 4px 8px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.counting-objects-stage {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  font-size: 2rem;
+  gap: 12px;
+  font-size: 2.3rem;
   align-items: center;
+  flex: 1;
+  padding: 0 10px;
+}
+
+.count-item-icon {
+  display: inline-block;
+  line-height: 1;
+  transition: transform 0.1s ease;
+}
+
+.counting-answer-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.counting-answer-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 .counting-answer-box {
-  width: 55px;
-  height: 55px;
-  border: 2px solid #000;
-  border-radius: 8px;
+  width: 66px;
+  height: 66px;
+  border: 2px solid #475569;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
-  color: #AAA;
+  position: relative;
+  background: #FAFBFD;
 }
 
-/* TYPE 3: MATCHING WORKSHEET */
+.counting-box-inner-guide {
+  position: absolute;
+  top: 50%;
+  left: 8px;
+  right: 8px;
+  border-top: 1.5px dashed #CBD5E1;
+  pointer-events: none;
+}
+
+.counting-reward-star {
+  font-size: 1.25rem;
+  color: #CBD5E1;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+/* ========================================================
+   TYPE 3: MATCHING WORKSHEET
+   ======================================================== */
 .matching-container {
   display: flex;
   justify-content: space-between;
-  padding: 10px 30px;
+  align-items: stretch;
+  gap: 16px;
+  padding: 10px 6px;
   position: relative;
+}
+
+.urdu-matching {
+  direction: rtl;
 }
 
 .matching-column {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  width: 40%;
+  gap: 18px;
+  width: 44%;
 }
 
 .match-item {
-  border: 2px solid #333;
-  border-radius: 8px;
-  padding: 12px;
-  font-size: 1.4rem;
-  font-weight: bold;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 1.3rem;
+  font-weight: 700;
   text-align: center;
   position: relative;
-  background: #fff;
-  min-height: 55px;
+  background: #FFFFFF;
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.match-text {
+  flex: 1;
+  font-family: inherit;
+}
+
+.match-connector {
+  width: 22px;
+  height: 22px;
+  border: 2px solid #64748B;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  color: #64748B;
+  background: #FFFFFF;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.matching-divider-space {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 12%;
 }
 
-.match-item.left::after {
-  content: "";
-  position: absolute;
-  right: -10px;
-  top: calc(50% - 6px);
-  width: 12px;
-  height: 12px;
-  background: #000;
-  border-radius: 50%;
+.matching-center-cue {
+  writing-mode: vertical-lr;
+  text-orientation: mixed;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #94A3B8;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border-left: 1.5px dashed #CBD5E1;
+  padding-left: 8px;
+  height: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
 }
 
-.match-item.right::before {
-  content: "";
-  position: absolute;
-  left: -10px;
-  top: calc(50% - 6px);
-  width: 12px;
-  height: 12px;
-  background: #000;
-  border-radius: 50%;
-}
-
-/* TYPE 4: COLORING WORKSHEET */
+/* ========================================================
+   TYPE 4: COLORING + TRACING WORKSHEET
+   ======================================================== */
 .coloring-container {
   text-align: center;
-  padding: 10px;
+  padding: 10px 0;
+}
+
+.urdu-coloring {
+  direction: rtl;
 }
 
 .coloring-art-box {
-  border: 2px solid #222;
-  border-radius: 12px;
-  padding: 20px;
-  margin: 10px auto;
-  max-width: 420px;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 16px;
+  padding: 24px;
+  margin: 12px auto;
+  max-width: 480px;
+  min-height: 260px;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 260px;
+  background: #FFFFFF;
+  position: relative;
 }
 
 .coloring-art-box svg {
   max-width: 100%;
   height: auto;
-  stroke: #000;
-  stroke-width: 3;
-  fill: #fff;
+  stroke: #334155;
+  stroke-width: 2.5;
+  fill: #FFFFFF;
 }
 
-.coloring-word-trace {
-  font-size: 2.2rem;
-  font-weight: 800;
-  letter-spacing: 4px;
-  color: #BBB;
-  border: 2px dashed #999;
+.coloring-corner-star {
+  position: absolute;
+  font-size: 0.9rem;
+  color: #CBD5E1;
+  user-select: none;
+}
+
+.coloring-corner-star.top-left { top: 8px; left: 8px; }
+.coloring-corner-star.top-right { top: 8px; right: 8px; }
+.coloring-corner-star.bottom-left { bottom: 8px; left: 8px; }
+.coloring-corner-star.bottom-right { bottom: 8px; right: 8px; }
+
+.coloring-trace-section {
+  margin-top: 20px;
+}
+
+.coloring-trace-label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #475569;
+  margin-bottom: 8px;
+}
+
+.coloring-ruled-banner {
   display: inline-block;
-  padding: 6px 24px;
-  border-radius: 10px;
-  margin-top: 14px;
+  position: relative;
+  height: 60px;
+  min-width: 260px;
+  border-top: 1.5px solid #94A3B8;
+  border-bottom: 2px solid #475569;
+  background: #FFFFFF;
+  padding: 0 24px;
 }
 
-.coloring-word-urdu {
-  font-family: var(--font-urdu);
-  direction: rtl;
+.coloring-ruled-banner::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  border-top: 1.5px dashed #94A3B8;
+}
+
+.coloring-trace-word {
+  position: relative;
+  z-index: 1;
+  font-family: 'Fredoka', var(--font-family);
   font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: 8px;
+  color: #94A3B8;
+  line-height: 56px;
+  user-select: none;
+}
+
+.coloring-ruled-banner.urdu-ruled .coloring-trace-word {
+  font-family: var(--font-urdu), 'Jameel Noori Nastaleeq', serif;
+  font-size: 2.8rem;
   letter-spacing: normal;
 }
 
-/* TYPE 5: CIRCLE THE CORRECT */
+.coloring-ruled-banner.arabic-ruled .coloring-trace-word {
+  font-family: 'Scheherazade New', 'Amiri', serif;
+  font-size: 2.6rem;
+  letter-spacing: normal;
+}
+
+/* ========================================================
+   TYPE 5: CIRCLE THE CORRECT ANSWER
+   ======================================================== */
 .circle-list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 18px;
+}
+
+.urdu-circle {
+  direction: rtl;
 }
 
 .circle-row {
   display: flex;
   align-items: center;
-  border: 2px solid #333;
-  border-radius: 10px;
-  padding: 10px 14px;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 14px;
+  padding: 14px 20px;
   gap: 16px;
+  background: #FFFFFF;
 }
 
-.circle-target {
-  background: #EAEAEA;
-  border: 2px solid #333;
-  border-radius: 8px;
+.circle-target-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #F8FAFC;
+  border: 2px solid #475569;
+  border-radius: 12px;
   padding: 8px 14px;
-  font-size: 1.6rem;
+  min-width: 80px;
+  min-height: 70px;
+}
+
+.circle-target-label {
+  font-size: 0.7rem;
   font-weight: 800;
-  min-width: 60px;
-  text-align: center;
+  color: #64748B;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+  letter-spacing: 0.04em;
+}
+
+.circle-target-val {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #0F172A;
+  font-family: 'Fredoka', var(--font-family);
+}
+
+.circle-target-val.urdu-val {
+  font-family: var(--font-urdu), 'Jameel Noori Nastaleeq', serif;
+  font-size: 2.2rem;
+}
+
+.circle-target-val.arabic-val {
+  font-family: 'Scheherazade New', 'Amiri', serif;
+  font-size: 2rem;
+}
+
+.circle-divider-arrow {
+  font-size: 1.4rem;
+  color: #94A3B8;
+  user-select: none;
 }
 
 .circle-options {
   display: flex;
-  gap: 14px;
+  gap: 16px;
   flex: 1;
   justify-content: space-around;
 }
 
 .circle-choice {
-  width: 46px;
-  height: 46px;
-  border: 2px dashed #444;
+  width: 58px;
+  height: 58px;
+  border: 2px dashed #94A3B8;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 700;
+  color: #1E293B;
+  background: #FFFFFF;
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
 
-/* TYPE 6: FILL IN THE BLANKS */
+.circle-choice.urdu-choice {
+  font-family: var(--font-urdu), 'Jameel Noori Nastaleeq', serif;
+  font-size: 1.8rem;
+}
+
+.circle-choice.arabic-choice {
+  font-family: 'Scheherazade New', 'Amiri', serif;
+  font-size: 1.7rem;
+}
+
+/* ========================================================
+   TYPE 6: FILL IN THE BLANKS
+   ======================================================== */
 .fill-wordbank {
-  border: 2px dashed #444;
-  border-radius: 8px;
-  padding: 8px 14px;
-  margin-bottom: 16px;
-  background: #FDFDFD;
+  border: 1.5px dashed #94A3B8;
+  border-radius: 12px;
+  padding: 12px 18px;
+  margin-bottom: 20px;
+  background: #F8FAFC;
   text-align: center;
-  font-size: 1.1rem;
 }
 
-.wordbank-label {
+.urdu-fill {
+  direction: rtl;
+}
+
+.wordbank-title {
+  font-size: 0.82rem;
   font-weight: 800;
-  margin-right: 8px;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.wordbank-pills {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.wordbank-pill {
+  background: #FFFFFF;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0F172A;
 }
 
 .fill-sequences {
@@ -1419,40 +1777,81 @@ h1, h2, h3, h4 {
 
 .fill-row {
   display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 12px;
+  background: #FFFFFF;
+}
+
+.fill-row-num {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #64748B;
+  background: #F1F5F9;
+  padding: 4px 8px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.fill-cells-group {
+  display: flex;
   gap: 10px;
   align-items: center;
   justify-content: center;
+  flex: 1;
   flex-wrap: wrap;
-  padding: 10px;
-  border: 1px solid #CCC;
-  border-radius: 8px;
 }
 
 .fill-cell {
-  width: 48px;
-  height: 48px;
-  border: 2px solid #333;
-  border-radius: 8px;
+  width: 54px;
+  height: 54px;
+  border: 2px solid #475569;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 800;
-  background: #FFF;
+  background: #FFFFFF;
+  color: #0F172A;
+  font-family: 'Fredoka', var(--font-family);
 }
 
 .fill-cell.blank {
-  border: 2px dashed #999;
-  background: #F7F7F7;
+  border: 2px dashed #94A3B8;
+  background: #FAFBFD;
+  position: relative;
 }
 
-/* TYPE 7: MAP LABELING (PRD v3.2) */
+.fill-blank-guide {
+  position: absolute;
+  top: 50%;
+  left: 6px;
+  right: 6px;
+  border-top: 1.5px dashed #CBD5E1;
+  pointer-events: none;
+}
+
+.fill-blank-qmark {
+  color: #CBD5E1;
+  font-size: 1.2rem;
+}
+
+/* ========================================================
+   TYPE 7: MAP & DIAGRAM LABELING
+   ======================================================== */
 .map-worksheet-box {
-  border: 2px solid #333;
-  border-radius: 12px;
-  padding: 16px;
-  background: #FFF;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 14px;
+  padding: 18px;
+  background: #FFFFFF;
   margin-top: 10px;
+}
+
+.urdu-map {
+  direction: rtl;
 }
 
 .map-svg-container {
@@ -1463,29 +1862,44 @@ h1, h2, h3, h4 {
 
 .map-labels-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
-  margin-top: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+  margin-top: 16px;
 }
 
 .map-label-target-card {
-  border: 2px dashed #666;
-  border-radius: 8px;
-  padding: 8px 12px;
+  border: 1.5px dashed #94A3B8;
+  border-radius: 10px;
+  padding: 10px 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
+  background: #FAFBFD;
 }
 
 .map-target-title {
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 0.95rem;
+  color: #1E293B;
 }
 
 .map-blank-input-box {
-  width: 90px;
-  height: 32px;
-  border-bottom: 2px solid #000;
+  width: 100px;
+  height: 36px;
+  border-top: 1px dashed #CBD5E1;
+  border-bottom: 2px solid #475569;
+  background: #FFFFFF;
+  position: relative;
+}
+
+.map-blank-input-box::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  border-top: 1px dashed #CBD5E1;
 }
 
 /* ========================================================
@@ -2735,8 +3149,8 @@ input:checked + .slider-round:before {
 
   .paper-page {
     box-shadow: none !important;
-    border: 2px solid #000 !important;
-    padding: 10mm !important;
+    border: 1.5px solid #475569 !important;
+    padding: 8mm 10mm !important;
     margin: 0 !important;
     width: 100% !important;
     min-height: 265mm !important;
@@ -2748,8 +3162,8 @@ input:checked + .slider-round:before {
     page-break-after: always !important;
     break-after: page !important;
     box-shadow: none !important;
-    border: 2px solid #000 !important;
-    padding: 10mm !important;
+    border: 1.5px solid #475569 !important;
+    padding: 8mm 10mm !important;
     margin: 0 !important;
     width: 100% !important;
     min-height: 265mm !important;
@@ -2761,23 +3175,24 @@ input:checked + .slider-round:before {
   }
 
   .trace-card, .counting-row, .match-item, .circle-row, .fill-row, .map-worksheet-box {
-    border-color: #000 !important;
+    border-color: #64748B !important;
     page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 
   .ws-header {
-    border-bottom: 2px solid #000 !important;
+    border-bottom: 2px solid #475569 !important;
   }
 
   .ws-brand-row {
-    color: #000 !important;
+    color: #334155 !important;
   }
 
   .coloring-art-box, .map-worksheet-box {
-    border-color: #000 !important;
+    border-color: #64748B !important;
   }
 
   .coloring-art-box svg, .map-worksheet-box svg {
-    stroke: #000 !important;
+    stroke: #334155 !important;
   }
 }

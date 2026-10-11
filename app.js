@@ -86,7 +86,7 @@ var SYLLABUS_DATA = {
         { id: "i34_2", title: "First Kalima Tayyaba Recitation", guide: "Recite aloud and trace the name of Allah", presetId: "isl_trace_allah", type: "tracing" }
       ],
       Nazra: [
-        { id: "n34_1", title: "Noorani Qaida: Single Letters (ا to خ)", guide: "Pronounce with correct articulation (Makhraj)", presetId: "ur_trace_1", type: "tracing" }
+        { id: "n34_1", title: "Noorani Qaida: Single Letters (ا to خ)", guide: "Pronounce with correct articulation (Makhraj)", presetId: "naz_trace_1", type: "tracing" }
       ],
       Science: [
         { id: "s34_1", title: "Common Animals & Their Sounds", guide: "Identify Cat, Dog, Cow, Lion sounds", presetId: "act_match_animals", type: "matching" },
@@ -126,7 +126,7 @@ var SYLLABUS_DATA = {
         { id: "i45_2", title: "Surah Al-Ikhlas Memorization", guide: "Meaning: Allah is One with no partners", presetId: "isl_circle_basics", type: "circle" }
       ],
       Nazra: [
-        { id: "n45_1", title: "Compound Letters (Murakkabat)", guide: "Practice connected letters with fluency", presetId: "ur_trace_2", type: "tracing" }
+        { id: "n45_1", title: "Compound Letters (Murakkabat)", guide: "Practice connected letters with fluency", presetId: "naz_trace_compounds", type: "tracing" }
       ],
       Science: [
         { id: "s45_1", title: "Pets vs Wild Animals", guide: "Differentiate cat and goat from lion and bear", presetId: "sci_wild_pets", type: "circle" },
@@ -163,7 +163,7 @@ var SYLLABUS_DATA = {
         { id: "i56_1", title: "First & Second Kalima with Meaning", guide: "Understand the meaning and recite with fluency", presetId: "isl_fill_kalima", type: "fill" }
       ],
       Nazra: [
-        { id: "n56_1", title: "Tanween and Jazm Rules", guide: "Learn the Nun sound of Tanween and silent Jazm", presetId: "ur_trace_5", type: "tracing" }
+        { id: "n56_1", title: "Tanween and Jazm Rules", guide: "Learn the Nun sound of Tanween and silent Jazm", presetId: "naz_trace_tanween", type: "tracing" }
       ],
       Science: [
         { id: "s56_1", title: "The Five Senses (Sight, Smell, Taste, Touch, Hearing)", guide: "Link each sense organ with daily activity", presetId: "sci_senses", type: "matching" },
@@ -195,7 +195,7 @@ var SYLLABUS_DATA = {
         { id: "i67_1", title: "Steps of Wudu (Ablution)", guide: "Learn the 4 obligatory acts and Sunnah steps", presetId: "isl_match_basics", type: "matching" }
       ],
       Nazra: [
-        { id: "n67_1", title: "Huroof-e-Maddah (Elongation)", guide: "Stretch the vowel sound to one Alif count", presetId: "ur_trace_6", type: "tracing" }
+        { id: "n67_1", title: "Huroof-e-Maddah (Elongation)", guide: "Stretch the vowel sound to one Alif count", presetId: "naz_trace_maddah", type: "tracing" }
       ],
       Science: [
         { id: "s67_1", title: "Human Skeleton & Vital Organs", guide: "Heart, brain, lungs and bones roles", presetId: "sci_body_organs", type: "matching" },
@@ -884,7 +884,8 @@ function openGeneratorWithTopic(subjectName, topicItem) {
   var subKey = subjectName.toLowerCase();
   if (subKey === "social studies") subKey = "social";
   if (subKey === "art & craft") subKey = "art";
-  if (subKey === "nazra") subKey = "urdu";
+  if (subKey === "math/counting") subKey = "math";
+  if (subKey === "reading" || subKey === "writing") subKey = "english";
 
   var subjectSelect = document.getElementById("wsSubject");
   if (subjectSelect) subjectSelect.value = subKey;
@@ -905,6 +906,7 @@ function openGeneratorWithTopic(subjectName, topicItem) {
 
 // ========================================================
 // VIEW 3: PRINTABLE GENERATOR (7 Worksheet Types)
+// 100% Language Purity & Kindergarten Design (Ages 3–7)
 // ========================================================
 var WORKSHEET_PRESETS = {
   english: {
@@ -928,12 +930,17 @@ var WORKSHEET_PRESETS = {
         { icon: "⭐", count: 5, label: "Stars" },
         { icon: "🎈", count: 2, label: "Balloons" },
         { icon: "🌸", count: 4, label: "Flowers" }
+      ]},
+      { id: "en_count_6to10", name: "Counting Objects 6 to 10", items: [
+        { icon: "✏️", count: 6, label: "Pencils" },
+        { icon: "🐟", count: 8, label: "Fishes" },
+        { icon: "🍬", count: 10, label: "Candies" }
       ]}
     ],
     coloring: [
-      { id: "en_color_apple", name: "Apple (A for Apple)", word: "APPLE", svg: "apple", prompt: "Color the Apple red and the leaf green!" },
-      { id: "en_color_star", name: "Star (Twinkle Star)", word: "STAR", svg: "star", prompt: "Color the star bright golden yellow!" },
-      { id: "en_color_car", name: "Car (Beep Beep!)", word: "CAR", svg: "car", prompt: "Color the car your favorite color!" }
+      { id: "en_color_apple", name: "Apple (A for Apple)", word: "APPLE", svg: "apple", prompt: "Color the Apple red and the leaf green, then trace the word below!" },
+      { id: "en_color_star", name: "Star (Twinkle Star)", word: "STAR", svg: "star", prompt: "Color the star bright golden yellow, then trace the word below!" },
+      { id: "en_color_car", name: "Car (Beep Beep!)", word: "CAR", svg: "car", prompt: "Color the car your favorite color, then trace the word below!" }
     ],
     circle: [
       { id: "en_circle_letters", name: "Find & Circle Letter", questions: [
@@ -961,41 +968,48 @@ var WORKSHEET_PRESETS = {
 
   urdu: {
     tracing: [
-      { id: "ur_trace_1", name: "Urdu Alphabet: Alif to Say (ا ب پ ت ٹ ث)", letters: ["ا", "ب", "پ", "ت", "ٹ", "ث"], type: "urdu" },
-      { id: "ur_trace_2", name: "Urdu Alphabet: Jeem to Khay (ج چ ح خ)", letters: ["ج", "چ", "ح", "خ"], type: "urdu" },
-      { id: "ur_trace_3", name: "Urdu Alphabet: Daal to Zay (د ڈ ذ ر ڑ ز ژ)", letters: ["د", "ڈ", "ذ", "ر", "ڑ", "ز"], type: "urdu" },
-      { id: "ur_trace_4", name: "Urdu Alphabet: Seen to Zoay (س ش ص ض ط ظ)", letters: ["س", "ش", "ص", "ض", "ط", "ظ"], type: "urdu" },
-      { id: "ur_trace_5", name: "Urdu Alphabet: Ain to Gaaf (ع غ ف ق ک گ)", letters: ["ع", "غ", "ف", "ق", "ک", "گ"], type: "urdu" },
-      { id: "ur_trace_6", name: "Urdu Alphabet: Laam to Yay (ل م ن و ہ ی)", letters: ["ل", "م", "ن", "و", "ہ", "ی"], type: "urdu" }
+      { id: "ur_trace_1", name: "حروفِ تہجی: الف تا ث (ا ب پ ت ٹ ث)", letters: ["ا", "ب", "پ", "ت", "ٹ", "ث"], type: "urdu" },
+      { id: "ur_trace_2", name: "حروفِ تہجی: جیم تا خے (ج چ ح خ)", letters: ["ج", "چ", "ح", "خ"], type: "urdu" },
+      { id: "ur_trace_3", name: "حروفِ تہجی: دال تا زے (د ڈ ذ ر ڑ ز ژ)", letters: ["د", "ڈ", "ذ", "ر", "ڑ", "ز"], type: "urdu" },
+      { id: "ur_trace_4", name: "حروفِ تہجی: سین تا ظوئے (س ش ص ض ط ظ)", letters: ["س", "ش", "ص", "ض", "ط", "ظ"], type: "urdu" },
+      { id: "ur_trace_5", name: "حروفِ تہجی: عین تا گاف (ع غ ف ق ک گ)", letters: ["ع", "غ", "ف", "ق", "ک", "گ"], type: "urdu" },
+      { id: "ur_trace_6", name: "حروفِ تہجی: لام تا یے (ل م ن و ہ ی)", letters: ["ل", "م", "ن", "و", "ہ", "ی"], type: "urdu" }
     ],
     matching: [
-      { id: "ur_match_huroof", name: "Match Urdu Letters (ا ب ج د)", left: ["ا", "ب", "ج", "د"], right: ["ب", "ا", "د", "ج"] }
+      { id: "ur_match_huroof", name: "حروف ملائیں (ا ب ج د)", left: ["ا", "ب", "ج", "د"], right: ["ب", "ا", "د", "ج"] },
+      { id: "ur_match_words", name: "الفاظ اور تصویر ملائیں", left: ["سیب 🍎", "تارہ ⭐", "گاڑی 🚗", "پھول 🌸"], right: ["گاڑی", "پھول", "سیب", "تارہ"] }
     ],
     counting: [
-      { id: "ur_count_1to5", name: "Counting in Urdu (1 to 5)", items: [
-        { icon: "⭐", count: 2, label: "Stars" },
-        { icon: "🍎", count: 4, label: "Apples" },
-        { icon: "🌸", count: 3, label: "Flowers" }
+      { id: "ur_count_1to5", name: "اردو گنتی (۱ تا ۵)", items: [
+        { icon: "⭐", count: 2, label: "ستارے" },
+        { icon: "🍎", count: 4, label: "سیب" },
+        { icon: "🌸", count: 3, label: "پھول" }
+      ]},
+      { id: "ur_count_6to10", name: "اردو گنتی (۶ تا ۱۰)", items: [
+        { icon: "✏️", count: 6, label: "پنسلیں" },
+        { icon: "🐟", count: 8, label: "مچھلیاں" },
+        { icon: "🍬", count: 10, label: "ٹافیاں" }
       ]}
     ],
     coloring: [
-      { id: "ur_color_seb", name: "Sayb (Apple / سیب)", word: "سیب", svg: "apple", prompt: "Color the apple red and trace the word!" },
-      { id: "ur_color_phool", name: "Phool (Flower / پھول)", word: "پھول", svg: "flower", prompt: "Color the flower nicely and trace the word!" }
+      { id: "ur_color_seb", name: "سیب (رنگ اور ٹریسنگ)", word: "سیب", svg: "apple", prompt: "سیب میں خوبصورت لال رنگ بھریں اور نیچے دیا گیا لفظ ٹریس کریں۔" },
+      { id: "ur_color_phool", name: "پھول (رنگ اور ٹریسنگ)", word: "پھول", svg: "flower", prompt: "پھول میں پیارے رنگ بھریں اور نیچے دیا گیا لفظ ٹریس کریں۔" },
+      { id: "ur_color_tara", name: "تارہ (رنگ اور ٹریسنگ)", word: "تارہ", svg: "star", prompt: "تارے میں سنہرا پیلا رنگ بھریں اور نیچے دیا گیا لفظ ٹریس کریں۔" }
     ],
     circle: [
-      { id: "ur_circle_huroof", name: "Circle the Target Urdu Letter", questions: [
+      { id: "ur_circle_huroof", name: "درست حرف پر دائرہ لگائیں", questions: [
         { target: "ب", options: ["ت", "پ", "ب", "ث"] },
         { target: "ج", options: ["چ", "ح", "ج", "خ"] }
       ]}
     ],
     fill: [
-      { id: "ur_fill_1", name: "Fill in Missing Urdu Letters", bank: ["ب", "ٹ", "چ"], rows: [
+      { id: "ur_fill_1", name: "خالی جگہ پُر کریں (حروف)", bank: ["ب", "ٹ", "چ"], rows: [
         ["ا", "", "پ", "ت"],
         ["", "ث", "ج", ""]
       ]}
     ],
     map: [
-      { id: "ur_map_directions", name: "Directions (North, South, East, West)", kind: "compass_ur" }
+      { id: "ur_map_directions", name: "سمتیں (شمال، جنوب، مشرق، مغرب)", kind: "compass_ur" }
     ]
   },
 
@@ -1020,7 +1034,7 @@ var WORKSHEET_PRESETS = {
       { id: "math_match_count", name: "Count to Numbers", left: ["⭐⭐", "⭐⭐⭐⭐", "⭐"], right: ["4", "1", "2"] }
     ],
     coloring: [
-      { id: "math_color_star", name: "Number One Star", word: "ONE 1", svg: "star", prompt: "Color the big number 1 star!" }
+      { id: "math_color_star", name: "Number One Star", word: "ONE 1", svg: "star", prompt: "Color the big number 1 star and trace the number below!" }
     ],
     circle: [
       { id: "math_circle_num", name: "Circle the Target Number", questions: [
@@ -1041,34 +1055,77 @@ var WORKSHEET_PRESETS = {
 
   islamiat: {
     tracing: [
-      { id: "isl_trace_allah", name: "Allah & Muhammad (PBUH) Tracing", letters: ["اللہ", "محمد"], type: "urdu" },
-      { id: "isl_trace_bismillah", name: "Bismillah Tracing (بِسْمِ اللَّهِ)", letters: ["بِسْمِ اللَّهِ"], type: "urdu" }
+      { id: "isl_trace_allah", name: "Allah & Muhammad (PBUH) Tracing", letters: ["اللَّه", "مُحَمَّد"], type: "arabic" },
+      { id: "isl_trace_bismillah", name: "Bismillah Tracing", letters: ["بِسْمِ اللَّهِ"], type: "arabic" },
+      { id: "isl_trace_subhanallah", name: "Tasbeeh Tracing", letters: ["سُبْحَانَ اللَّهِ", "الْحَمْدُ لِلَّهِ"], type: "arabic" }
     ],
     matching: [
-      { id: "isl_match_basics", name: "Islamic Knowledge Matching", left: ["Quran", "Kaabah", "Masjid"], right: ["Makkah", "Book of Allah", "Place of Salah"] }
+      { id: "isl_match_basics", name: "Islamic Knowledge Matching", left: ["Holy Quran", "The Kaabah", "The Masjid"], right: ["Book of Allah", "House of Allah", "Place of Salah"] }
     ],
     counting: [
       { id: "isl_count_pillars", name: "Five Pillars of Islam", items: [
-        { icon: "🕌", count: 5, label: "Daily Prayers (5)" },
-        { icon: "🕋", count: 1, label: "One Kaabah (1)" }
+        { icon: "🕌", count: 5, label: "Daily Prayers" },
+        { icon: "🕋", count: 1, label: "The Kaabah" }
       ]}
     ],
     coloring: [
-      { id: "isl_color_masjid", name: "Masjid / Mosque", word: "MASJID", svg: "masjid", prompt: "Color the dome and minarets beautifully!" },
-      { id: "isl_color_moon", name: "Crescent & Star", word: "CRESCENT", svg: "crescent", prompt: "Color the crescent moon and star!" }
+      { id: "isl_color_masjid", name: "The Holy Masjid", word: "MASJID", svg: "masjid", prompt: "Color the dome and minarets with your favorite colors!" },
+      { id: "isl_color_moon", name: "Crescent and Star", word: "CRESCENT", svg: "crescent", prompt: "Color the crescent moon and star bright yellow!" }
     ],
     circle: [
-      { id: "isl_circle_basics", name: "Circle the Correct Islamic Answer", questions: [
-        { target: "How many Gods?", options: ["1", "2", "3"] }
+      { id: "isl_circle_basics", name: "Circle the Correct Answer", questions: [
+        { target: "How many Gods?", options: ["One (Allah)", "Two", "Three"] },
+        { target: "Holy Book of Islam?", options: ["Quran", "Stories", "Atlas"] }
       ]}
     ],
     fill: [
-      { id: "isl_fill_kalima", name: "First Kalima Tayyaba", bank: ["Allah", "Rasool"], rows: [
-        ["La ilaha illa", "", "Muhammadur", "", "Allah"]
+      { id: "isl_fill_kalima", name: "First Kalima Tayyaba", bank: ["Allah", "Prophet"], rows: [
+        ["There is no God but", ""],
+        ["Muhammad is the", "of Allah"]
       ]}
     ],
     map: [
-      { id: "isl_map_makkah", name: "Qibla Direction Compass", kind: "compass" }
+      { id: "isl_map_makkah", name: "Qibla Direction (Kaabah in Makkah)", kind: "compass" }
+    ]
+  },
+
+  nazra: {
+    tracing: [
+      { id: "naz_trace_1", name: "Noorani Qaida: Letters Alif to Khaa (ا to خ)", letters: ["ا", "ب", "ت", "ث", "ج", "ح", "خ"], type: "arabic" },
+      { id: "naz_trace_2", name: "Noorani Qaida: Letters Daal to Saad (د to ص)", letters: ["د", "ذ", "ر", "ز", "س", "ش", "ص"], type: "arabic" },
+      { id: "naz_trace_3", name: "Noorani Qaida: Letters Zaad to Faa (ض to ف)", letters: ["ض", "ط", "ظ", "ع", "غ", "ف"], type: "arabic" },
+      { id: "naz_trace_4", name: "Noorani Qaida: Letters Qaaf to Yaa (ق to ی)", letters: ["ق", "ک", "ل", "م", "ن", "و", "ہ", "ی"], type: "arabic" },
+      { id: "naz_trace_compounds", name: "Compound Letters (Murakkabat)", letters: ["لا", "با", "بل", "تم", "فی"], type: "arabic" },
+      { id: "naz_trace_tanween", name: "Tanween Signs (Double Vowels)", letters: ["ـً", "ـٍ", "ـٌ"], type: "arabic" },
+      { id: "naz_trace_maddah", name: "Huroof-e-Maddah (Elongation)", letters: ["بَا", "بُو", "بِی"], type: "arabic" }
+    ],
+    matching: [
+      { id: "naz_match_shapes", name: "Match Arabic Letter Shapes", left: ["ب", "ج", "د", "ر"], right: ["ر", "د", "ب", "ج"] }
+    ],
+    counting: [
+      { id: "naz_count_dots", name: "Count the Dots on Letters", items: [
+        { icon: "ب", count: 1, label: "Dot Below (1)" },
+        { icon: "ت", count: 2, label: "Dots Above (2)" },
+        { icon: "ث", count: 3, label: "Dots Above (3)" }
+      ]}
+    ],
+    coloring: [
+      { id: "naz_color_quran", name: "The Holy Quran", word: "QURAN", svg: "book", prompt: "Color the Holy Quran respectfully and trace the word below!" }
+    ],
+    circle: [
+      { id: "naz_circle_letters", name: "Find the Target Arabic Letter", questions: [
+        { target: "ب", options: ["ت", "ب", "ث", "ن"] },
+        { target: "ج", options: ["ح", "خ", "ج", "ع"] }
+      ]}
+    ],
+    fill: [
+      { id: "naz_fill_alphabet", name: "Missing Arabic Alphabet", bank: ["ب", "ث", "ح"], rows: [
+        ["ا", "", "ت"],
+        ["", "ج", ""]
+      ]}
+    ],
+    map: [
+      { id: "naz_map_makkah", name: "Qibla Direction Compass", kind: "compass" }
     ]
   },
 
@@ -1090,8 +1147,8 @@ var WORKSHEET_PRESETS = {
       ]}
     ],
     coloring: [
-      { id: "sci_color_flower", name: "Parts of a Flower", word: "FLOWER", svg: "flower", prompt: "Color petal, stem and leaf with natural colors!" },
-      { id: "sci_color_moon", name: "Night Sky Crescent", word: "NIGHT SKY", svg: "crescent", prompt: "Color sky deep blue and moon yellow!" }
+      { id: "sci_color_flower", name: "Parts of a Flower", word: "FLOWER", svg: "flower", prompt: "Color the petal, stem and leaf with natural colors!" },
+      { id: "sci_color_moon", name: "Night Sky Crescent", word: "NIGHT SKY", svg: "crescent", prompt: "Color the sky deep blue and the moon golden yellow!" }
     ],
     circle: [
       { id: "sci_wild_pets", name: "Circle the Wild Animal", questions: [
@@ -1109,7 +1166,7 @@ var WORKSHEET_PRESETS = {
       { id: "sci_fill_day_night", name: "Day & Night Words", bank: ["SUN", "MOON", "STARS"], rows: [
         ["Day brings the bright", ""],
         ["Night brings the glowing", ""],
-        ["Twinkling in sky are", ""]
+        ["Twinkling in the sky are", ""]
       ]}
     ],
     map: [
@@ -1122,7 +1179,7 @@ var WORKSHEET_PRESETS = {
       { id: "soc_trace_pak", name: "Pakistan & Lahore Tracing", letters: ["PAKISTAN", "LAHORE"], type: "letters" }
     ],
     matching: [
-      { id: "soc_family", name: "My Family Words", left: ["Ammi", "Abu", "Bhai", "Behn"], right: ["Mother", "Father", "Brother", "Sister"] },
+      { id: "soc_family", name: "My Family Members", left: ["Father", "Mother", "Brother", "Sister"], right: ["Abu", "Ammi", "Bhai", "Behn"] },
       { id: "soc_helpers", name: "Community Helpers", left: ["👨‍⚕️ Doctor", "👩‍🏫 Teacher", "👮 Police"], right: ["Hospital", "School", "Safety"] }
     ],
     counting: [
@@ -1200,7 +1257,7 @@ var WORKSHEET_PRESETS = {
       ]}
     ],
     coloring: [
-      { id: "act_color_flower", name: "Beautiful Flower", word: "FLOWER", svg: "flower", prompt: "Color petals with rainbow colors!" }
+      { id: "act_color_flower", name: "Beautiful Flower", word: "FLOWER", svg: "flower", prompt: "Color the petals with rainbow colors!" }
     ],
     circle: [
       { id: "act_circle_odd", name: "Odd One Out", questions: [
@@ -1218,13 +1275,15 @@ var WORKSHEET_PRESETS = {
   }
 };
 
+// Ink-friendly outline SVGs (no heavy black solid fills)
 var COLORING_SVGS = {
-  apple: '<svg viewBox="0 0 200 200" width="180" height="180"><path d="M100 45 C95 25 115 15 125 20 C120 35 105 45 100 45 Z" fill="#fff" stroke="#000" stroke-width="4"/><path d="M100 50 C100 30 105 20 110 15" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round"/><path d="M100 55 C80 35 30 50 30 105 C30 160 80 185 100 185 C120 185 170 160 170 105 C170 50 120 35 100 55 Z" fill="#fff" stroke="#000" stroke-width="5"/></svg>',
-  star: '<svg viewBox="0 0 200 200" width="180" height="180"><polygon points="100,15 125,75 190,75 138,115 158,175 100,135 42,175 62,115 10,75 75,75" fill="#fff" stroke="#000" stroke-width="5" stroke-linejoin="round"/></svg>',
-  car: '<svg viewBox="0 0 240 140" width="220" height="130"><path d="M20 90 L40 50 L90 40 L160 40 L190 70 L220 70 C225 70 230 75 230 85 L230 105 L210 105 C210 95 195 95 195 105 L75 105 C75 95 60 95 60 105 L20 105 Z" fill="#fff" stroke="#000" stroke-width="5"/><circle cx="68" cy="105" r="16" fill="#fff" stroke="#000" stroke-width="5"/><circle cx="202" cy="105" r="16" fill="#fff" stroke="#000" stroke-width="5"/><path d="M95 48 L155 48 L155 70 L80 70 Z" fill="#fff" stroke="#000" stroke-width="3"/></svg>',
-  flower: '<svg viewBox="0 0 200 200" width="180" height="180"><circle cx="100" cy="60" r="28" fill="#fff" stroke="#000" stroke-width="4"/><circle cx="140" cy="100" r="28" fill="#fff" stroke="#000" stroke-width="4"/><circle cx="100" cy="140" r="28" fill="#fff" stroke="#000" stroke-width="4"/><circle cx="60" cy="100" r="28" fill="#fff" stroke="#000" stroke-width="4"/><circle cx="100" cy="100" r="24" fill="#fff" stroke="#000" stroke-width="5"/><path d="M100 168 L100 200" stroke="#000" stroke-width="6"/><path d="M100 180 C120 170 135 185 135 185 C135 185 120 195 100 185" fill="#fff" stroke="#000" stroke-width="3"/></svg>',
-  masjid: '<svg viewBox="0 0 240 200" width="210" height="180"><path d="M70 120 C70 70 120 40 120 40 C120 40 170 70 170 120 Z" fill="#fff" stroke="#000" stroke-width="4"/><circle cx="120" cy="30" r="6" fill="#fff" stroke="#000" stroke-width="3"/><path d="M116 24 C116 16 124 16 124 24" fill="none" stroke="#000" stroke-width="3"/><rect x="60" y="120" width="120" height="70" fill="#fff" stroke="#000" stroke-width="4"/><path d="M100 190 C100 155 140 155 140 190 Z" fill="#fff" stroke="#000" stroke-width="4"/><rect x="30" y="70" width="25" height="120" fill="#fff" stroke="#000" stroke-width="4"/><path d="M30 70 L42 45 L55 70 Z" fill="#fff" stroke="#000" stroke-width="4"/><rect x="185" y="70" width="25" height="120" fill="#fff" stroke="#000" stroke-width="4"/><path d="M185 70 L197 45 L210 70 Z" fill="#fff" stroke="#000" stroke-width="4"/></svg>',
-  crescent: '<svg viewBox="0 0 200 200" width="180" height="180"><path d="M120 30 C70 30 35 75 35 125 C35 175 80 190 125 190 C90 175 75 140 75 110 C75 70 100 45 120 30 Z" fill="#fff" stroke="#000" stroke-width="5"/><polygon points="150,55 158,75 178,75 162,88 168,108 150,95 132,108 138,88 122,75 142,75" fill="#fff" stroke="#000" stroke-width="4"/></svg>'
+  apple: '<svg viewBox="0 0 200 200" width="180" height="180"><path d="M100 45 C95 25 115 15 125 20 C120 35 105 45 100 45 Z" fill="#fff" stroke="#334155" stroke-width="2.5"/><path d="M100 50 C100 30 105 20 110 15" fill="none" stroke="#334155" stroke-width="2.5" stroke-linecap="round"/><path d="M100 55 C80 35 30 50 30 105 C30 160 80 185 100 185 C120 185 170 160 170 105 C170 50 120 35 100 55 Z" fill="#fff" stroke="#334155" stroke-width="2.5"/></svg>',
+  star: '<svg viewBox="0 0 200 200" width="180" height="180"><polygon points="100,15 125,75 190,75 138,115 158,175 100,135 42,175 62,115 10,75 75,75" fill="#fff" stroke="#334155" stroke-width="2.5" stroke-linejoin="round"/></svg>',
+  car: '<svg viewBox="0 0 240 140" width="220" height="130"><path d="M20 90 L40 50 L90 40 L160 40 L190 70 L220 70 C225 70 230 75 230 85 L230 105 L210 105 C210 95 195 95 195 105 L75 105 C75 95 60 95 60 105 L20 105 Z" fill="#fff" stroke="#334155" stroke-width="2.5"/><circle cx="68" cy="105" r="16" fill="#fff" stroke="#334155" stroke-width="2.5"/><circle cx="202" cy="105" r="16" fill="#fff" stroke="#334155" stroke-width="2.5"/><path d="M95 48 L155 48 L155 70 L80 70 Z" fill="#fff" stroke="#334155" stroke-width="2"/></svg>',
+  flower: '<svg viewBox="0 0 200 200" width="180" height="180"><circle cx="100" cy="60" r="28" fill="#fff" stroke="#334155" stroke-width="2.5"/><circle cx="140" cy="100" r="28" fill="#fff" stroke="#334155" stroke-width="2.5"/><circle cx="100" cy="140" r="28" fill="#fff" stroke="#334155" stroke-width="2.5"/><circle cx="60" cy="100" r="28" fill="#fff" stroke="#334155" stroke-width="2.5"/><circle cx="100" cy="100" r="24" fill="#fff" stroke="#334155" stroke-width="2.5"/><path d="M100 168 L100 200" stroke="#334155" stroke-width="3"/><path d="M100 180 C120 170 135 185 135 185 C135 185 120 195 100 185" fill="#fff" stroke="#334155" stroke-width="2"/></svg>',
+  masjid: '<svg viewBox="0 0 240 200" width="210" height="180"><path d="M70 120 C70 70 120 40 120 40 C120 40 170 70 170 120 Z" fill="#fff" stroke="#334155" stroke-width="2.5"/><circle cx="120" cy="30" r="6" fill="#fff" stroke="#334155" stroke-width="2"/><path d="M116 24 C116 16 124 16 124 24" fill="none" stroke="#334155" stroke-width="2"/><rect x="60" y="120" width="120" height="70" fill="#fff" stroke="#334155" stroke-width="2.5"/><path d="M100 190 C100 155 140 155 140 190 Z" fill="#fff" stroke="#334155" stroke-width="2.5"/><rect x="30" y="70" width="25" height="120" fill="#fff" stroke="#334155" stroke-width="2.5"/><path d="M30 70 L42 45 L55 70 Z" fill="#fff" stroke="#334155" stroke-width="2.5"/><rect x="185" y="70" width="25" height="120" fill="#fff" stroke="#334155" stroke-width="2.5"/><path d="M185 70 L197 45 L210 70 Z" fill="#fff" stroke="#334155" stroke-width="2.5"/></svg>',
+  crescent: '<svg viewBox="0 0 200 200" width="180" height="180"><path d="M120 30 C70 30 35 75 35 125 C35 175 80 190 125 190 C90 175 75 140 75 110 C75 70 100 45 120 30 Z" fill="#fff" stroke="#334155" stroke-width="2.5"/><polygon points="150,55 158,75 178,75 162,88 168,108 150,95 132,108 138,88 122,75 142,75" fill="#fff" stroke="#334155" stroke-width="2"/></svg>',
+  book: '<svg viewBox="0 0 200 160" width="190" height="150"><path d="M100 40 C75 25 35 25 15 35 L15 130 C35 120 75 120 100 135 C125 120 165 120 185 130 L185 35 C165 25 125 25 100 40 Z" fill="#fff" stroke="#334155" stroke-width="2.5"/><line x1="100" y1="40" x2="100" y2="135" stroke="#334155" stroke-width="2.5"/><path d="M25 55 C45 45 75 45 90 55" fill="none" stroke="#64748B" stroke-width="1.5"/><path d="M25 75 C45 65 75 65 90 75" fill="none" stroke="#64748B" stroke-width="1.5"/><path d="M110 55 C125 45 155 45 175 55" fill="none" stroke="#64748B" stroke-width="1.5"/><path d="M110 75 C125 65 155 65 175 75" fill="none" stroke="#64748B" stroke-width="1.5"/></svg>'
 };
 
 function updateGeneratorKidName() {
@@ -1279,255 +1338,370 @@ function renderWorksheetPreview() {
   displayBox.innerHTML = html;
 }
 
-function buildWorksheetHTML(sub, typ, preset, kidName, wsDate) {
-  var isUrdu = (sub === "urdu" || sub === "islamiat");
-  var title = preset ? preset.name : "Practice Worksheet";
-  var urduTitle = isUrdu ? "مشق شیٹ" : "";
+// Standard Consistent Header on Every Page
+function buildWorksheetHeader(sub, title, kidName, wsDate) {
+  var isUrdu = (sub === "urdu");
+  var out = '<div class="ws-header' + (isUrdu ? ' urdu-header' : '') + '">';
 
-  var instructions = {
-    tracing: {
-      en: "Trace carefully along the dotted lines with a pencil.",
-      ur: "نقطوں پر پنسل چلائیں اور بار بار لکھیں۔"
-    },
-    matching: {
-      en: "Draw a straight line to match the correct pairs.",
-      ur: "لکیر لگا کر صحیح جوڑے ملائیں۔"
-    },
-    counting: {
-      en: "Count the objects in each box and write the number in the square.",
-      ur: "چیزیں گنیں اور خالی ڈبے میں درست ہندسہ لکھیں۔"
-    },
-    coloring: {
-      en: preset && preset.prompt ? preset.prompt : "Color neatly inside the lines and trace the word.",
-      ur: "خوبصورت رنگ بھریں اور نیچے دیے گئے لفظ کو ٹریس کریں۔"
-    },
-    circle: {
-      en: "Look at the target and circle the correct matching answer.",
-      ur: "پہلے حرف/نمبر کو دیکھ کر صحیح جواب پر گول دائرہ لگائیں۔"
-    },
-    fill: {
-      en: "Use the word bank to fill in the missing blanks.",
-      ur: "اوپر دیے گئے خانے کی مدد سے خالی جگہ پُر کریں۔"
-    },
-    map: {
-      en: "Look at the diagram, color neatly and label each province or direction in the blank box.",
-      ur: "نقشہ دیکھیں، رنگ بھریں اور خالی خانے میں صوبے کا نام لکھیں۔"
-    }
-  };
+  if (isUrdu) {
+    out += '  <div class="ws-brand-row urdu-text">';
+    out += '    <div class="ws-brand-title">🌱 ہوم اسکول • HomeSteps</div>';
+    out += '    <div class="ws-brand-badge">عمر ۳ تا ۷ سال • اردو مشق</div>';
+    out += '  </div>';
+    out += '  <div class="ws-title-row">';
+    out += '    <h1 class="ws-title urdu-title">' + title + '</h1>';
+    out += '  </div>';
+    out += '  <div class="ws-meta-bar urdu-text">';
+    out += '    <div class="ws-meta-item"><span>نام:</span> <span class="ws-meta-fill">' + kidName + '</span></div>';
+    out += '    <div class="ws-meta-item"><span>تاریخ:</span> <span class="ws-meta-fill">' + wsDate + '</span></div>';
+    out += '    <div class="ws-meta-item"><span>ستارے:</span> <span class="ws-stars">⭐ ⭐ ⭐</span></div>';
+    out += '  </div>';
+  } else {
+    var subjectLabels = {
+      english: "English",
+      math: "Math",
+      science: "Science",
+      islamiat: "Islamiat",
+      nazra: "Nazra (Quranic Arabic)",
+      social: "Social Studies",
+      art: "Art & Craft",
+      activity: "Activity"
+    };
+    var subLabel = subjectLabels[sub] || "Homeschool Learning";
 
-  var inst = instructions[typ] || { en: "Complete the exercises below.", ur: "نیچے دی گئی مشق مکمل کریں۔" };
-
-  var out = '<div class="ws-container">';
-
-  // 1. Header (HomeSteps Branding)
-  out += '  <div class="ws-header">';
-  out += '    <div class="ws-brand-row">';
-  out += '      <span>🌱 HomeSteps Homeschool</span>';
-  out += '      <span>Ages 3–7 • Bilingual</span>';
-  out += '    </div>';
-  out += '    <div class="ws-title-row">';
-  out += '      <div class="ws-title">' + title + '</div>';
-  if (urduTitle) {
-    out += '      <div class="ws-title-urdu">' + urduTitle + '</div>';
-  }
-  out += '    </div>';
-  out += '    <div class="ws-meta-bar">';
-  out += '      <div class="ws-meta-item"><span>Name:</span> <span class="ws-meta-fill">' + kidName + '</span></div>';
-  out += '      <div class="ws-meta-item"><span>Date:</span> <span class="ws-meta-fill">' + wsDate + '</span></div>';
-  out += '      <div class="ws-meta-item"><span>Score:</span> <span>⭐ ⭐ ⭐</span></div>';
-  out += '    </div>';
-  out += '  </div>';
-
-  // 2. Instructions
-  out += '  <div class="ws-instructions">';
-  out += '    <span class="ws-inst-en">✏️ ' + inst.en + '</span>';
-  out += '    <span class="ws-inst-ur">' + inst.ur + '</span>';
-  out += '  </div>';
-
-  // 3. Body
-  out += '  <div class="ws-body">';
-
-  if (typ === "tracing") {
-    out += buildTracingBody(preset);
-  } else if (typ === "counting") {
-    out += buildCountingBody(preset);
-  } else if (typ === "matching") {
-    out += buildMatchingBody(preset);
-  } else if (typ === "coloring") {
-    out += buildColoringBody(preset);
-  } else if (typ === "circle") {
-    out += buildCircleBody(preset);
-  } else if (typ === "fill") {
-    out += buildFillBody(preset);
-  } else if (typ === "map") {
-    out += buildMapLabelingBody(preset);
+    out += '  <div class="ws-brand-row">';
+    out += '    <div class="ws-brand-title">🌱 HomeSteps Homeschool</div>';
+    out += '    <div class="ws-brand-badge">Ages 3–7 • ' + subLabel + '</div>';
+    out += '  </div>';
+    out += '  <div class="ws-title-row">';
+    out += '    <h1 class="ws-title">' + title + '</h1>';
+    out += '  </div>';
+    out += '  <div class="ws-meta-bar">';
+    out += '    <div class="ws-meta-item"><span>Name:</span> <span class="ws-meta-fill">' + kidName + '</span></div>';
+    out += '    <div class="ws-meta-item"><span>Date:</span> <span class="ws-meta-fill">' + wsDate + '</span></div>';
+    out += '    <div class="ws-meta-item"><span>Score:</span> <span class="ws-stars">⭐ ⭐ ⭐</span></div>';
+    out += '  </div>';
   }
 
-  out += '  </div>';
   out += '</div>';
-
   return out;
 }
 
-function buildTracingBody(preset) {
-  var letters = (preset && preset.letters) || ["A", "B", "C", "D"];
-  var isUrdu = preset && preset.type === "urdu";
-  var html = '<div class="tracing-grid">';
+// Clear Single-Language Instruction at Top of Page
+function buildWorksheetInstructions(sub, typ, preset) {
+  var isUrdu = (sub === "urdu");
 
-  letters.forEach(function (char) {
+  var englishInstructions = {
+    tracing: "Trace carefully along the dotted lines with your pencil.",
+    matching: "Draw a straight line to match each correct pair.",
+    counting: "Count the objects in each box and write the number in the square.",
+    coloring: preset && preset.prompt ? preset.prompt : "Color neatly inside the lines and trace the word below.",
+    circle: "Look at the target and circle the matching answer.",
+    fill: "Use the word bank to fill in the missing blanks.",
+    map: "Look at the diagram and write the correct label in each box."
+  };
+
+  if (sub === "islamiat" && typ === "tracing") {
+    englishInstructions.tracing = "Trace the sacred Arabic words carefully with your pencil.";
+  }
+  if (sub === "nazra" && typ === "tracing") {
+    englishInstructions.tracing = "Trace the Arabic letters carefully along the dotted lines with correct pronunciation (Makhraj).";
+  }
+
+  var urduInstructions = {
+    tracing: "نقطوں پر پنسل چلائیں اور بار بار لکھنے کی مشق کریں۔",
+    matching: "لکیر لگا کر صحیح جوڑے آپس میں ملائیں۔",
+    counting: "چیزیں گنیں اور خالی ڈبے میں درست ہندسہ لکھیں۔",
+    coloring: preset && preset.prompt ? preset.prompt : "تصویر میں خوبصورت رنگ بھریں اور نیچے دیا گیا لفظ ٹریس کریں۔",
+    circle: "پہلے حرف کو دیکھ کر صحیح جواب پر گول دائرہ لگائیں۔",
+    fill: "اوپر دیے گئے خانے کی مدد سے خالی جگہ پُر کریں۔",
+    map: "نقشہ دیکھیں، رنگ بھریں اور خالی خانے میں درست سمت کا نام لکھیں۔"
+  };
+
+  var out = '<div class="ws-instructions' + (isUrdu ? ' urdu-instructions' : '') + '">';
+  if (isUrdu) {
+    out += '  <span class="ws-inst-text">✏️ ' + (urduInstructions[typ] || "دی گئی مشق مکمل کریں۔") + '</span>';
+  } else {
+    out += '  <span class="ws-inst-text">✏️ ' + (englishInstructions[typ] || "Complete the exercises below.") + '</span>';
+  }
+  out += '</div>';
+  return out;
+}
+
+// 1. Tracing Body with Kindergarten 3-Line Ruled Writing Guides
+function buildTracingBody(sub, preset) {
+  var letters = (preset && preset.letters) || ["A", "B", "C", "D"];
+  var isUrdu = (sub === "urdu");
+  var isArabic = (sub === "nazra" || (sub === "islamiat" && preset && preset.type === "arabic"));
+
+  var html = '<div class="tracing-grid">';
+  letters.forEach(function (char, idx) {
     html += '<div class="trace-card">';
-    html += '  <div class="trace-letter-big' + (isUrdu ? ' trace-letter-urdu' : '') + '">' + char + '</div>';
-    html += '  <div class="trace-lines-box"></div>';
-    html += '  <div class="trace-lines-box"></div>';
+    html += '  <div class="trace-card-header">';
+    html += '    <span class="trace-num-badge">#' + (idx + 1) + '</span>';
+    html += '    <span class="trace-star-cue">⭐</span>';
+    html += '  </div>';
+
+    var letterClass = 'trace-letter-big';
+    if (isUrdu) letterClass += ' trace-letter-urdu';
+    else if (isArabic) letterClass += ' trace-letter-arabic';
+
+    html += '  <div class="' + letterClass + '">' + char + '</div>';
+
+    html += '  <div class="trace-guidelines-container' + (isUrdu || isArabic ? ' rtl-guide' : '') + '">';
+
+    // Line 1: Dotted tracing repetitions
+    html += '    <div class="ruled-line-guide">';
+    html += '      <span class="guide-slot trace-dotted-sample' + (isUrdu ? ' urdu-char' : (isArabic ? ' arabic-char' : '')) + '">' + char + '</span>';
+    html += '      <span class="guide-slot trace-dotted-sample' + (isUrdu ? ' urdu-char' : (isArabic ? ' arabic-char' : '')) + '">' + char + '</span>';
+    html += '      <span class="guide-slot trace-dotted-sample' + (isUrdu ? ' urdu-char' : (isArabic ? ' arabic-char' : '')) + '">' + char + '</span>';
+    html += '    </div>';
+
+    // Line 2: Starter trace + free writing slots
+    html += '    <div class="ruled-line-guide">';
+    html += '      <span class="guide-slot trace-dotted-sample' + (isUrdu ? ' urdu-char' : (isArabic ? ' arabic-char' : '')) + '">' + char + '</span>';
+    html += '      <span class="guide-slot guide-slot-empty"></span>';
+    html += '      <span class="guide-slot guide-slot-empty"></span>';
+    html += '    </div>';
+
+    html += '  </div>';
     html += '</div>';
   });
-
   html += '</div>';
   return html;
 }
 
-function buildCountingBody(preset) {
+// 2. Counting Body with Generous Spacing and Big Answer Box
+function buildCountingBody(sub, preset) {
   var items = (preset && preset.items) || [
     { icon: "🍎", count: 3, label: "Apples" },
     { icon: "⭐", count: 5, label: "Stars" },
     { icon: "🎈", count: 2, label: "Balloons" },
     { icon: "🌸", count: 4, label: "Flowers" }
   ];
+  var isUrdu = (sub === "urdu");
 
-  var html = '<div class="counting-list">';
-  items.forEach(function (it) {
+  var html = '<div class="counting-list' + (isUrdu ? ' urdu-counting' : '') + '">';
+  items.forEach(function (it, idx) {
     html += '<div class="counting-row">';
-    html += '  <div class="counting-objects">';
+    html += '  <div class="counting-index-badge">#' + (idx + 1) + '</div>';
+
+    html += '  <div class="counting-objects-stage">';
     for (var i = 0; i < it.count; i++) {
-      html += '<span>' + it.icon + '</span>';
+      html += '    <span class="count-item-icon">' + it.icon + '</span>';
     }
     html += '  </div>';
-    html += '  <div class="counting-answer-box">?</div>';
+
+    html += '  <div class="counting-answer-group">';
+    html += '    <div class="counting-answer-label">' + (isUrdu ? 'تعداد لکھیں' : 'Count & Write') + '</div>';
+    html += '    <div class="counting-answer-box">';
+    html += '      <div class="counting-box-inner-guide"></div>';
+    html += '    </div>';
+    html += '    <span class="counting-reward-star" title="Color when correct">⭐</span>';
+    html += '  </div>';
+
     html += '</div>';
   });
   html += '</div>';
   return html;
 }
 
-function buildMatchingBody(preset) {
+// 3. Matching Body with Two Spacious Columns and Central Drawing Lane
+function buildMatchingBody(sub, preset) {
   var left = (preset && preset.left) || ["A", "B", "C", "D"];
   var right = (preset && preset.right) || ["c", "a", "d", "b"];
+  var isUrdu = (sub === "urdu");
 
-  var html = '<div class="matching-container">';
-  html += '<div class="matching-column">';
-  left.forEach(function (item) {
-    html += '<div class="match-item left">' + item + '</div>';
-  });
-  html += '</div>';
+  var html = '<div class="matching-container' + (isUrdu ? ' urdu-matching' : '') + '">';
 
-  html += '<div class="matching-column">';
-  right.forEach(function (item) {
-    html += '<div class="match-item right">' + item + '</div>';
+  html += '  <div class="matching-column left-col">';
+  left.forEach(function (item, idx) {
+    html += '    <div class="match-item match-left" data-index="' + idx + '">';
+    html += '      <span class="match-text">' + item + '</span>';
+    html += '      <span class="match-connector">○</span>';
+    html += '    </div>';
   });
-  html += '</div>';
+  html += '  </div>';
+
+  html += '  <div class="matching-divider-space">';
+  html += '    <div class="matching-center-cue">✏️ Draw Line ✏️</div>';
+  html += '  </div>';
+
+  html += '  <div class="matching-column right-col">';
+  right.forEach(function (item, idx) {
+    html += '    <div class="match-item match-right" data-index="' + idx + '">';
+    html += '      <span class="match-connector">○</span>';
+    html += '      <span class="match-text">' + item + '</span>';
+    html += '    </div>';
+  });
+  html += '  </div>';
+
   html += '</div>';
   return html;
 }
 
-function buildColoringBody(preset) {
+// 4. Coloring + Kindergarten Ruled Tracing Banner Below
+function buildColoringBody(sub, preset) {
   var svgKey = (preset && preset.svg) || "apple";
   var svgCode = COLORING_SVGS[svgKey] || COLORING_SVGS.apple;
   var word = (preset && preset.word) || "COLOR";
-  var isUrdu = word.match(/[\u0600-\u06FF]/);
+  var isUrdu = (sub === "urdu");
+  var isArabic = (sub === "nazra");
 
-  var html = '<div class="coloring-container">';
-  html += '  <div class="coloring-art-box">' + svgCode + '</div>';
-  html += '  <div>';
-  html += '    <div class="coloring-word-trace' + (isUrdu ? ' coloring-word-urdu' : '') + '">' + word + '</div>';
+  var html = '<div class="coloring-container' + (isUrdu ? ' urdu-coloring' : '') + '">';
+
+  html += '  <div class="coloring-art-box">';
+  html += '    <div class="coloring-corner-star top-left">⭐</div>';
+  html += '    <div class="coloring-corner-star top-right">⭐</div>';
+  html += '    ' + svgCode;
+  html += '    <div class="coloring-corner-star bottom-left">⭐</div>';
+  html += '    <div class="coloring-corner-star bottom-right">⭐</div>';
   html += '  </div>';
+
+  html += '  <div class="coloring-trace-section">';
+  html += '    <div class="coloring-trace-label">' + (isUrdu ? '✏️ نیچے دیا گیا لفظ ٹریس کریں:' : '✏️ Trace the Word Below:') + '</div>';
+  html += '    <div class="coloring-ruled-banner' + (isUrdu ? ' urdu-ruled' : (isArabic ? ' arabic-ruled' : '')) + '">';
+  html += '      <span class="coloring-trace-word">' + word + '</span>';
+  html += '    </div>';
+  html += '  </div>';
+
   html += '</div>';
   return html;
 }
 
-function buildCircleBody(preset) {
+// 5. Circle the Correct Answer with Big Target Card & Spacious Choices
+function buildCircleBody(sub, preset) {
   var questions = (preset && preset.questions) || [
     { target: "B", options: ["D", "B", "P", "R"] },
     { target: "5", options: ["2", "5", "8", "3"] }
   ];
+  var isUrdu = (sub === "urdu");
+  var isArabic = (sub === "nazra");
 
-  var html = '<div class="circle-list">';
+  var html = '<div class="circle-list' + (isUrdu ? ' urdu-circle' : '') + '">';
   questions.forEach(function (q) {
     html += '<div class="circle-row">';
-    html += '  <div class="circle-target">' + q.target + '</div>';
+
+    html += '  <div class="circle-target-card">';
+    html += '    <div class="circle-target-label">' + (isUrdu ? 'تلاش کریں' : 'FIND THIS') + '</div>';
+    html += '    <div class="circle-target-val' + (isUrdu ? ' urdu-val' : (isArabic ? ' arabic-val' : '')) + '">' + q.target + '</div>';
+    html += '  </div>';
+
+    html += '  <div class="circle-divider-arrow">' + (isUrdu ? '⬅' : '➔') + '</div>';
+
     html += '  <div class="circle-options">';
     q.options.forEach(function (opt) {
-      html += '    <div class="circle-choice">' + opt + '</div>';
+      html += '    <div class="circle-choice' + (isUrdu ? ' urdu-choice' : (isArabic ? ' arabic-choice' : '')) + '">';
+      html += '      <span>' + opt + '</span>';
+      html += '    </div>';
+    });
+    html += '  </div>';
+
+    html += '</div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+// 6. Fill in the Blanks with Dedicated Word Bank Pills
+function buildFillBody(sub, preset) {
+  var bank = (preset && preset.bank) || ["A", "B", "C"];
+  var rows = (preset && preset.rows) || [["A", "", "C"]];
+  var isUrdu = (sub === "urdu");
+
+  var html = '<div class="fill-container' + (isUrdu ? ' urdu-fill' : '') + '">';
+
+  html += '<div class="fill-wordbank">';
+  html += '  <div class="wordbank-title">🏷️ ' + (isUrdu ? 'الفاظ کا خانہ (Word Bank):' : 'WORD BANK') + '</div>';
+  html += '  <div class="wordbank-pills">';
+  bank.forEach(function (b) {
+    html += '    <span class="wordbank-pill">' + b + '</span>';
+  });
+  html += '  </div>';
+  html += '</div>';
+
+  html += '<div class="fill-sequences">';
+  rows.forEach(function (row, rIdx) {
+    html += '<div class="fill-row">';
+    html += '  <div class="fill-row-num">#' + (rIdx + 1) + '</div>';
+    html += '  <div class="fill-cells-group">';
+    row.forEach(function (cell) {
+      if (cell === "") {
+        html += '<div class="fill-cell blank">';
+        html += '  <div class="fill-blank-guide"></div>';
+        html += '  <span class="fill-blank-qmark">?</span>';
+        html += '</div>';
+      } else {
+        html += '<div class="fill-cell">' + cell + '</div>';
+      }
     });
     html += '  </div>';
     html += '</div>';
   });
   html += '</div>';
-  return html;
-}
 
-function buildFillBody(preset) {
-  var bank = (preset && preset.bank) || ["A", "B", "C"];
-  var rows = (preset && preset.rows) || [["A", "", "C"]];
-
-  var html = '<div class="fill-container">';
-  html += '<div class="fill-wordbank">';
-  html += '  <span class="wordbank-label">📦 Word Bank:</span> ';
-  bank.forEach(function (b) {
-    html += '  <strong style="margin: 0 8px; font-size: 1.15rem;">' + b + '</strong>';
-  });
-  html += '</div>';
-
-  html += '<div class="fill-sequences">';
-  rows.forEach(function (row) {
-    html += '<div class="fill-row">';
-    row.forEach(function (cell) {
-      if (cell === "") {
-        html += '<div class="fill-cell blank">?</div>';
-      } else {
-        html += '<div class="fill-cell">' + cell + '</div>';
-      }
-    });
-    html += '</div>';
-  });
-  html += '</div>';
   html += '</div>';
   return html;
 }
 
-function buildMapLabelingBody(preset) {
+// 7. Map & Diagram Labeling with Clean Ink-Friendly Line Art
+function buildMapLabelingBody(sub, preset) {
   var kind = (preset && preset.kind) || "pak_provinces";
-  var html = '<div class="map-worksheet-box">';
+  var isUrdu = (sub === "urdu");
+  var html = '<div class="map-worksheet-box' + (isUrdu ? ' urdu-map' : '') + '">';
 
   if (kind === "pak_flag") {
     html += '<div class="map-svg-container">';
-    html += '  <svg viewBox="0 0 240 160" width="220" height="150" style="border: 2px solid #000; border-radius: 6px;">';
-    html += '    <rect x="0" y="0" width="60" height="160" fill="#fff" stroke="#000" stroke-width="2"/>';
-    html += '    <rect x="60" y="0" width="180" height="160" fill="#fff" stroke="#000" stroke-width="2"/>';
-    html += '    <path d="M165 50 C140 50 125 70 125 90 C125 110 140 130 165 130 C150 120 140 105 140 90 C140 75 150 60 165 50 Z" fill="#fff" stroke="#000" stroke-width="3"/>';
-    html += '    <polygon points="175,70 180,82 192,82 182,90 186,102 175,94 164,102 168,90 158,82 170,82" fill="#fff" stroke="#000" stroke-width="2"/>';
+    html += '  <svg viewBox="0 0 240 160" width="220" height="150" style="border: 1.5px solid #475569; border-radius: 6px; background: #FFF;">';
+    html += '    <rect x="0" y="0" width="60" height="160" fill="#fff" stroke="#475569" stroke-width="2"/>';
+    html += '    <rect x="60" y="0" width="180" height="160" fill="#fff" stroke="#475569" stroke-width="2"/>';
+    html += '    <path d="M165 50 C140 50 125 70 125 90 C125 110 140 130 165 130 C150 120 140 105 140 90 C140 75 150 60 165 50 Z" fill="#fff" stroke="#475569" stroke-width="2.5"/>';
+    html += '    <polygon points="175,70 180,82 192,82 182,90 186,102 175,94 164,102 168,90 158,82 170,82" fill="#fff" stroke="#475569" stroke-width="2"/>';
     html += '  </svg>';
     html += '</div>';
-    html += '<div class="fill-wordbank"><span class="wordbank-label">📦 Word Bank:</span> <strong>White Stripe</strong> • <strong>Green Field</strong> • <strong>Crescent Moon</strong> • <strong>Five-pointed Star</strong></div>';
+    html += '<div class="fill-wordbank"><div class="wordbank-title">🏷️ WORD BANK:</div><div class="wordbank-pills"><span class="wordbank-pill">White Stripe</span><span class="wordbank-pill">Green Field</span><span class="wordbank-pill">Crescent Moon</span><span class="wordbank-pill">Five-pointed Star</span></div></div>';
     html += '<div class="map-labels-grid">';
     html += '  <div class="map-label-target-card"><span class="map-target-title">1. Left vertical stripe:</span><div class="map-blank-input-box"></div></div>';
     html += '  <div class="map-label-target-card"><span class="map-target-title">2. Main background field:</span><div class="map-blank-input-box"></div></div>';
     html += '  <div class="map-label-target-card"><span class="map-target-title">3. Moon symbol:</span><div class="map-blank-input-box"></div></div>';
     html += '  <div class="map-label-target-card"><span class="map-target-title">4. Star symbol:</span><div class="map-blank-input-box"></div></div>';
     html += '</div>';
-  } else if (kind === "compass" || kind === "compass_ur") {
+  } else if (kind === "compass_ur") {
     html += '<div class="map-svg-container">';
     html += '  <svg viewBox="0 0 200 200" width="180" height="180">';
-    html += '    <circle cx="100" cy="100" r="80" fill="#fff" stroke="#000" stroke-width="4"/>';
-    html += '    <line x1="100" y1="20" x2="100" y2="180" stroke="#000" stroke-width="3"/>';
-    html += '    <line x1="20" y1="100" x2="180" y2="100" stroke="#000" stroke-width="3"/>';
-    html += '    <polygon points="100,25 108,80 100,70 92,80" fill="#000"/>';
+    html += '    <circle cx="100" cy="100" r="80" fill="#fff" stroke="#334155" stroke-width="2.5"/>';
+    html += '    <line x1="100" y1="20" x2="100" y2="180" stroke="#64748B" stroke-width="1.5"/>';
+    html += '    <line x1="20" y1="100" x2="180" y2="100" stroke="#64748B" stroke-width="1.5"/>';
+    html += '    <polygon points="100,25 108,80 100,70 92,80" fill="#fff" stroke="#334155" stroke-width="2"/>';
+    html += '    <polygon points="100,175 108,120 100,130 92,120" fill="#fff" stroke="#334155" stroke-width="2"/>';
+    html += '    <text x="82" y="24" font-weight="bold" font-size="13" font-family="sans-serif">شمال</text>';
+    html += '    <text x="82" y="196" font-weight="bold" font-size="13" font-family="sans-serif">جنوب</text>';
+    html += '    <text x="176" y="105" font-weight="bold" font-size="13" font-family="sans-serif">مشرق</text>';
+    html += '    <text x="4" y="105" font-weight="bold" font-size="13" font-family="sans-serif">مغرب</text>';
+    html += '  </svg>';
+    html += '</div>';
+    html += '<div class="fill-wordbank"><div class="wordbank-title">🏷️ الفاظ کا خانہ (Word Bank):</div><div class="wordbank-pills"><span class="wordbank-pill">شمال</span><span class="wordbank-pill">جنوب</span><span class="wordbank-pill">مشرق</span><span class="wordbank-pill">مغرب</span></div></div>';
+    html += '<div class="map-labels-grid">';
+    html += '  <div class="map-label-target-card"><span class="map-target-title">اوپر کی سمت:</span><div class="map-blank-input-box"></div></div>';
+    html += '  <div class="map-label-target-card"><span class="map-target-title">نیچے کی سمت:</span><div class="map-blank-input-box"></div></div>';
+    html += '  <div class="map-label-target-card"><span class="map-target-title">دائیں سمت:</span><div class="map-blank-input-box"></div></div>';
+    html += '  <div class="map-label-target-card"><span class="map-target-title">بائیں سمت:</span><div class="map-blank-input-box"></div></div>';
+    html += '</div>';
+  } else if (kind === "compass") {
+    html += '<div class="map-svg-container">';
+    html += '  <svg viewBox="0 0 200 200" width="180" height="180">';
+    html += '    <circle cx="100" cy="100" r="80" fill="#fff" stroke="#334155" stroke-width="2.5"/>';
+    html += '    <line x1="100" y1="20" x2="100" y2="180" stroke="#64748B" stroke-width="1.5"/>';
+    html += '    <line x1="20" y1="100" x2="180" y2="100" stroke="#64748B" stroke-width="1.5"/>';
+    html += '    <polygon points="100,25 108,80 100,70 92,80" fill="#fff" stroke="#334155" stroke-width="2"/>';
+    html += '    <polygon points="100,175 108,120 100,130 92,120" fill="#fff" stroke="#334155" stroke-width="2"/>';
     html += '    <text x="94" y="20" font-weight="bold" font-size="16">N</text>';
     html += '    <text x="94" y="196" font-weight="bold" font-size="16">S</text>';
     html += '    <text x="184" y="105" font-weight="bold" font-size="16">E</text>';
     html += '    <text x="6" y="105" font-weight="bold" font-size="16">W</text>';
     html += '  </svg>';
     html += '</div>';
-    html += '<div class="fill-wordbank"><span class="wordbank-label">📦 Word Bank:</span> <strong>North</strong> • <strong>South</strong> • <strong>East</strong> • <strong>West</strong></div>';
+    html += '<div class="fill-wordbank"><div class="wordbank-title">🏷️ WORD BANK:</div><div class="wordbank-pills"><span class="wordbank-pill">North</span><span class="wordbank-pill">South</span><span class="wordbank-pill">East</span><span class="wordbank-pill">West</span></div></div>';
     html += '<div class="map-labels-grid">';
     html += '  <div class="map-label-target-card"><span class="map-target-title">Top Direction (N):</span><div class="map-blank-input-box"></div></div>';
     html += '  <div class="map-label-target-card"><span class="map-target-title">Bottom Direction (S):</span><div class="map-blank-input-box"></div></div>';
@@ -1536,12 +1710,12 @@ function buildMapLabelingBody(preset) {
     html += '</div>';
   } else {
     html += '<div class="map-svg-container">';
-    html += '  <svg viewBox="0 0 280 220" width="260" height="200" style="border: 2px solid #000; border-radius: 8px; background: #FAF9F6;">';
-    html += '    <path d="M70 140 L120 130 L100 190 L40 180 Z" fill="#fff" stroke="#000" stroke-width="2" title="Balochistan"/>';
-    html += '    <path d="M120 130 L170 120 L150 185 L100 190 Z" fill="#fff" stroke="#000" stroke-width="2" title="Sindh"/>';
-    html += '    <path d="M120 70 L190 70 L170 120 L120 130 Z" fill="#fff" stroke="#000" stroke-width="2" title="Punjab"/>';
-    html += '    <path d="M75 60 L120 70 L110 120 L65 100 Z" fill="#fff" stroke="#000" stroke-width="2" title="KPK"/>';
-    html += '    <path d="M140 25 L210 30 L190 70 L125 65 Z" fill="#fff" stroke="#000" stroke-width="2" title="GB & Kashmir"/>';
+    html += '  <svg viewBox="0 0 280 220" width="260" height="200" style="border: 1.5px solid #475569; border-radius: 8px; background: #FAF9F6;">';
+    html += '    <path d="M70 140 L120 130 L100 190 L40 180 Z" fill="#fff" stroke="#475569" stroke-width="1.5" title="Balochistan"/>';
+    html += '    <path d="M120 130 L170 120 L150 185 L100 190 Z" fill="#fff" stroke="#475569" stroke-width="1.5" title="Sindh"/>';
+    html += '    <path d="M120 70 L190 70 L170 120 L120 130 Z" fill="#fff" stroke="#475569" stroke-width="1.5" title="Punjab"/>';
+    html += '    <path d="M75 60 L120 70 L110 120 L65 100 Z" fill="#fff" stroke="#475569" stroke-width="1.5" title="KPK"/>';
+    html += '    <path d="M140 25 L210 30 L190 70 L125 65 Z" fill="#fff" stroke="#475569" stroke-width="1.5" title="GB & Kashmir"/>';
     html += '    <text x="60" y="160" font-size="12" font-weight="bold">1</text>';
     html += '    <text x="135" y="160" font-size="12" font-weight="bold">2</text>';
     html += '    <text x="150" y="100" font-size="12" font-weight="bold">3</text>';
@@ -1549,7 +1723,7 @@ function buildMapLabelingBody(preset) {
     html += '    <text x="165" y="45" font-size="12" font-weight="bold">5</text>';
     html += '  </svg>';
     html += '</div>';
-    html += '<div class="fill-wordbank"><span class="wordbank-label">📦 Word Bank:</span> <strong>Punjab</strong> • <strong>Sindh</strong> • <strong>Khyber Pakhtunkhwa</strong> • <strong>Balochistan</strong> • <strong>Gilgit-Baltistan</strong></div>';
+    html += '<div class="fill-wordbank"><div class="wordbank-title">🏷️ WORD BANK:</div><div class="wordbank-pills"><span class="wordbank-pill">Punjab</span><span class="wordbank-pill">Sindh</span><span class="wordbank-pill">Khyber Pakhtunkhwa</span><span class="wordbank-pill">Balochistan</span><span class="wordbank-pill">Gilgit-Baltistan</span></div></div>';
     html += '<div class="map-labels-grid">';
     html += '  <div class="map-label-target-card"><span class="map-target-title">1. Largest area (South-West):</span><div class="map-blank-input-box"></div></div>';
     html += '  <div class="map-label-target-card"><span class="map-target-title">2. Indus Delta (South-East):</span><div class="map-blank-input-box"></div></div>';
@@ -1561,6 +1735,32 @@ function buildMapLabelingBody(preset) {
 
   html += '</div>';
   return html;
+}
+
+// Master HTML Assembly
+function buildWorksheetHTML(sub, typ, preset, kidName, wsDate) {
+  var title = preset ? preset.name : "Practice Worksheet";
+  var header = buildWorksheetHeader(sub, title, kidName, wsDate);
+  var instructions = buildWorksheetInstructions(sub, typ, preset);
+
+  var body = "";
+  if (typ === "tracing") {
+    body = buildTracingBody(sub, preset);
+  } else if (typ === "counting") {
+    body = buildCountingBody(sub, preset);
+  } else if (typ === "matching") {
+    body = buildMatchingBody(sub, preset);
+  } else if (typ === "coloring") {
+    body = buildColoringBody(sub, preset);
+  } else if (typ === "circle") {
+    body = buildCircleBody(sub, preset);
+  } else if (typ === "fill") {
+    body = buildFillBody(sub, preset);
+  } else if (typ === "map") {
+    body = buildMapLabelingBody(sub, preset);
+  }
+
+  return '<div class="ws-container">' + header + instructions + '  <div class="ws-body">' + body + '  </div>\n</div>';
 }
 
 
@@ -1879,7 +2079,8 @@ function batchPrintWeeksWorksheets() {
     var subKey = primarySub.toLowerCase();
     if (subKey === "social studies") subKey = "social";
     if (subKey === "art & craft") subKey = "art";
-    if (subKey === "nazra") subKey = "urdu";
+    if (subKey === "math/counting") subKey = "math";
+    if (subKey === "reading" || subKey === "writing") subKey = "english";
 
     var typ = (item && item.type) ? item.type : "tracing";
     var list = (WORKSHEET_PRESETS[subKey] && WORKSHEET_PRESETS[subKey][typ]) || [];
