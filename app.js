@@ -2517,6 +2517,12 @@ if (pwaBtn) {
       });
     }
   };
+
+  window.addEventListener("appinstalled", function () {
+    console.log("PWA was installed");
+    pwaBtn.classList.add("hidden");
+    deferredInstallPrompt = null;
+  });
 }
 
 // PWA one-time toast hint
