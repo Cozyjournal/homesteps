@@ -10,12 +10,12 @@
 // Replace the placeholder values with your exact Firebase project config
 // ========================================================
 var firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyCzLIma_ZK8qOKoL2qE3VQ64z0OROiOeIk",
+  authDomain: "homesteps-96609.firebaseapp.com",
+  projectId: "homesteps-96609",
+  storageBucket: "homesteps-96609.firebasestorage.app",
+  messagingSenderId: "159351991208",
+  appId: "1:159351991208:web:2b0a2976a331ac06734b9d"
 };
 
 // ========================================================
