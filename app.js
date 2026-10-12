@@ -6,6 +6,19 @@
 // ========================================================
 
 // ========================================================
+// FIREBASE AUTHENTICATION CONFIGURATION
+// Replace the placeholder values with your exact Firebase project config
+// ========================================================
+var firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+// ========================================================
 // EDITABLE VIDEO LINKS (Topic Keyword -> YouTube URL)
 // The owner can customize, reorder, or add new topics below anytime!
 // ========================================================
@@ -2662,8 +2675,211 @@ document.getElementById("shareStreakWhatsAppBtn").onclick = function () {
 // 6. Monthly Report Controls (Requirement 6)
 initReportControls();
 
+// ========================================================
+// 7. FIREBASE AUTHENTICATION & APP GATING
+// ========================================================
+var authMode = "login"; // "login" or "signup"
+var isFirebaseInitialized = false;
+
+function initFirebaseAuth() {
+  var authScreen = document.getElementById("authScreen");
+  var appShell = document.getElementById("mainAppShell");
+
+  if (typeof firebase === "undefined") {
+    console.warn("Firebase SDK not loaded.");
+    if (authScreen) authScreen.classList.remove("hidden");
+    if (appShell) appShell.classList.add("hidden");
+    showAuthAlert("Connecting to authentication service... Please verify your internet connection.", "info");
+    setupAuthUI();
+    return;
+  }
+
+  try {
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    isFirebaseInitialized = true;
+  } catch (err) {
+    console.warn("Firebase initialization notice:", err);
+  }
+
+  setupAuthUI();
+
+  if (isFirebaseInitialized && firebase.auth) {
+    firebase.auth().onAuthStateChanged(function (user) {
+      if (user) {
+        // Logged-in users go straight in
+        if (authScreen) authScreen.classList.add("hidden");
+        if (appShell) appShell.classList.remove("hidden");
+        render();
+      } else {
+        // Not logged in: Show ONLY login screen, hide entire app
+        if (authScreen) authScreen.classList.remove("hidden");
+        if (appShell) appShell.classList.add("hidden");
+      }
+    });
+  } else {
+    // Gated fallback
+    if (authScreen) authScreen.classList.remove("hidden");
+    if (appShell) appShell.classList.add("hidden");
+  }
+}
+
+function showAuthAlert(message, type) {
+  var alertEl = document.getElementById("authAlert");
+  if (!alertEl) return;
+  alertEl.textContent = message;
+  alertEl.className = "auth-alert " + (type || "error");
+  alertEl.classList.remove("hidden");
+}
+
+function clearAuthAlert() {
+  var alertEl = document.getElementById("authAlert");
+  if (!alertEl) return;
+  alertEl.textContent = "";
+  alertEl.className = "auth-alert hidden";
+}
+
+function setupAuthUI() {
+  var tabLogin = document.getElementById("authTabLogin");
+  var tabSignup = document.getElementById("authTabSignup");
+  var submitBtn = document.getElementById("authSubmitBtn");
+  var submitText = document.getElementById("authSubmitText");
+  var footerHint = document.getElementById("authFooterHint");
+  var authForm = document.getElementById("authForm");
+  var logoutBtn = document.getElementById("logoutBtn");
+
+  if (tabLogin && tabSignup) {
+    tabLogin.onclick = function () {
+      authMode = "login";
+      tabLogin.classList.add("active");
+      tabSignup.classList.remove("active");
+      if (submitText) submitText.textContent = "Log In";
+      if (footerHint) footerHint.innerHTML = "First time using HomeSteps? Click <strong>Sign Up</strong> above.";
+      clearAuthAlert();
+    };
+
+    tabSignup.onclick = function () {
+      authMode = "signup";
+      tabSignup.classList.add("active");
+      tabLogin.classList.remove("active");
+      if (submitText) submitText.textContent = "Create Account";
+      if (footerHint) footerHint.innerHTML = "Already have an account? Click <strong>Log In</strong> above.";
+      clearAuthAlert();
+    };
+  }
+
+  if (authForm) {
+    authForm.onsubmit = function (e) {
+      if (e && e.preventDefault) e.preventDefault();
+      var emailInput = document.getElementById("authEmail");
+      var passInput = document.getElementById("authPassword");
+      var email = (emailInput ? emailInput.value : "").trim();
+      var password = passInput ? passInput.value : "";
+
+      clearAuthAlert();
+
+      if (!email) {
+        showAuthAlert("Please enter your email address.", "error");
+        if (emailInput) emailInput.focus();
+        return false;
+      }
+
+      if (!password || password.length < 6) {
+        showAuthAlert("Password must be at least 6 characters long.", "error");
+        if (passInput) passInput.focus();
+        return false;
+      }
+
+      if (!isFirebaseInitialized || !firebase.auth) {
+        showAuthAlert("Firebase is not initialized. Please ensure your Firebase configuration is added in app.js.", "error");
+        return false;
+      }
+
+      if (firebaseConfig.apiKey === "YOUR_API_KEY") {
+        showAuthAlert("Please paste your Firebase configuration in app.js (firebaseConfig) to enable live authentication.", "info");
+        return false;
+      }
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        if (submitText) submitText.textContent = authMode === "login" ? "Logging in..." : "Creating account...";
+      }
+
+      var authPromise;
+      if (authMode === "login") {
+        authPromise = firebase.auth().signInWithEmailAndPassword(email, password);
+      } else {
+        authPromise = firebase.auth().createUserWithEmailAndPassword(email, password);
+      }
+
+      authPromise
+        .then(function () {
+          clearAuthAlert();
+        })
+        .catch(function (error) {
+          showAuthAlert(getFriendlyErrorMessage(error), "error");
+        })
+        .finally(function () {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            if (submitText) submitText.textContent = authMode === "login" ? "Log In" : "Create Account";
+          }
+        });
+
+      return false;
+    };
+  }
+
+  if (logoutBtn) {
+    logoutBtn.onclick = function () {
+      if (confirm("Are you sure you want to log out of HomeSteps?")) {
+        if (isFirebaseInitialized && firebase.auth) {
+          firebase.auth().signOut().catch(function (err) {
+            console.error("Sign out error:", err);
+          });
+        } else {
+          var authScreen = document.getElementById("authScreen");
+          var appShell = document.getElementById("mainAppShell");
+          if (authScreen) authScreen.classList.remove("hidden");
+          if (appShell) appShell.classList.add("hidden");
+        }
+      }
+    };
+  }
+}
+
+function getFriendlyErrorMessage(error) {
+  if (!error) return "An error occurred. Please try again.";
+  var code = error.code || "";
+  switch (code) {
+    case "auth/invalid-email":
+      return "Please enter a valid email address.";
+    case "auth/user-not-found":
+    case "auth/wrong-password":
+    case "auth/invalid-credential":
+      return "Incorrect email or password. Please try again.";
+    case "auth/email-already-in-use":
+      return "An account already exists with this email address. Please Log In instead.";
+    case "auth/weak-password":
+      return "Password is too weak. Please choose at least 6 characters.";
+    case "auth/network-request-failed":
+      return "Network connection error. Please check your internet connection.";
+    case "auth/too-many-requests":
+      return "Too many failed attempts. Please wait a moment and try again.";
+    case "auth/invalid-api-key":
+    case "auth/api-key-not-valid":
+      return "Invalid Firebase API key. Please check your firebaseConfig in app.js.";
+    case "auth/operation-not-allowed":
+      return "Email/Password sign-in is not enabled in your Firebase console under Authentication > Sign-in method.";
+    default:
+      return error.message || "Authentication failed. Please try again.";
+  }
+}
+
 // ---------- Initial Boot ----------
 initAccessibility();
 initDailyReminder();
 updatePresetOptions();
+initFirebaseAuth();
 render();

@@ -12,6 +12,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="style.css">
+  <!-- Firebase SDK v10.x Compat Builds -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#C96F4A">
   <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -20,8 +23,46 @@
 </head>
 <body>
 
+  <!-- ================= AUTH SCREEN (GATED LOGIN / SIGNUP) ================= -->
+  <div id="authScreen" class="auth-screen">
+    <div class="auth-card">
+      <div class="auth-brand">
+        <span class="auth-logo">🌱</span>
+        <h1 class="auth-brand-name">HomeSteps</h1>
+        <p class="auth-brand-tagline">Teach it. Track it. Print it. — All in one place 💛</p>
+      </div>
+
+      <div class="auth-mode-toggle">
+        <button id="authTabLogin" class="auth-toggle-btn active" type="button">Log In</button>
+        <button id="authTabSignup" class="auth-toggle-btn" type="button">Sign Up</button>
+      </div>
+
+      <form id="authForm" novalidate onsubmit="return false;">
+        <div id="authAlert" class="auth-alert hidden"></div>
+
+        <div class="auth-field">
+          <label for="authEmail">Email Address</label>
+          <input type="email" id="authEmail" class="form-input" placeholder="mother@homesteps.com" autocomplete="email" required>
+        </div>
+
+        <div class="auth-field">
+          <label for="authPassword">Password</label>
+          <input type="password" id="authPassword" class="form-input" placeholder="At least 6 characters" autocomplete="current-password" required>
+        </div>
+
+        <button type="submit" id="authSubmitBtn" class="btn btn-primary auth-btn">
+          <span id="authSubmitText">Log In</span>
+        </button>
+      </form>
+
+      <div class="auth-footer-note">
+        <span id="authFooterHint">First time using HomeSteps? Click <strong>Sign Up</strong> above.</span>
+      </div>
+    </div>
+  </div>
+
   <!-- ================= MAIN APP SHELL (NO-PRINT) ================= -->
-  <div class="app no-print">
+  <div id="mainAppShell" class="app no-print hidden">
 
     <!-- App Header -->
     <header class="app-header">
@@ -34,13 +75,14 @@
           </div>
         </div>
 
-        <!-- Header Action Icons (Accessibility, Help, Premium, Backup, PWA Install) -->
+        <!-- Header Action Icons (Accessibility, Help, Premium, Backup, PWA Install, Logout) -->
         <div class="header-actions">
           <button id="pwaInstallBtn" class="pwa-install-btn hidden" title="Install HomeSteps App" aria-label="Install App">📲 Install App</button>
           <button id="toggleBigTextBtn" class="icon-btn" title="Big Text Mode (Aa+)" aria-label="Toggle Big Text">Aa+</button>
           <button id="helpModalBtn" class="icon-btn" title="Help & Guide (?)" aria-label="Help">❓</button>
           <button id="premiumModalBtn" class="premium-header-btn" title="HomeSteps Premium (Coming Soon)" aria-label="Premium">✨ Premium</button>
           <button id="backupModalBtn" class="icon-btn" title="Backup & Restore Data" aria-label="Backup">💾</button>
+          <button id="logoutBtn" class="icon-btn logout-header-btn" title="Log Out of HomeSteps" aria-label="Log Out">🚪</button>
         </div>
       </div>
     </header>
